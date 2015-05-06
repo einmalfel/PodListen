@@ -1,5 +1,5 @@
 <resources>
     <account-authenticator
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:accountType="podlisten.einmalfel.com"/>
+        android:accountType="@string/app_id"/>
 </resources>
