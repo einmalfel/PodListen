@@ -34,7 +34,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public Fragment getItem(int position) {
-      Log.v(TAG, "Making fragment for position " + Integer.toString(position));
+      Log.v(TAG, "Making fragment for position " + position);
       return PlaylistFragment.newInstance();
     }
   }
