@@ -1,5 +1,7 @@
 package com.einmalfel.podlisten;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +15,7 @@ import com.astuetz.PagerSlidingTabStrip;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "MainActivity";
+  private Account account;
 
   private static class TabsAdapter extends FragmentPagerAdapter {
     private static final String[] TAB_NAMES = {"Player", "Playlist", "New episodes",
@@ -47,5 +50,16 @@ public class MainActivity extends FragmentActivity {
     pager.setAdapter(new TabsAdapter(getSupportFragmentManager()));
     PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
     tabs.setViewPager(pager);
+  }
+
+  public Account getAccount() {
+    if (account == null) {
+      // user base authority/app id as stub account type and name
+      String accountTypeName = getResources().getString(R.string.app_id);
+      account = new Account(accountTypeName, accountTypeName);
+      AccountManager accountManager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
+      accountManager.addAccountExplicitly(account, null, null);
+    }
+    return account;
   }
 }
