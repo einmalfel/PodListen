@@ -1,5 +1,3 @@
-<resources>
-    <account-authenticator
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:accountType="@string/app_id"/>
-</resources>
+<account-authenticator
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accountType="@string/app_id"/>
