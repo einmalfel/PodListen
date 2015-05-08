@@ -26,6 +26,14 @@
                 android:resource="@xml/authenticator"/>
         </service>
 
+
+        <provider
+            android:name=".Provider"
+            android:authorities="@string/app_id"
+            android:enabled="true"
+            android:exported="true"
+            android:syncable="true">
+        </provider>
     </application>
 
 </manifest>
