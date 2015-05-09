@@ -34,6 +34,10 @@ public class Provider extends ContentProvider {
   public static final int STATE_GONE = 2;
 
   public static final String authorityBase = "com.einmalfel.podlisten";
+  public static final String commonUriString = ContentResolver.SCHEME_CONTENT + "://" + authorityBase;
+  public static final Uri podcastUri = Uri.parse(commonUriString + '/' + T_PODCAST);
+  public static final Uri episodeUri = Uri.parse(commonUriString + '/' + T_EPISODE);
+
   private static final String[] TABLES = {T_EPISODE, T_PODCAST};
   private static final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
   private static final String TAG = "PLP";
