@@ -60,7 +60,26 @@ public class Provider extends ContentProvider {
 
   @Override
   public int delete(Uri uri, String selection, String[] selectionArgs) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    int code = matcher.match(uri);
+    if (code == -1) {
+      Log.e(TAG, "Wrong query uri " + uri + ". Code " + code);
+      return 0;
+    }
+    if (code >= TABLES.length) {
+      code -= TABLES.length;
+      selection = "_ID = " + uri.getLastPathSegment();
+    }
+
+    SQLiteDatabase db = helper.getWritableDatabase();
+    int result = -1;
+    try {
+      result = db.delete(TABLES[code], selection, selectionArgs);
+    } catch (RuntimeException ignored) {
+      return 0;
+    } finally {
+      db.close();
+    }
+    return result;
   }
 
   @Override
