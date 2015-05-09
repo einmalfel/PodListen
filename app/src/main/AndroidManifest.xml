@@ -26,6 +26,17 @@
                 android:resource="@xml/authenticator"/>
         </service>
 
+        <service
+            android:name=".EpisodeSyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter"/>
+        </service>
 
         <provider
             android:name=".Provider"
