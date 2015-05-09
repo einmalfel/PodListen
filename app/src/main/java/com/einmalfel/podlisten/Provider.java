@@ -47,6 +47,17 @@ public class Provider extends ContentProvider {
   private static final String TAG = "PLP";
   private static HelperV1 helper;
 
+  public static Uri getUri(String table, Long id) {
+    Uri.Builder builder = new Uri.Builder()
+        .scheme(ContentResolver.SCHEME_CONTENT)
+        .authority(authorityBase)
+        .appendPath(table);
+    if (id != null) {
+      builder.appendPath(id.toString());
+    }
+    return builder.build();
+  }
+
   @Override
   public int delete(Uri uri, String selection, String[] selectionArgs) {
     throw new UnsupportedOperationException("Not yet implemented");
@@ -75,12 +86,7 @@ public class Provider extends ContentProvider {
       Log.e(TAG, "SQLite insert failed " + uri + ". Values " + values);
       return null;
     }
-    return new Uri.Builder()
-        .scheme(ContentResolver.SCHEME_CONTENT)
-        .authority(authorityBase)
-        .appendPath(TABLES[code])
-        .appendPath(Long.toString(id))
-        .build();
+    return getUri(TABLES[code], id);
   }
 
   @Override
