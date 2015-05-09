@@ -19,7 +19,7 @@ public class Provider extends ContentProvider {
   public static final String K_ENAME = "episode_name";
   public static final String K_EDATE = "publication_date";
   public static final String K_EDESCR = "episode_description";
-  public static final String K_ESTATE = "episode_selected";
+  public static final String K_ESTATE = "episode_state";
   public static final String K_EAURL = "audio_url";
   public static final String K_EURL = "episode_url";
   public static final String K_EDFIN = "download_finished";
@@ -29,9 +29,13 @@ public class Provider extends ContentProvider {
   public static final String K_PDESCR = "podcast_description";
   public static final String K_PURL = "podcast_url";
   public static final String K_PFURL = "feed_url";
-  public static final int STATE_NEW = 0;
-  public static final int STATE_SELECTED = 1;
-  public static final int STATE_GONE = 2;
+  public static final String K_PSTATE = "podcast_state";
+  public static final int ESTATE_NEW = 0;
+  public static final int ESTATE_SELECTED = 1;
+  public static final int ESTATE_IN_PLAYLIST = 1;
+  public static final int ESTATE_GONE = 2;
+  public static final int PSTATE_NEW = 0;
+  public static final int PSTATE_SEEN_ONCE = 1;
 
   public static final String authorityBase = "com.einmalfel.podlisten";
   public static final String commonUriString = ContentResolver.SCHEME_CONTENT + "://" + authorityBase;
@@ -145,6 +149,7 @@ public class Provider extends ContentProvider {
           K_ID + " INTEGER PRIMARY KEY," +
           K_PNAME + " TEXT," +
           K_PDESCR + " TEXT," +
+          K_PSTATE + " INTEGER," +
           K_PURL + " TEXT," +
           K_PFURL + " TEXT" +
           ')');
@@ -154,7 +159,7 @@ public class Provider extends ContentProvider {
           K_EDESCR + " TEXT," +
           K_EURL + " TEXT," +
           K_EAURL + " TEXT," +
-          K_EDATE + " TEXT," +
+          K_EDATE + " INTEGER," +
           K_EDFIN + " INTEGER," +
           K_EDATT + " INTEGER," +
           K_ESTATE + " INTEGER," +
