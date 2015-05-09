@@ -107,7 +107,7 @@ public class Provider extends ContentProvider {
       Log.e(TAG, "Wrong query uri " + uri + ". Code " + code);
       return null;
     }
-    if (code > TABLES.length) {
+    if (code >= TABLES.length) {
       code -= TABLES.length;
       selection = "_ID = " + uri.getLastPathSegment();
     }
@@ -130,7 +130,7 @@ public class Provider extends ContentProvider {
       Log.e(TAG, "Wrong query uri " + uri + ". Code " + code);
       return 0;
     }
-    if (code > TABLES.length) {
+    if (code >= TABLES.length) {
       code -= TABLES.length;
       selection = "_ID = " + uri.getLastPathSegment();
     }
