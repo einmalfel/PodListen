@@ -33,11 +33,11 @@ public class Provider extends ContentProvider {
   public static final int STATE_SELECTED = 1;
   public static final int STATE_GONE = 2;
 
+  public static final String authorityBase = "com.einmalfel.podlisten";
   private static final String[] TABLES = {T_EPISODE, T_PODCAST};
   private static final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
   private static final String TAG = "PLP";
   private static HelperV1 helper;
-  private static String authorityBase;
 
   @Override
   public int delete(Uri uri, String selection, String[] selectionArgs) {
@@ -77,7 +77,6 @@ public class Provider extends ContentProvider {
 
   @Override
   public boolean onCreate() {
-    authorityBase = getContext().getResources().getString(R.string.app_id);
     helper = new HelperV1(getContext(), authorityBase);
     for (int i = 0; i < TABLES.length; i++) {
       matcher.addURI(authorityBase, TABLES[i], i);
