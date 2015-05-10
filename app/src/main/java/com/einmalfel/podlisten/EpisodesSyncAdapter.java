@@ -182,9 +182,13 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     if (newEpisode) {//episode is not yet in db
-      Log.d(TAG, "New episode! " + entry.getTitle());
+      String title = entry.getTitle();
+      if (title == null) {
+        title = "NO TITLE";
+      }
+      Log.d(TAG, "New episode! " + title);
       ContentValues values = new ContentValues();
-      putStringIfNotNull(values, Provider.K_ENAME, entry.getTitle());
+      putStringIfNotNull(values, Provider.K_ENAME, title);
       putStringIfNotNull(values, Provider.K_EAURL, audioLink);
       putStringIfNotNull(values, Provider.K_EDESCR, entry.getDescription().getValue());
       putStringIfNotNull(values, Provider.K_EURL, entry.getLink());
