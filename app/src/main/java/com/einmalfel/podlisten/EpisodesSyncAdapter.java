@@ -2,6 +2,8 @@ package com.einmalfel.podlisten;
 
 
 import android.accounts.Account;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
@@ -55,6 +57,15 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     // ROME-for-android doesn't work with system class loader which is used by default
     Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
+    NotificationManager nm = (NotificationManager) getContext().getSystemService(
+        Context.NOTIFICATION_SERVICE);
+    Notification.Builder nb = new Notification.Builder(getContext())
+        .setSmallIcon(R.mipmap.ic_sync_green_24dp)
+        .setContentTitle("Podlisten refreshing")
+        .setOngoing(true)
+        .setProgress(c.getCount(), 0, false);
+    nm.notify(0, nb.build());
+
     // For each podcast launch rss parsing on its feed URL
     try {
       int furlIndex = c.getColumnIndexOrThrow(Provider.K_PFURL);
@@ -73,12 +84,25 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
           Log.e(TAG, "Feed error while loading feed, skipping. " + feedUrl + " Exception: " + e);
           syncResult.stats.numIoExceptions++;
         }
+        nb.setProgress(c.getCount(), c.getPosition() + 1, false);
+        if (count > 0) {
+          nb.setContentTitle(Integer.toString(count) + " new episode(s)");
+        }
+        nm.notify(0, nb.build());
       } while (c.moveToNext());
+      if (count == 0) {
+        nb.setContentText("No new episodes");
+      }
     } catch (RemoteException re) {
       Log.e(TAG, "Content provider error " + re);
       syncResult.databaseError = true;
+      nb.setContentText("DB error while loading episodes");
     } finally {
       c.close();
+      nb.setOngoing(false)
+          .setProgress(0,0,false)
+          .setContentTitle("Podlisten refreshed");
+      nm.notify(0, nb.build());
     }
   }
 
