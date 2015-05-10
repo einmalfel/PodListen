@@ -71,13 +71,11 @@ public class Provider extends ContentProvider {
     }
 
     SQLiteDatabase db = helper.getWritableDatabase();
-    int result = -1;
+    int result;
     try {
       result = db.delete(TABLES[code], selection, selectionArgs);
     } catch (RuntimeException ignored) {
       return 0;
-    } finally {
-      db.close();
     }
     return result;
   }
@@ -95,12 +93,8 @@ public class Provider extends ContentProvider {
       return null;
     }
     SQLiteDatabase db = helper.getWritableDatabase();
-    long id;
-    try {
-      id = db.insert(TABLES[code], null, values);
-    } finally {
-      db.close();
-    }
+    long id = db.insert(TABLES[code], null, values);
+
     if (id == -1) {
       Log.e(TAG, "SQLite insert failed " + uri + ". Values " + values);
       return null;
@@ -130,16 +124,10 @@ public class Provider extends ContentProvider {
       code -= TABLES.length;
       selection = "_ID = " + uri.getLastPathSegment();
     }
-    Cursor result;
     SQLiteDatabase db = helper.getReadableDatabase();
-    try {
-      result = db.query(TABLES[code], projection, selection, selectionArgs, null, null, sortOrder);
-    } catch (RuntimeException ignore){
-      db.close();
-      return null;
-    }
-    return result;
+    return db.query(TABLES[code], projection, selection, selectionArgs, null, null, sortOrder);
   }
+
 
   @Override
   public int update(Uri uri, ContentValues values, String selection,
@@ -154,13 +142,7 @@ public class Provider extends ContentProvider {
       selection = "_ID = " + uri.getLastPathSegment();
     }
     SQLiteDatabase db = helper.getWritableDatabase();
-    int result;
-    try {
-      result = db.update(TABLES[code], values, selection, selectionArgs);
-    } finally {
-      db.close();
-    }
-    return result;
+    return db.update(TABLES[code], values, selection, selectionArgs);
   }
 
   private static class HelperV1 extends SQLiteOpenHelper {
