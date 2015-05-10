@@ -8,6 +8,7 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -121,7 +122,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     return count;
   }
 
-  private static int loadFeed(String url, long pid, ContentProviderClient cpc, boolean newSubscription)
+  private int loadFeed(String url, long pid, ContentProviderClient cpc, boolean newSubscription)
       throws IOException, RemoteException, FeedException {
     Log.i(TAG, "Refreshing " + url);
     SyndFeedInput input = new SyndFeedInput();
@@ -173,7 +174,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
   }
 
-  private static Long tryInsertEntry(SyndEntry entry, long pid, ContentProviderClient cpc, boolean gone)
+  private Long tryInsertEntry(SyndEntry entry, long pid, ContentProviderClient cpc, boolean gone)
       throws RemoteException {
     String audioLink = extractAudio(entry.getEnclosures());
     if (audioLink == null) {
@@ -194,7 +195,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       if (title == null) {
         title = "NO TITLE";
       }
-      Log.d(TAG, "New episode! " + title);
+
       ContentValues values = new ContentValues();
       putStringIfNotNull(values, Provider.K_ENAME, title);
       putStringIfNotNull(values, Provider.K_EAURL, audioLink);
@@ -210,6 +211,15 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       values.put(Provider.K_ID, id);
       values.put(Provider.K_ESTATE, gone ? Provider.ESTATE_GONE : Provider.ESTATE_NEW);
       cpc.insert(Provider.episodeUri, values);
+
+      if (!gone) {
+        Log.d(TAG, "New episode! " + title);
+        Intent bi = new Intent(DownloadStartReceiver.NEW_EPISODE_INTENT);
+        bi.putExtra(DownloadStartReceiver.URL_EXTRA_NAME, audioLink);
+        bi.putExtra(DownloadStartReceiver.TITLE_EXTRA_NAME, title);
+        bi.putExtra(DownloadStartReceiver.ID_EXTRA_NAME, id);
+        getContext().sendBroadcast(bi);
+      }
     }
 
     return id;
