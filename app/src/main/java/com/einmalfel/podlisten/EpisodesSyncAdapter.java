@@ -30,8 +30,9 @@ import java.util.regex.Pattern;
 
 public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
   private static final String TAG = "ESA";
-  private static final String[] P_PROJECTION = {Provider.K_PFURL, Provider.K_ID};
+  private static final String[] P_PROJECTION = {Provider.K_PFURL, Provider.K_ID, Provider.K_PSTATE};
   private static final Pattern AUDIO_PATTERN = Pattern.compile("^audio/\\w*");
+  private static final int NEW_SUBSCRIPTION_LIMIT = 5; // limit episodes to add for feeds TODO option
 
   public EpisodesSyncAdapter(Context context, boolean autoInitialize) {
     super(context, autoInitialize);
@@ -70,13 +71,15 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     try {
       int furlIndex = c.getColumnIndexOrThrow(Provider.K_PFURL);
       int idIndex = c.getColumnIndexOrThrow(Provider.K_ID);
+      int stateIndex = c.getColumnIndexOrThrow(Provider.K_PSTATE);
       c.moveToFirst();
       int count = 0;
       do {
         long id = c.getLong(idIndex);
         String feedUrl = c.getString(furlIndex);
+        int state = c.getInt(stateIndex);
         try {
-          count += loadFeed(feedUrl, id, provider);
+          count += loadFeed(feedUrl, id, provider, state == Provider.PSTATE_NEW);
         } catch (IOException e) {
           Log.e(TAG, "IO error while loading feed, skipping. " + feedUrl + " Exception: " + e);
           syncResult.stats.numIoExceptions++;
@@ -110,7 +113,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
   }
 
-  private static int loadFeed(String url, long pid, ContentProviderClient cpc)
+  private static int loadFeed(String url, long pid, ContentProviderClient cpc, boolean newSubscription)
       throws IOException, RemoteException, FeedException {
     Log.i(TAG, "Refreshing " + url);
     SyndFeedInput input = new SyndFeedInput();
@@ -124,11 +127,13 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     @SuppressWarnings("unchecked")
     List<SyndEntry> entries = feed.getEntries();
     StringBuilder b = new StringBuilder("");
+    int count = 0;
     for (SyndEntry entry : entries) {
-      Long id = tryInsertEntry(entry, pid, cpc);
+      Long id = tryInsertEntry(entry, pid, cpc, newSubscription && count >= NEW_SUBSCRIPTION_LIMIT);
       if (id != null) {
         b.append(id);
         b.append(',');
+        count++;
       }
     }
     b.deleteCharAt(b.lastIndexOf(","));
@@ -160,7 +165,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
   }
 
-  private static Long tryInsertEntry(SyndEntry entry, long pid, ContentProviderClient cpc)
+  private static Long tryInsertEntry(SyndEntry entry, long pid, ContentProviderClient cpc, boolean gone)
       throws RemoteException {
     String audioLink = extractAudio(entry.getEnclosures());
     if (audioLink == null) {
@@ -191,7 +196,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       }
       values.put(Provider.K_EPID, pid);
       values.put(Provider.K_ID, id);
-      values.put(Provider.K_ESTATE, Provider.ESTATE_NEW);
+      values.put(Provider.K_ESTATE, gone ? Provider.ESTATE_GONE : Provider.ESTATE_NEW);
       cpc.insert(Provider.episodeUri, values);
     }
 
