@@ -15,9 +15,11 @@ import android.util.Log;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEnclosure;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
+import com.google.code.rome.android.repackaged.com.sun.syndication.io.FeedException;
 import com.google.code.rome.android.repackaged.com.sun.syndication.io.SyndFeedInput;
 import com.google.code.rome.android.repackaged.com.sun.syndication.io.XmlReader;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -61,23 +63,29 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       do {
         long id = c.getLong(idIndex);
         String feedUrl = c.getString(furlIndex);
-        loadFeed(feedUrl, id, provider);
+        try {
+          loadFeed(feedUrl, id, provider);
+        } catch (IOException e) {
+          Log.e(TAG, "IO error while loading feed, skipping. " + feedUrl + " Exception: " + e);
+          syncResult.stats.numIoExceptions++;
+        } catch (FeedException e) {
+          Log.e(TAG, "Feed error while loading feed, skipping. " + feedUrl + " Exception: " + e);
+          syncResult.stats.numIoExceptions++;
+        }
       } while (c.moveToNext());
+    } catch (RemoteException re) {
+      Log.e(TAG, "Content provider error " + re);
+      syncResult.databaseError = true;
     } finally {
       c.close();
     }
   }
 
-  private static void loadFeed(String url, long pid, ContentProviderClient cpc) {
+  private static void loadFeed(String url, long pid, ContentProviderClient cpc)
+      throws IOException, RemoteException, FeedException {
     Log.i(TAG, "Refreshing " + url);
     SyndFeedInput input = new SyndFeedInput();
-    SyndFeed feed;
-    try {
-      feed = input.build(new XmlReader(new URL(url)));
-    } catch (Exception e) {
-      Log.e(TAG, "Exception while setting up podcast feed " + e);
-      return;
-    }
+    SyndFeed feed = input.build(new XmlReader(new URL(url)));
 
     updatePodcastInfo(pid, cpc, feed);
 
@@ -103,25 +111,22 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
   }
 
-  private static void updatePodcastInfo(long id, ContentProviderClient cpc, SyndFeed feed) {
+  private static void updatePodcastInfo(long id, ContentProviderClient cpc, SyndFeed feed)
+      throws RemoteException {
     ContentValues values = new ContentValues();
     putStringIfNotNull(values, Provider.K_PURL, feed.getLink());
     putStringIfNotNull(values, Provider.K_PNAME, feed.getTitle());
     putStringIfNotNull(values, Provider.K_PDESCR, feed.getDescription());
     //TODO check if image file exists and download it
     values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
-    try {
-      int updated = cpc.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null);
-      if (updated != 1) {
-        Log.e(TAG, "Unexpected number of items updated " + updated + " id " + id);
-      }
-
-    } catch (RemoteException re) {
-      Log.e(TAG, "Problem updating feed info " + re + " id " + id);
+    int updated = cpc.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null);
+    if (updated != 1) {
+      Log.e(TAG, "Unexpected number of items updated " + updated + " id " + id);
     }
   }
 
-  private static Long tryInsertEntry(SyndEntry entry, long pid, ContentProviderClient cpc) {
+  private static Long tryInsertEntry(SyndEntry entry, long pid, ContentProviderClient cpc)
+      throws RemoteException {
     String audioLink = extractAudio(entry.getEnclosures());
     if (audioLink == null) {
       Log.i(TAG, entry.getTitle() + " has no audio attachment, skipping");
@@ -129,14 +134,8 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     long id = (long) audioLink.hashCode() - Integer.MIN_VALUE;
-    Cursor c;
-    try {
-      //TODO this is suboptimal. Will later check existance of episodes in a bunch query
-      c = cpc.query(Provider.getUri(Provider.T_EPISODE, id), null, null, null, null);
-    } catch (RemoteException e) {
-      Log.e(TAG, "Unexpected error while checking episode presence. Skipping episode. " + e);
-      return null;
-    }
+    //TODO this is suboptimal. Will later check existence of episodes in a bunch query
+    Cursor c = cpc.query(Provider.getUri(Provider.T_EPISODE, id), null, null, null, null);
     boolean newEpisode = c == null || c.isAfterLast();
     if (c != null) {
       c.close();
@@ -158,13 +157,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       values.put(Provider.K_EPID, pid);
       values.put(Provider.K_ID, id);
       values.put(Provider.K_ESTATE, Provider.ESTATE_NEW);
-
-      try {
-        cpc.insert(Provider.episodeUri, values);
-      } catch (RemoteException e) {
-        Log.e(TAG, "Failed to insert episode " + e);
-        return null;
-      }
+      cpc.insert(Provider.episodeUri, values);
     }
 
     return id;
