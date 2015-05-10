@@ -91,7 +91,11 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
         nm.notify(0, nb.build());
       } while (c.moveToNext());
       if (count == 0) {
-        nb.setContentText("No new episodes");
+        if (syncResult.stats.numIoExceptions == c.getCount()) {
+          nb.setContentText("Refresh failed");
+        } else {
+          nb.setContentText("No new episodes");
+        }
       }
     } catch (RemoteException re) {
       Log.e(TAG, "Content provider error " + re);
