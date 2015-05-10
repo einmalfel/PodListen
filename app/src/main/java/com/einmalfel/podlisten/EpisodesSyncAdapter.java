@@ -60,11 +60,12 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       int furlIndex = c.getColumnIndexOrThrow(Provider.K_PFURL);
       int idIndex = c.getColumnIndexOrThrow(Provider.K_ID);
       c.moveToFirst();
+      int count = 0;
       do {
         long id = c.getLong(idIndex);
         String feedUrl = c.getString(furlIndex);
         try {
-          loadFeed(feedUrl, id, provider);
+          count += loadFeed(feedUrl, id, provider);
         } catch (IOException e) {
           Log.e(TAG, "IO error while loading feed, skipping. " + feedUrl + " Exception: " + e);
           syncResult.stats.numIoExceptions++;
@@ -81,13 +82,15 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
   }
 
-  private static void loadFeed(String url, long pid, ContentProviderClient cpc)
+  private static int loadFeed(String url, long pid, ContentProviderClient cpc)
       throws IOException, RemoteException, FeedException {
     Log.i(TAG, "Refreshing " + url);
     SyndFeedInput input = new SyndFeedInput();
     SyndFeed feed = input.build(new XmlReader(new URL(url)));
 
     updatePodcastInfo(pid, cpc, feed);
+
+    int countBefore = cpc.query(Provider.episodeUri, null, null, null, null).getCount();
 
     // insert every episode
     @SuppressWarnings("unchecked")
@@ -102,6 +105,8 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     b.deleteCharAt(b.lastIndexOf(","));
 
+    int countAfter = cpc.query(Provider.episodeUri, null, null, null, null).getCount();
+
     //cleanup episodes which are both not interesting for user (ESTATE_GONE) and absent in feed
     String presentInFeed = b.toString();
     try {
@@ -109,6 +114,8 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
           new String[]{Integer.toString(Provider.ESTATE_GONE), presentInFeed});
     } catch (RemoteException ignore) {
     }
+
+    return countAfter - countBefore;
   }
 
   private static void updatePodcastInfo(long id, ContentProviderClient cpc, SyndFeed feed)
