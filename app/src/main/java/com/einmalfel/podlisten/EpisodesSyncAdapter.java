@@ -113,6 +113,14 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
   }
 
+  private static int countNewInDB(ContentProviderClient cpc) throws RemoteException {
+    Cursor cursorBefore = cpc.query(Provider.episodeUri, null, Provider.K_ESTATE + " = ?",
+        new String[]{Integer.toString(Provider.ESTATE_NEW)}, null);
+    int count = cursorBefore.getCount();
+    cursorBefore.close();
+    return count;
+  }
+
   private static int loadFeed(String url, long pid, ContentProviderClient cpc, boolean newSubscription)
       throws IOException, RemoteException, FeedException {
     Log.i(TAG, "Refreshing " + url);
@@ -121,7 +129,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
 
     updatePodcastInfo(pid, cpc, feed);
 
-    int countBefore = cpc.query(Provider.episodeUri, null, null, null, null).getCount();
+    int countBefore = countNewInDB(cpc);
 
     // insert every episode
     @SuppressWarnings("unchecked")
@@ -138,7 +146,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     b.deleteCharAt(b.lastIndexOf(","));
 
-    int countAfter = cpc.query(Provider.episodeUri, null, null, null, null).getCount();
+    int countAfter = countNewInDB(cpc);
 
     //cleanup episodes which are both not interesting for user (ESTATE_GONE) and absent in feed
     String presentInFeed = b.toString();
