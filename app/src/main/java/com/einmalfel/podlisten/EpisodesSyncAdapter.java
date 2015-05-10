@@ -86,7 +86,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
         }
         nb.setProgress(c.getCount(), c.getPosition() + 1, false);
         if (count > 0) {
-          nb.setContentTitle(Integer.toString(count) + " new episode(s)");
+          nb.setContentText(Integer.toString(count) + " new episode(s)");
         }
         nm.notify(0, nb.build());
       } while (c.moveToNext());
