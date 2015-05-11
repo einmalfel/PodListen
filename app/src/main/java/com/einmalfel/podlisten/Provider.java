@@ -32,8 +32,8 @@ public class Provider extends ContentProvider {
   public static final String K_PSTATE = "podcast_state";
   public static final int ESTATE_NEW = 0;
   public static final int ESTATE_SELECTED = 1;
-  public static final int ESTATE_IN_PLAYLIST = 1;
-  public static final int ESTATE_GONE = 2;
+  public static final int ESTATE_IN_PLAYLIST = 2;
+  public static final int ESTATE_GONE = 3;
   public static final int PSTATE_NEW = 0;
   public static final int PSTATE_SEEN_ONCE = 1;
 
