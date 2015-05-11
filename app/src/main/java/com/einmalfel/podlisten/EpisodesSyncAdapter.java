@@ -149,13 +149,14 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
 
     int countAfter = countNewInDB(cpc);
 
-    //cleanup episodes which are both not interesting for user (ESTATE_GONE) and absent in feed
-    String presentInFeed = b.toString();
-    try {
-      cpc.delete(Provider.episodeUri, Provider.K_ESTATE + "=? AND " + Provider.K_ID + " NOT IN (?)",
-          new String[]{Integer.toString(Provider.ESTATE_GONE), presentInFeed});
-    } catch (RemoteException ignore) {
-    }
+//    //cleanup episodes which are both not interesting for user (ESTATE_GONE) and absent in feed
+//    String presentInFeed = b.toString();
+//    try {
+//      //TODO check if this actually works
+//      cpc.delete(Provider.episodeUri, Provider.K_ESTATE + "=? AND " + Provider.K_ID + " NOT IN (?)",
+//          new String[]{Integer.toString(Provider.ESTATE_GONE), presentInFeed});
+//    } catch (RemoteException ignore) {
+//    }
 
     return countAfter - countBefore;
   }
