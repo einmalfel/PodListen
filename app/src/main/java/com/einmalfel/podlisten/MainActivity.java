@@ -16,6 +16,8 @@ import com.astuetz.PagerSlidingTabStrip;
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "MainActivity";
   private Account account;
+  enum Pages {PLAYER, PLAYLIST, NEW_EPISODES, SUBSCRIPTIONS}
+  static final String PAGE_LAUNCH_OPTION = "Page";
 
   private static class TabsAdapter extends FragmentPagerAdapter {
     private static final String[] TAB_NAMES = {"Player", "Playlist", "New episodes",
@@ -27,7 +29,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public int getCount() {
-      return 4;
+      return Pages.values().length;
     }
 
     @Override
