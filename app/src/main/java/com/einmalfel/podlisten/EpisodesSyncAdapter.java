@@ -33,7 +33,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
   private static final String TAG = "ESA";
   private static final String[] P_PROJECTION = {Provider.K_PFURL, Provider.K_ID, Provider.K_PSTATE};
   private static final Pattern AUDIO_PATTERN = Pattern.compile("^audio/\\w*");
-  private static final int NEW_SUBSCRIPTION_LIMIT = 5; // limit episodes to add for feeds TODO option
+  private static final int NEW_SUBSCRIPTION_LIMIT = 2; // limit episodes to add for feeds TODO option
 
   public EpisodesSyncAdapter(Context context, boolean autoInitialize) {
     super(context, autoInitialize);
