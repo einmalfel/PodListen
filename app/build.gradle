@@ -38,4 +38,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.google.code.android-rome-feed-reader:android-rome-feed-reader:1.0.0-r2'
     debugCompile 'com.facebook.stetho:stetho:1.1.1'
+    compile 'com.android.support:recyclerview-v7:22.1.1'
 }
