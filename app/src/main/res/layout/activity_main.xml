@@ -5,12 +5,9 @@
               android:orientation="vertical"
               tools:context=".MainActivity">
 
-    <com.astuetz.PagerSlidingTabStrip
+    <include
         android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp"/>
+        layout="@layout/tab_strip"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
