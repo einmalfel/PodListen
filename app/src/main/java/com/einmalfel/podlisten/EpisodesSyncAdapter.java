@@ -73,27 +73,28 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       int furlIndex = c.getColumnIndexOrThrow(Provider.K_PFURL);
       int idIndex = c.getColumnIndexOrThrow(Provider.K_ID);
       int stateIndex = c.getColumnIndexOrThrow(Provider.K_PSTATE);
-      c.moveToFirst();
       int count = 0;
-      do {
-        long id = c.getLong(idIndex);
-        String feedUrl = c.getString(furlIndex);
-        int state = c.getInt(stateIndex);
-        try {
-          count += loadFeed(feedUrl, id, provider, state == Provider.PSTATE_NEW);
-        } catch (IOException e) {
-          Log.e(TAG, "IO error while loading feed, skipping. " + feedUrl + " Exception: " + e);
-          syncResult.stats.numIoExceptions++;
-        } catch (FeedException e) {
-          Log.e(TAG, "Feed error while loading feed, skipping. " + feedUrl + " Exception: " + e);
-          syncResult.stats.numIoExceptions++;
-        }
-        nb.setProgress(c.getCount(), c.getPosition() + 1, false);
-        if (count > 0) {
-          nb.setContentText(Integer.toString(count) + " new episode(s)");
-        }
-        nm.notify(0, nb.build());
-      } while (c.moveToNext());
+      if (c.moveToFirst()) {
+        do {
+          long id = c.getLong(idIndex);
+          String feedUrl = c.getString(furlIndex);
+          int state = c.getInt(stateIndex);
+          try {
+            count += loadFeed(feedUrl, id, provider, state == Provider.PSTATE_NEW);
+          } catch (IOException e) {
+            Log.e(TAG, "IO error while loading feed, skipping. " + feedUrl + " Exception: " + e);
+            syncResult.stats.numIoExceptions++;
+          } catch (FeedException e) {
+            Log.e(TAG, "Feed error while loading feed, skipping. " + feedUrl + " Exception: " + e);
+            syncResult.stats.numIoExceptions++;
+          }
+          nb.setProgress(c.getCount(), c.getPosition() + 1, false);
+          if (count > 0) {
+            nb.setContentText(Integer.toString(count) + " new episode(s)");
+          }
+          nm.notify(0, nb.build());
+        } while (c.moveToNext());
+      }
       if (count == 0) {
         if (syncResult.stats.numIoExceptions == c.getCount()) {
           nb.setContentText("Refresh failed");
