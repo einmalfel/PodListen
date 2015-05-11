@@ -46,6 +46,7 @@ public class Provider extends ContentProvider {
   private static final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
   private static final String TAG = "PLP";
   private static HelperV1 helper;
+  private ContentResolver resolver;
 
   public static Uri getUri(String table, Long id) {
     Uri.Builder builder = new Uri.Builder()
@@ -77,6 +78,7 @@ public class Provider extends ContentProvider {
     } catch (RuntimeException ignored) {
       return 0;
     }
+    resolver.notifyChange(uri, null);
     return result;
   }
 
@@ -94,17 +96,19 @@ public class Provider extends ContentProvider {
     }
     SQLiteDatabase db = helper.getWritableDatabase();
     long id = db.insert(TABLES[code], null, values);
-
     if (id == -1) {
       Log.e(TAG, "SQLite insert failed " + uri + ". Values " + values);
       return null;
     }
-    return getUri(TABLES[code], id);
+    Uri newUri = getUri(TABLES[code], id);
+    resolver.notifyChange(newUri, null);
+    return newUri;
   }
 
   @Override
   public boolean onCreate() {
     helper = new HelperV1(getContext(), authorityBase);
+    resolver = getContext().getContentResolver();
     for (int i = 0; i < TABLES.length; i++) {
       matcher.addURI(authorityBase, TABLES[i], i);
       matcher.addURI(authorityBase, TABLES[i] + "/#", TABLES.length + i);
@@ -125,7 +129,9 @@ public class Provider extends ContentProvider {
       selection = "_ID = " + uri.getLastPathSegment();
     }
     SQLiteDatabase db = helper.getReadableDatabase();
-    return db.query(TABLES[code], projection, selection, selectionArgs, null, null, sortOrder);
+    Cursor result = db.query(TABLES[code], projection, selection, selectionArgs, null, null, sortOrder);
+    result.setNotificationUri(resolver, uri);
+    return result;
   }
 
 
@@ -142,7 +148,11 @@ public class Provider extends ContentProvider {
       selection = "_ID = " + uri.getLastPathSegment();
     }
     SQLiteDatabase db = helper.getWritableDatabase();
-    return db.update(TABLES[code], values, selection, selectionArgs);
+    int result = db.update(TABLES[code], values, selection, selectionArgs);
+    if (result > 0) {
+      resolver.notifyChange(uri, null);
+    }
+    return result;
   }
 
   private static class HelperV1 extends SQLiteOpenHelper {
