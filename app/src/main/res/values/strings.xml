@@ -12,6 +12,7 @@
     <string name="delete_subscription">Unsubscribe from feed?</string>
     <string name="subscribe_failed_empty">Failed to subcribe: empty url</string>
     <string name="already_subscribed">Already subscribed to this feed</string>
+    <string name="empty_playlist">Nothing to play. There is no downloaded episodes in playlist</string>
     <string name="refreshing">PodListen refreshing</string>
     <string name="new_episodes">new episode(s)</string>
     <string name="refresh_failed">Refresh failed</string>
