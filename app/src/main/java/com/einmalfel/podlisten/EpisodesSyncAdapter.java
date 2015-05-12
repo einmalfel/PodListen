@@ -93,7 +93,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
           String feedUrl = c.getString(furlIndex);
           int state = c.getInt(stateIndex);
           try {
-            count += loadFeed(feedUrl, id, provider, state == Provider.PSTATE_NEW);
+            loadFeed(feedUrl, id, provider, state == Provider.PSTATE_NEW);
           } catch (IOException e) {
             Log.e(TAG, "IO error while loading feed, skipping. " + feedUrl + " Exception: " + e);
             syncResult.stats.numIoExceptions++;
@@ -102,6 +102,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
             syncResult.stats.numIoExceptions++;
           }
           nb.setProgress(c.getCount(), c.getPosition() + 1, false);
+          count = countNewInDB(provider);
           if (count > 0) {
             nb.setContentText(Integer.toString(count) + " new episode(s)");
           }
@@ -136,7 +137,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     return count;
   }
 
-  private int loadFeed(String url, long pid, ContentProviderClient cpc, boolean newSubscription)
+  private void loadFeed(String url, long pid, ContentProviderClient cpc, boolean newSubscription)
       throws IOException, RemoteException, FeedException {
     Log.i(TAG, "Refreshing " + url);
     if (!url.toLowerCase().matches("^\\w+://.*")) {
@@ -147,8 +148,6 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     SyndFeed feed = input.build(new XmlReader(new URL(url)));
 
     updatePodcastInfo(pid, cpc, feed);
-
-    int countBefore = countNewInDB(cpc);
 
     // insert every episode
     @SuppressWarnings("unchecked")
@@ -165,8 +164,6 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     b.deleteCharAt(b.lastIndexOf(","));
 
-    int countAfter = countNewInDB(cpc);
-
 //    //cleanup episodes which are both not interesting for user (ESTATE_GONE) and absent in feed
 //    String presentInFeed = b.toString();
 //    try {
@@ -175,8 +172,6 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
 //          new String[]{Integer.toString(Provider.ESTATE_GONE), presentInFeed});
 //    } catch (RemoteException ignore) {
 //    }
-
-    return countAfter - countBefore;
   }
 
   private static void updatePodcastInfo(long id, ContentProviderClient cpc, SyndFeed feed)
