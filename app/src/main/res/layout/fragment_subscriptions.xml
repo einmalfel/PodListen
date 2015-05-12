@@ -22,12 +22,14 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/subscribe_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/subscribe"/>
 
         <Button
+            android:id="@+id/sample_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

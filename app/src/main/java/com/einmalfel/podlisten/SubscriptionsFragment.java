@@ -61,6 +61,7 @@ public class SubscriptionsFragment extends Fragment
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final EditText input = new EditText(activity);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+          @Override
           public void onClick(DialogInterface dialog, int id) {
             String url = input.getText().toString().trim();
             if (url.isEmpty()) {
