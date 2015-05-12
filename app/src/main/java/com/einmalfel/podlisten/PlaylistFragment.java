@@ -51,21 +51,25 @@ public class PlaylistFragment extends Fragment
     context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), val, null, null);
   }
 
-  @Override
-  public void onItemLongClick(View view, int position) {
-    final long episodeId = adapter.getItemId(position);
-    Log.d(TAG, "long tap " + Long.toString(episodeId));
-    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+  public static void deleteEpisodeDialog(final long episodeId, final Context context) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int id) {
-        deleteEpisode(episodeId, activity);
+        deleteEpisode(episodeId, context);
       }
     });
     builder
         .setNegativeButton(R.string.cancel, null)
-        .setTitle(activity.getString(R.string.delete_episode))
+        .setTitle(context.getString(R.string.delete_episode))
         .create()
         .show();
+  }
+
+  @Override
+  public void onItemLongClick(View view, int position) {
+    long episodeId = adapter.getItemId(position);
+    Log.d(TAG, "long tap " + Long.toString(episodeId));
+    deleteEpisodeDialog(episodeId, activity);
   }
 
   @Override
