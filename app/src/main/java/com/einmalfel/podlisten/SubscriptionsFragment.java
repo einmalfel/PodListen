@@ -1,18 +1,23 @@
 package com.einmalfel.podlisten;
 
 
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 
 public class SubscriptionsFragment extends Fragment
@@ -34,6 +39,28 @@ public class SubscriptionsFragment extends Fragment
     rv.setAdapter(adapter);
     rv.addOnItemTouchListener(new RecyclerItemClickListener(activity, rv, this));
     activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), null, this);
+    Button b = (Button) layout.findViewById(R.id.subscribe_button);
+    b.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final EditText input = new EditText(activity);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
+            ContentValues values = new ContentValues();
+            values.put(Provider.K_PFURL, input.getText().toString());
+            activity.getContentResolver().insert(Provider.podcastUri, values);
+            activity.refresh();
+          }
+        });
+        builder
+            .setNegativeButton(R.string.cancel, null)
+            .setTitle(activity.getString(R.string.enter_feed_url))
+            .setView(input)
+            .create()
+            .show();
+      }
+    });
     return layout;
   }
 
