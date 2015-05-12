@@ -44,7 +44,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
   public void onPerformSync(Account account, Bundle extras, String authority,
                             ContentProviderClient provider, SyncResult syncResult) {
     Log.i(TAG, "Starting sync..");
-
+    Context context = getContext();
     // Get podcasts cursor
     Cursor c = null;
     try {
@@ -65,15 +65,15 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
     //setup notification
-    Intent intent = new Intent(getContext(), MainActivity.class);
+    Intent intent = new Intent(context, MainActivity.class);
     Bundle opts = new Bundle();
     opts.putInt(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.NEW_EPISODES.ordinal());
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
     PendingIntent pendingIntent =
-        PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT, opts);
-    NotificationManager nm = (NotificationManager) getContext().getSystemService(
+        PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT, opts);
+    NotificationManager nm = (NotificationManager) context.getSystemService(
         Context.NOTIFICATION_SERVICE);
-    Notification.Builder nb = new Notification.Builder(getContext())
+    Notification.Builder nb = new Notification.Builder(context)
         .setSmallIcon(R.mipmap.ic_sync_green_24dp)
         .setContentTitle("Podlisten refreshing")
         .setOngoing(true)
