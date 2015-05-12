@@ -1,8 +1,10 @@
 package com.einmalfel.podlisten;
 
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -13,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.io.File;
 
 
 public class PlaylistFragment extends Fragment
@@ -37,6 +41,12 @@ public class PlaylistFragment extends Fragment
     return layout;
   }
 
+  public void deleteEpisode(long id) {
+    new File(activity.getExternalFilesDir(Environment.DIRECTORY_PODCASTS), Long.toString(id)).delete();
+    ContentValues val = new ContentValues();
+    val.put(Provider.K_ESTATE, Provider.ESTATE_GONE);
+    activity.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), val, null, null);
+  }
   @Override
   public void onItemLongClick(View view, int position) {
     long id = adapter.getItemId(position);
