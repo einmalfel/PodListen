@@ -79,7 +79,7 @@ public class SubscriptionsFragment extends Fragment
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(activity, Provider.podcastUri,
-        new String[]{Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR}, null, null, null);
+        new String[]{Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE}, null, null, null);
   }
 
   @Override

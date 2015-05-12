@@ -22,9 +22,22 @@ public class PodcastListAdapter extends CursorRecyclerAdapter<PodcastViewHolder>
 
   @Override
   public void onBindViewHolderCursor(PodcastViewHolder holder, Cursor cursor) {
-    holder.titleView.setText(cursor.getString(cursor.getColumnIndex(Provider.K_PNAME)));
-    Spanned spannedText = strToSpanned(cursor.getString(cursor.getColumnIndex(Provider.K_PDESCR)));
-    holder.descriptionView.setText(spannedText, TextView.BufferType.SPANNABLE);
+    int state = cursor.getInt(cursor.getColumnIndex(Provider.K_PSTATE));
+    if (state == Provider.PSTATE_NEW) {
+      holder.titleView.setText(cursor.getString(cursor.getColumnIndex(Provider.K_PFURL)));
+      holder.descriptionView.setText("Feed isn't loaded yet");
+    } else {
+      String title = cursor.getString(cursor.getColumnIndex(Provider.K_PNAME));
+      String description = cursor.getString(cursor.getColumnIndex(Provider.K_PDESCR));
+      if (title != null) {
+        holder.titleView.setText(cursor.getString(cursor.getColumnIndex(Provider.K_PNAME)));
+      }
+      if (description != null) {
+        Spanned spannedText = strToSpanned(description);
+        holder.descriptionView.setText(spannedText, TextView.BufferType.SPANNABLE);
+      }
+    }
+
   }
 
   @Override
