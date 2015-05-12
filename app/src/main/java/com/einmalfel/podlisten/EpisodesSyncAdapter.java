@@ -4,6 +4,7 @@ package com.einmalfel.podlisten;
 import android.accounts.Account;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
@@ -59,6 +60,13 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     // ROME-for-android doesn't work with system class loader which is used by default
     Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 
+    //setup notification
+    Intent intent = new Intent(getContext(), MainActivity.class);
+    Bundle opts = new Bundle();
+    opts.putInt(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.NEW_EPISODES.ordinal());
+    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    PendingIntent pendingIntent =
+        PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT, opts);
     NotificationManager nm = (NotificationManager) getContext().getSystemService(
         Context.NOTIFICATION_SERVICE);
     Notification.Builder nb = new Notification.Builder(getContext())
@@ -66,6 +74,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
         .setContentTitle("Podlisten refreshing")
         .setOngoing(true)
         .setProgress(c.getCount(), 0, false);
+        .setContentIntent(pendingIntent);
     nm.notify(0, nb.build());
 
     // For each podcast launch rss parsing on its feed URL
