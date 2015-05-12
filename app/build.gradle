@@ -25,6 +25,7 @@ android {
             minifyEnabled false
             pseudoLocalesEnabled false
         }
+    }
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
     }
