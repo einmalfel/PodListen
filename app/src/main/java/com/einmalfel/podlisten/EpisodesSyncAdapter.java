@@ -75,9 +75,9 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
         Context.NOTIFICATION_SERVICE);
     Notification.Builder nb = new Notification.Builder(context)
         .setSmallIcon(R.mipmap.ic_sync_green_24dp)
-        .setContentTitle("Podlisten refreshing")
+        .setContentTitle(context.getString(R.string.refreshing))
         .setOngoing(true)
-        .setProgress(c.getCount(), 0, false);
+        .setProgress(c.getCount(), 0, false)
         .setContentIntent(pendingIntent);
     nm.notify(0, nb.build());
 
@@ -104,27 +104,27 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
           nb.setProgress(c.getCount(), c.getPosition() + 1, false);
           count = countNewInDB(provider);
           if (count > 0) {
-            nb.setContentText(Integer.toString(count) + " new episode(s)");
+            nb.setContentText(Integer.toString(count) + ' ' + getContext().getString(R.string.new_episodes));
           }
           nm.notify(0, nb.build());
         } while (c.moveToNext());
       }
       if (count == 0) {
         if (syncResult.stats.numIoExceptions == c.getCount()) {
-          nb.setContentText("Refresh failed");
+          nb.setContentText(context.getString(R.string.refresh_failed));
         } else {
-          nb.setContentText("No new episodes");
+          nb.setContentText(context.getString(R.string.no_new_episodes));
         }
       }
     } catch (RemoteException re) {
       Log.e(TAG, "Content provider error " + re);
       syncResult.databaseError = true;
-      nb.setContentText("DB error while loading episodes");
+      nb.setContentText(context.getString(R.string.db_error));
     } finally {
       c.close();
       nb.setOngoing(false)
-          .setProgress(0,0,false)
-          .setContentTitle("Podlisten refreshed");
+          .setProgress(0, 0, false)
+          .setContentTitle(context.getString(R.string.refreshed));
       nm.notify(0, nb.build());
       Intent bi = new Intent(DownloadStartReceiver.REFRESH_FINISHED_INTENT);
       getContext().sendBroadcast(bi);
@@ -209,7 +209,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     if (newEpisode) {//episode is not yet in db
       String title = entry.getTitle();
       if (title == null) {
-        title = "NO TITLE";
+        title = getContext().getString(R.string.no_title);
       }
 
       ContentValues values = new ContentValues();
