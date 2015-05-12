@@ -53,7 +53,11 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       Log.e(TAG, "Podcast provider query failed with remote exception " + e);
       syncResult.databaseError = true;
     }
-    if (c == null || c.getCount() < 1) {
+    if (c == null) {
+      return;
+    }
+    if (c.getCount() < 1) {
+      c.close();
       return;
     }
 
