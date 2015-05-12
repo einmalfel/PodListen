@@ -1,6 +1,7 @@
 <resources>
 
     <style name="Theme.PodListen" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:fontFamily">sans-serif</item> <!--on android 4.1+ this is robo font-->
         <item name="colorPrimary">@color/primary_material_dark</item>
         <item name="colorPrimaryDark">@color/primary_dark_material_dark</item>
     </style>
