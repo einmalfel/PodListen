@@ -15,25 +15,25 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-public class PlaylistFragment extends Fragment
+public class SubscriptionsFragment extends Fragment
     implements LoaderManager.LoaderCallbacks<Cursor>, RecyclerItemClickListener.OnItemClickListener {
   private MainActivity activity;
-  private static final String TAG = "PLF";
-  private static final MainActivity.Pages activityPage = MainActivity.Pages.PLAYLIST;
-  private EpisodeListAdapter adapter;
+  private static final MainActivity.Pages activityPage = MainActivity.Pages.SUBSCRIPTIONS;
+  private static final String TAG = "SSF";
+  private PodcastListAdapter adapter;
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    View layout = inflater.inflate(R.layout.fragment_playlist, container, false);
+    View layout = inflater.inflate(R.layout.fragment_subscriptions, container, false);
     RecyclerView rv = (RecyclerView) layout.findViewById(R.id.recycler_view);
-    activity = (MainActivity) getActivity();
+    activity = (MainActivity)getActivity();
     rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(activity));
     rv.setItemAnimator(new DefaultItemAnimator());
-    adapter = new EpisodeListAdapter(activity, null, MainActivity.Pages.PLAYLIST);
-    activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), null, this);
+    adapter = new PodcastListAdapter(null);
     rv.setAdapter(adapter);
     rv.addOnItemTouchListener(new RecyclerItemClickListener(activity, rv, this));
+    activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), null, this);
     return layout;
   }
 
@@ -51,22 +51,17 @@ public class PlaylistFragment extends Fragment
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    return new CursorLoader(activity,
-        Provider.episodeUri,
-        new String[]{Provider.K_ID, Provider.K_ENAME, Provider.K_EDESCR, Provider.K_EDFIN},
-        Provider.K_ESTATE + " = ?",
-        new String[]{Integer.toString(Provider.ESTATE_IN_PLAYLIST)},
-        Provider.K_EDATE);
+    return new CursorLoader(activity, Provider.podcastUri,
+        new String[]{Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR}, null, null, null);
   }
 
   @Override
-  public void onLoadFinished(Loader loader, Cursor data) {
-    Log.d(TAG, "Finished loading cursor " + data.getCount());
+  public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
     adapter.swapCursor(data);
   }
 
   @Override
-  public void onLoaderReset(Loader loader) {
+  public void onLoaderReset(Loader<Cursor> loader) {
     adapter.swapCursor(null);
   }
 }

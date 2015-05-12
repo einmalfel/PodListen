@@ -40,7 +40,18 @@ public class MainActivity extends FragmentActivity {
     @Override
     public Fragment getItem(int position) {
       Log.v(TAG, "Making fragment for position " + position);
-      return PlaylistFragment.newInstance();
+      switch (Pages.values()[position]) {
+        case PLAYER:
+          return new PlayerFragment();
+        case PLAYLIST:
+          return new PlaylistFragment();
+        case NEW_EPISODES:
+          return new NewEpisodesFragment();
+        case SUBSCRIPTIONS:
+          return new SubscriptionsFragment();
+      }
+      Log.e(TAG, "Wrong fragment number " + position);
+      return null;
     }
   }
 
