@@ -2,6 +2,7 @@ package com.einmalfel.podlisten;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,7 @@ import com.astuetz.PagerSlidingTabStrip;
 
 public class MainActivity extends FragmentActivity {
   private static final String TAG = "MainActivity";
+  public static final int POLL_FREQUENCY = 60 * 60;
   private Account account;
   enum Pages {PLAYER, PLAYLIST, NEW_EPISODES, SUBSCRIPTIONS}
   static final String PAGE_LAUNCH_OPTION = "Page";
@@ -58,6 +60,8 @@ public class MainActivity extends FragmentActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    ContentResolver.addPeriodicSync(getAccount(), getString(R.string.app_id), Bundle.EMPTY, POLL_FREQUENCY);
+    ContentResolver.setSyncAutomatically(getAccount(), getString(R.string.app_id), true);
     setContentView(R.layout.activity_main);
     ViewPager pager = (ViewPager) findViewById(R.id.pager);
     pager.setAdapter(new TabsAdapter(getSupportFragmentManager()));
