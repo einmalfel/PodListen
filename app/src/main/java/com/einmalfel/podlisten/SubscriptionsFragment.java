@@ -50,7 +50,11 @@ public class SubscriptionsFragment extends Fragment
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
             String url = input.getText().toString().trim();
-            addSubscription(url);
+            if (url.isEmpty()) {
+              Toast.makeText(activity, R.string.subscribe_failed_empty, Toast.LENGTH_SHORT).show();
+            } else {
+              addSubscription(url);
+            }
           }
         });
         builder
