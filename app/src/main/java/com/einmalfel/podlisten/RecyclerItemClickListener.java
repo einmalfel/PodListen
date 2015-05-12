@@ -36,7 +36,7 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
 
         if(childView != null && mListener != null)
         {
-          mListener.onItemLongClick(childView, recyclerView.getChildPosition(childView));
+          mListener.onItemLongClick(childView, recyclerView.getChildAdapterPosition(childView));
         }
       }
     });
@@ -49,7 +49,7 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
 
     if(childView != null && mListener != null && mGestureDetector.onTouchEvent(e))
     {
-      mListener.onItemClick(childView, view.getChildPosition(childView));
+      mListener.onItemClick(childView, view.getChildAdapterPosition(childView));
     }
 
     return false;
