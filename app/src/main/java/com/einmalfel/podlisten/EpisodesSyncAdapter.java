@@ -48,7 +48,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     // Get podcasts cursor
     Cursor c = null;
     try {
-      c = provider.query(Provider.podcastUri, P_PROJECTION, null, null, null);
+      c = provider.query(Provider.podcastUri, P_PROJECTION, null, null, Provider.K_PSTATE);
     } catch (RemoteException e) {
       Log.e(TAG, "Podcast provider query failed with remote exception " + e);
       syncResult.databaseError = true;
