@@ -26,6 +26,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@drawable/clickable_image_button_bg"
             android:text="@string/subscribe"/>
 
         <Button
@@ -33,6 +34,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@drawable/clickable_image_button_bg"
             android:text="@string/sample"/>
 
     </LinearLayout>

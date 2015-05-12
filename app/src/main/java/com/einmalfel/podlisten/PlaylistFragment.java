@@ -76,6 +76,7 @@ public class PlaylistFragment extends Fragment
   public void onItemClick(View view, int position) {
     long id = adapter.getItemId(position);
     Log.d(TAG, "tap " + Long.toString(id));
+    activity.tryStart(id);
   }
 
   @Override

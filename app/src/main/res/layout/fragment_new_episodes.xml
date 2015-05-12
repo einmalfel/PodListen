@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:background="@drawable/clickable_image_button_bg"
             android:text="@string/refresh"/>
 
         <Button
@@ -35,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:background="@drawable/clickable_image_button_bg"
             android:text="@string/clear"/>
 
     </LinearLayout>

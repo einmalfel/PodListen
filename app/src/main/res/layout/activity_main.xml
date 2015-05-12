@@ -15,38 +15,55 @@
         android:layout_height="0dp"
         android:layout_weight="0.8"/>
 
+    <ProgressBar
+        android:id="@+id/play_progress"
+        android:layout_width="match_parent"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_height="0dp"
+        android:layout_weight="0.02"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.15"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/next"
+        <ImageButton
+            android:id="@+id/fb_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_margin="5dp"
+            android:layout_margin="0dp"
             android:layout_weight="1"
-            android:background="@color/material_blue_grey_800"
-            android:text="Next"/>
+            android:src="@mipmap/ic_fast_rewind_grey600_36dp"
+            android:background="@drawable/clickable_image_button_bg"/>
 
-        <Button
-            android:id="@+id/ff_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:background="@color/material_blue_grey_800"
-            android:text="FF"/>
-
-        <Button
+        <ImageButton
             android:id="@+id/play_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_margin="5dp"
+            android:layout_margin="0dp"
             android:layout_weight="1"
-            android:background="@color/material_blue_grey_800"
-            android:text="Play"/>
+            android:src="@mipmap/ic_play_arrow_grey600_36dp"
+            android:background="@drawable/clickable_image_button_bg"/>
+
+        <ImageButton
+            android:id="@+id/ff_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:src="@mipmap/ic_fast_forward_grey600_36dp"
+            android:background="@drawable/clickable_image_button_bg"/>
+
+        <ImageButton
+            android:id="@+id/next_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:src="@mipmap/ic_skip_next_grey600_36dp"
+            android:background="@drawable/clickable_image_button_bg"/>
+
     </LinearLayout>
 
 </LinearLayout>
