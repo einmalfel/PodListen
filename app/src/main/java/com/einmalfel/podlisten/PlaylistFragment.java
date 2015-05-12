@@ -2,6 +2,7 @@ package com.einmalfel.podlisten;
 
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -43,11 +44,11 @@ public class PlaylistFragment extends Fragment
     return layout;
   }
 
-  public void deleteEpisode(long id) {
-    new File(activity.getExternalFilesDir(Environment.DIRECTORY_PODCASTS), Long.toString(id)).delete();
+  public static void deleteEpisode(long id, Context context) {
+    new File(context.getExternalFilesDir(Environment.DIRECTORY_PODCASTS), Long.toString(id)).delete();
     ContentValues val = new ContentValues();
     val.put(Provider.K_ESTATE, Provider.ESTATE_GONE);
-    activity.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), val, null, null);
+    context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), val, null, null);
   }
 
   @Override
@@ -57,7 +58,7 @@ public class PlaylistFragment extends Fragment
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int id) {
-        deleteEpisode(episodeId);
+        deleteEpisode(episodeId, activity);
       }
     });
     builder
