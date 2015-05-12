@@ -113,8 +113,20 @@ public class SubscriptionsFragment extends Fragment
 
   @Override
   public void onItemLongClick(View view, int position) {
-    long id = adapter.getItemId(position);
-    Log.d(TAG, "long tap " + Long.toString(id));
+    final long pID = adapter.getItemId(position);
+    Log.d(TAG, "long tap " + Long.toString(pID));
+    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int id) {
+        activity.getContentResolver().delete(Provider.getUri(Provider.T_PODCAST, pID), null, null);
+      }
+    });
+    builder
+        .setNegativeButton(R.string.cancel, null)
+        .setTitle(activity.getString(R.string.delete_subscription))
+        .create()
+        .show();
   }
 
   @Override
