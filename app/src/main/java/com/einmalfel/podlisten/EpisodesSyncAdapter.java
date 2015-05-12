@@ -126,6 +126,8 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
           .setProgress(0,0,false)
           .setContentTitle("Podlisten refreshed");
       nm.notify(0, nb.build());
+      Intent bi = new Intent(DownloadStartReceiver.REFRESH_FINISHED_INTENT);
+      getContext().sendBroadcast(bi);
     }
   }
 

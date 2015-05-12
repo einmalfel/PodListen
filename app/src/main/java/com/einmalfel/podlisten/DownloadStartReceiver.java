@@ -17,6 +17,7 @@ import java.util.LinkedHashSet;
 public class DownloadStartReceiver extends BroadcastReceiver {
   private static final String TAG = "DSR";
   static final String NEW_EPISODE_INTENT = "com.einmalfel.podlisten.NEW_EPISODE";
+  static final String REFRESH_FINISHED_INTENT = "com.einmalfel.podlisten.REFRESH_FINISHED";
   static final String URL_EXTRA_NAME = "URL";
   static final String TITLE_EXTRA_NAME = "TITLE";
   static final String ID_EXTRA_NAME = "ID";
@@ -101,11 +102,10 @@ public class DownloadStartReceiver extends BroadcastReceiver {
         if (ids.remove(id)) {
           processDownloadResult(id, context);
         }
-      } else if (ids.isEmpty()) {
+      } else {
         //Restart all unfinished not gone downloads. Conditions here:
-        // - phone just booted up or wi-fi state changed
+        // - phone just booted up or wi-fi state changed or refresh finished
         // - wi-fi connected
-        // - we have no ongoing downloads
         Log.i(TAG, "Restarting unfinished downloads");
         Cursor c = context.getContentResolver().query(
             Provider.episodeUri,
