@@ -43,11 +43,7 @@ public class NewEpisodesFragment extends Fragment
     b.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Bundle settingsBundle = new Bundle();
-        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        Account acc = ((MainActivity) getActivity()).getAccount();
-        ContentResolver.requestSync(acc, acc.type, settingsBundle);
+        activity.refresh();
       }
     });
     b = (Button) layout.findViewById(R.id.clear_button);

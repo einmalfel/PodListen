@@ -79,4 +79,12 @@ public class MainActivity extends FragmentActivity {
     }
     return account;
   }
+
+  public void refresh() {
+    Bundle settingsBundle = new Bundle();
+    settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+    settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+    Account acc = getAccount();
+    ContentResolver.requestSync(acc, acc.type, settingsBundle);
+  }
 }
