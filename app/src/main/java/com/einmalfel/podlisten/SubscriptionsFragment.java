@@ -21,12 +21,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 
 public class SubscriptionsFragment extends Fragment
     implements LoaderManager.LoaderCallbacks<Cursor>, RecyclerItemClickListener.OnItemClickListener {
   private MainActivity activity;
   private static final MainActivity.Pages activityPage = MainActivity.Pages.SUBSCRIPTIONS;
   private static final String TAG = "SSF";
+  private static final String[] samples = {
+      "http://podster.fm/rss.xml?pid=15",
+      "http://www.radio-t.com/podcast.rss",
+      "http://podster.fm/rss.xml?pid=33",
+      "http://www.npr.org/rss/podcast.php?id=500005",
+      "http://thepetesantillishow.com/feed/",
+      "http://www.cbc.ca/podcasting/includes/hourlynews.xml",
+      "http://runetologia.podfm.ru/rss/rss.xml"
+  };
+  private static ArrayList<String> sampleList = null;
   private PodcastListAdapter adapter;
 
   @Override
@@ -63,6 +76,21 @@ public class SubscriptionsFragment extends Fragment
             .setView(input)
             .create()
             .show();
+      }
+    });
+    Button sampleButton = (Button) layout.findViewById(R.id.sample_button);
+    sampleButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (sampleList == null) {
+          sampleList = new ArrayList<String>(samples.length);
+          Collections.addAll(sampleList, samples);
+        }
+        if (sampleList.isEmpty()) {
+          return;
+        }
+        String nextSample = sampleList.remove(0);
+        addSubscription(nextSample);
       }
     });
     return layout;
