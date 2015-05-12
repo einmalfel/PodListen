@@ -4,6 +4,7 @@ package com.einmalfel.podlisten;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class SubscriptionsFragment extends Fragment
@@ -47,10 +49,8 @@ public class SubscriptionsFragment extends Fragment
         final EditText input = new EditText(activity);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
-            ContentValues values = new ContentValues();
-            values.put(Provider.K_PFURL, input.getText().toString());
-            activity.getContentResolver().insert(Provider.podcastUri, values);
-            activity.refresh();
+            String url = input.getText().toString().trim();
+            addSubscription(url);
           }
         });
         builder
@@ -63,6 +63,21 @@ public class SubscriptionsFragment extends Fragment
     });
     return layout;
   }
+
+  public boolean addSubscription(String url) {
+    ContentValues values = new ContentValues();
+    values.put(Provider.K_PFURL, url);
+    values.put(Provider.K_ID, (long) url.hashCode() - Integer.MIN_VALUE);
+    Uri result = activity.getContentResolver().insert(Provider.podcastUri, values);
+    if (result == null) {
+      Toast.makeText(activity, R.string.already_subscribed, Toast.LENGTH_SHORT).show();
+      return true;
+    } else {
+      activity.refresh();
+      return false;
+    }
+  }
+
 
   @Override
   public void onItemLongClick(View view, int position) {
