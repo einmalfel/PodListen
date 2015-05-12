@@ -50,6 +50,24 @@ public class NewEpisodesFragment extends Fragment
         ContentResolver.requestSync(acc, acc.type, settingsBundle);
       }
     });
+    b = (Button) layout.findViewById(R.id.clear_button);
+    b.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Cursor c = activity.getContentResolver().query(
+            Provider.episodeUri,
+            new String[]{Provider.K_ID},
+            Provider.K_ESTATE + " = ?",
+            new String[]{Integer.toString(Provider.ESTATE_NEW)},
+            null);
+        if (c.moveToFirst()) {
+          do {
+            PlaylistFragment.deleteEpisode(c.getLong(c.getColumnIndex(Provider.K_ID)), activity);
+          } while (c.moveToNext());
+          c.close();
+        }
+      }
+    });
 
     return layout;
   }
