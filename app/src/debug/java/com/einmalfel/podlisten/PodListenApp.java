@@ -1,11 +1,11 @@
 package com.einmalfel.podlisten;
 
-import android.app.Application;
 import android.util.Log;
 
+import com.einmalfel.podlisten.support.InstanceAwareApplication;
 import com.facebook.stetho.Stetho;
 
-public class PodListenApp extends Application {
+public class PodListenApp extends InstanceAwareApplication {
   private static final String TAG = "PLA";
   public void onCreate() {
     super.onCreate();

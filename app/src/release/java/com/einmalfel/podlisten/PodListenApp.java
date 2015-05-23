@@ -1,5 +1,6 @@
 package com.einmalfel.podlisten;
 
-import android.app.Application;
+import com.einmalfel.podlisten.support.InstanceAwareApplication;
 
-public class PodListenApp extends Application {}
+public class PodListenApp extends InstanceAwareApplication {
+}
