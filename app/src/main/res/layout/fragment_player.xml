@@ -68,7 +68,7 @@
             card_view:cardUseCompatPadding="true"
             card_view:contentPadding="5dp">
 
-            <com.einmalfel.podlisten.PatchedTextView
+            <com.einmalfel.podlisten.support.PatchedTextView
                 android:id="@+id/player_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -19,6 +19,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
+import com.einmalfel.podlisten.support.RecyclerItemClickListener;
 import java.io.File;
 
 

@@ -18,6 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
+import com.einmalfel.podlisten.support.RecyclerItemClickListener;
+
 
 public class NewEpisodesFragment extends Fragment
     implements LoaderManager.LoaderCallbacks<Cursor>, RecyclerItemClickListener.OnItemClickListener{

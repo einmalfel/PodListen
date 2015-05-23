@@ -1,4 +1,4 @@
-package com.einmalfel.podlisten;
+package com.einmalfel.podlisten.support;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;

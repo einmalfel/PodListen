@@ -31,7 +31,7 @@
 
         </LinearLayout>
 
-        <com.einmalfel.podlisten.PatchedTextView
+        <com.einmalfel.podlisten.support.PatchedTextView
             android:id="@+id/podcast_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

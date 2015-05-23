@@ -21,6 +21,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
+import com.einmalfel.podlisten.support.RecyclerItemClickListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
