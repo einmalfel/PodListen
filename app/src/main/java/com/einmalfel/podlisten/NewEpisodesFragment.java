@@ -59,12 +59,10 @@ public class NewEpisodesFragment extends Fragment
             Provider.K_ESTATE + " = ?",
             new String[]{Integer.toString(Provider.ESTATE_NEW)},
             null);
-        if (c.moveToFirst()) {
-          do {
-            PlaylistFragment.deleteEpisode(c.getLong(c.getColumnIndex(Provider.K_ID)), activity);
-          } while (c.moveToNext());
-          c.close();
+        while (c.moveToNext()) {
+          PodcastHelper.getInstance().markEpisodeGone(c.getLong(c.getColumnIndex(Provider.K_ID)));
         }
+        c.close();
       }
     });
 

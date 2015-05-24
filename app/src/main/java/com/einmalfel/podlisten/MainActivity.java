@@ -227,14 +227,12 @@ public class MainActivity extends FragmentActivity implements MediaPlayer.OnComp
     if (c == null) {
       return false;
     }
-    if (c.moveToFirst()) {
-      do {
-        boolean result = tryStart(c.getLong(c.getColumnIndex(Provider.K_ID)));
-        if (result) {
-          c.close();
-          return true;
-        }
-      } while (c.moveToNext());
+    while (c.moveToNext()) {
+      boolean result = tryStart(c.getLong(c.getColumnIndex(Provider.K_ID)));
+      if (result) {
+        c.close();
+        return true;
+      }
     }
     c.close();
     return false;

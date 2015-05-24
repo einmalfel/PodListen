@@ -116,10 +116,8 @@ public class DownloadStartReceiver extends BroadcastReceiver {
         int urlIndex = c.getColumnIndex(Provider.K_EAURL);
         int idIndex = c.getColumnIndex(Provider.K_ID);
         int titleIndex = c.getColumnIndex(Provider.K_ENAME);
-        if (c.moveToFirst()) {
-          do {
-            download(context, c.getString(urlIndex), c.getString(titleIndex), c.getLong(idIndex));
-          } while (c.moveToNext());
+        while (c.moveToNext()) {
+          download(context, c.getString(urlIndex), c.getString(titleIndex), c.getLong(idIndex));
         }
         c.close();
       }
