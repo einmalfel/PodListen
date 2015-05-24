@@ -86,7 +86,9 @@ public class Provider extends ContentProvider {
     } catch (RuntimeException ignored) {
       return 0;
     }
-    resolver.notifyChange(uri, null);
+    if (result > 0) {
+      resolver.notifyChange(uri, null);
+    }
     return result;
   }
 
