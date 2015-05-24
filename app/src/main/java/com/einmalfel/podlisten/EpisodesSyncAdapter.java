@@ -35,6 +35,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
   private static final String[] P_PROJECTION = {Provider.K_PFURL, Provider.K_ID, Provider.K_PSTATE};
   private static final Pattern AUDIO_PATTERN = Pattern.compile("^audio/\\w*");
   private static final int NEW_SUBSCRIPTION_LIMIT = 2; // limit episodes to add for feeds TODO option
+  private static final int OLD_SUBSCRIPTION_LIMIT = 1000; // limit episodes to add for old feeds
 
   public EpisodesSyncAdapter(Context context, boolean autoInitialize) {
     super(context, autoInitialize);
@@ -92,7 +93,9 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
         String feedUrl = c.getString(furlIndex);
         int state = c.getInt(stateIndex);
         try {
-          loadFeed(feedUrl, id, provider, state == Provider.PSTATE_NEW);
+          loadFeed(
+              feedUrl, id, provider,
+              state == Provider.PSTATE_NEW ? NEW_SUBSCRIPTION_LIMIT : OLD_SUBSCRIPTION_LIMIT);
         } catch (IOException e) {
           Log.e(TAG, "IO error while loading feed, skipping. " + feedUrl + " Exception: " + e);
           syncResult.stats.numIoExceptions++;
@@ -137,7 +140,14 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     return count;
   }
 
-  private void loadFeed(String url, long pid, ContentProviderClient cpc, boolean newSubscription)
+  private boolean updateTimeStamp(long id, ContentProviderClient cpc, long timestamp)
+      throws RemoteException {
+    ContentValues values = new ContentValues();
+    values.put(Provider.K_ETSTAMP, timestamp);
+    return cpc.update(Provider.getUri(Provider.T_EPISODE, id), values, null, null) > 0;
+  }
+
+  private void loadFeed(String url, long pid, ContentProviderClient cpc, int maxNewEpisodes)
       throws IOException, RemoteException, FeedException {
     Log.i(TAG, "Refreshing " + url);
     if (!url.toLowerCase().matches("^\\w+://.*")) {
@@ -147,22 +157,28 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     SyndFeedInput input = new SyndFeedInput();
     SyndFeed feed = input.build(new XmlReader(new URL(url)));
 
-    updatePodcastInfo(pid, cpc, feed);
+    long timestamp = new Date().getTime();
 
-    // insert every episode
-    @SuppressWarnings("unchecked")
-    List<SyndEntry> entries = feed.getEntries();
-    StringBuilder b = new StringBuilder("");
-    int count = 0;
-    for (SyndEntry entry : entries) {
-      Long id = tryInsertEntry(entry, pid, cpc, newSubscription && count >= NEW_SUBSCRIPTION_LIMIT);
-      if (id != null) {
-        b.append(id);
-        b.append(',');
-        count++;
+    // try update timestamp on each episode in received feed
+    // if this fails, episode is not yet in db, insert it
+    int inserted = 0;
+    for (Object entry : feed.getEntries()) {
+      SyndEntry syndEntry = (SyndEntry) entry;
+      String audioLink = extractAudio(syndEntry.getEnclosures());
+      if (audioLink == null) {
+        Log.i(TAG, syndEntry.getTitle() + " has no audio attachment, skipping");
+        continue;
+      }
+      long id = (long) audioLink.hashCode() - Integer.MIN_VALUE;
+      if (!updateTimeStamp(id, cpc, timestamp)) {
+        tryInsertEntry(syndEntry, id, pid, timestamp, audioLink, cpc, inserted >= maxNewEpisodes);
+        inserted++;
       }
     }
-    b.deleteCharAt(b.lastIndexOf(","));
+
+    // update podcast timestamp AFTER episode timestamps, so gone episodes wont be deleted in case
+    // of connection fail in the middle of sync
+    updatePodcastInfo(pid, cpc, feed, timestamp);
 
 //    //cleanup episodes which are both not interesting for user (ESTATE_GONE) and absent in feed
 //    String presentInFeed = b.toString();
@@ -174,66 +190,52 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
 //    }
   }
 
-  private static void updatePodcastInfo(long id, ContentProviderClient cpc, SyndFeed feed)
-      throws RemoteException {
+  private static void updatePodcastInfo(long id, ContentProviderClient cpc, SyndFeed feed,
+                                        long timestamp) throws RemoteException {
     ContentValues values = new ContentValues();
     putStringIfNotNull(values, Provider.K_PURL, feed.getLink());
     putStringIfNotNull(values, Provider.K_PNAME, feed.getTitle());
     putStringIfNotNull(values, Provider.K_PDESCR, feed.getDescription());
     //TODO check if image file exists and download it
     values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
+    values.put(Provider.K_PTSTAMP, timestamp);
     int updated = cpc.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null);
     if (updated != 1) {
       Log.e(TAG, "Unexpected number of items updated " + updated + " id " + id);
     }
   }
 
-  private Long tryInsertEntry(SyndEntry entry, long pid, ContentProviderClient cpc, boolean gone)
-      throws RemoteException {
-    String audioLink = extractAudio(entry.getEnclosures());
-    if (audioLink == null) {
-      Log.i(TAG, entry.getTitle() + " has no audio attachment, skipping");
-      return null;
+  private Long tryInsertEntry(SyndEntry entry, long id, long pid, long timestamp, String audioLink,
+                              ContentProviderClient cpc, boolean gone) throws RemoteException {
+    String title = entry.getTitle();
+    if (title == null) {
+      title = getContext().getString(R.string.no_title);
     }
 
-    long id = (long) audioLink.hashCode() - Integer.MIN_VALUE;
-    //TODO this is suboptimal. Will later check existence of episodes in a bunch query
-    Cursor c = cpc.query(Provider.getUri(Provider.T_EPISODE, id), null, null, null, null);
-    boolean newEpisode = c == null || c.isAfterLast();
-    if (c != null) {
-      c.close();
+    ContentValues values = new ContentValues();
+    putStringIfNotNull(values, Provider.K_ENAME, title);
+    putStringIfNotNull(values, Provider.K_EAURL, audioLink);
+    putStringIfNotNull(values, Provider.K_EDESCR, entry.getDescription().getValue());
+    putStringIfNotNull(values, Provider.K_EURL, entry.getLink());
+    values.put(Provider.K_EDATT, 0);
+    values.put(Provider.K_EDFIN, 0);
+    Date date = entry.getPublishedDate();
+    if (date != null) {
+      values.put(Provider.K_EDATE, date.getTime());
     }
+    values.put(Provider.K_EPID, pid);
+    values.put(Provider.K_ID, id);
+    values.put(Provider.K_ETSTAMP, timestamp);
+    values.put(Provider.K_ESTATE, gone ? Provider.ESTATE_GONE : Provider.ESTATE_NEW);
+    cpc.insert(Provider.episodeUri, values);
 
-    if (newEpisode) {//episode is not yet in db
-      String title = entry.getTitle();
-      if (title == null) {
-        title = getContext().getString(R.string.no_title);
-      }
-
-      ContentValues values = new ContentValues();
-      putStringIfNotNull(values, Provider.K_ENAME, title);
-      putStringIfNotNull(values, Provider.K_EAURL, audioLink);
-      putStringIfNotNull(values, Provider.K_EDESCR, entry.getDescription().getValue());
-      putStringIfNotNull(values, Provider.K_EURL, entry.getLink());
-      values.put(Provider.K_EDATT, 0);
-      values.put(Provider.K_EDFIN, 0);
-      Date date = entry.getPublishedDate();
-      if (date != null) {
-        values.put(Provider.K_EDATE, date.getTime());
-      }
-      values.put(Provider.K_EPID, pid);
-      values.put(Provider.K_ID, id);
-      values.put(Provider.K_ESTATE, gone ? Provider.ESTATE_GONE : Provider.ESTATE_NEW);
-      cpc.insert(Provider.episodeUri, values);
-
-      if (!gone) {
-        Log.d(TAG, "New episode! " + title);
-        Intent bi = new Intent(DownloadStartReceiver.NEW_EPISODE_INTENT);
-        bi.putExtra(DownloadStartReceiver.URL_EXTRA_NAME, audioLink);
-        bi.putExtra(DownloadStartReceiver.TITLE_EXTRA_NAME, title);
-        bi.putExtra(DownloadStartReceiver.ID_EXTRA_NAME, id);
-        getContext().sendBroadcast(bi);
-      }
+    if (!gone) {
+      Log.d(TAG, "New episode! " + title);
+      Intent bi = new Intent(DownloadStartReceiver.NEW_EPISODE_INTENT);
+      bi.putExtra(DownloadStartReceiver.URL_EXTRA_NAME, audioLink);
+      bi.putExtra(DownloadStartReceiver.TITLE_EXTRA_NAME, title);
+      bi.putExtra(DownloadStartReceiver.ID_EXTRA_NAME, id);
+      getContext().sendBroadcast(bi);
     }
 
     return id;
