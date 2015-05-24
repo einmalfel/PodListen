@@ -191,7 +191,9 @@ public class Provider extends ContentProvider {
     }
     SQLiteDatabase db = helper.getWritableDatabase();
     int result = db.update(TABLES[code], values, selection, selectionArgs);
-    if (result > 0) {
+    boolean timestampUpdate = values.size() == 1 && (
+        values.containsKey(K_ETSTAMP) || values.containsKey(K_PTSTAMP));
+    if (result > 0 && !timestampUpdate) {
       resolver.notifyChange(uri, null);
     }
     return result;
