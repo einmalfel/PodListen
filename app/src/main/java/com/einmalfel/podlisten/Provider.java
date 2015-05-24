@@ -26,11 +26,13 @@ public class Provider extends ContentProvider {
   public static final String K_EDFIN = "download_finished";
   public static final String K_EDATT = "download_attempts";
   public static final String K_EPID = "podcast_id";
+  public static final String K_ETSTAMP = "episode_timestamp";
   public static final String K_PNAME = "podcast_name";
   public static final String K_PDESCR = "podcast_description";
   public static final String K_PURL = "podcast_url";
   public static final String K_PFURL = "feed_url";
   public static final String K_PSTATE = "podcast_state";
+  public static final String K_PTSTAMP = "podcast_timestamp";
   public static final int ESTATE_NEW = 0;
   public static final int ESTATE_SELECTED = 1;
   public static final int ESTATE_IN_PLAYLIST = 2;
@@ -206,7 +208,8 @@ public class Provider extends ContentProvider {
           K_PDESCR + " TEXT," +
           K_PSTATE + " INTEGER," +
           K_PURL + " TEXT," +
-          K_PFURL + " TEXT" +
+          K_PFURL + " TEXT," +
+          K_PTSTAMP + " INTEGER" +
           ')');
       db.execSQL("CREATE TABLE " + T_EPISODE + " (" +
           K_ID + " INTEGER PRIMARY KEY," +
@@ -218,6 +221,7 @@ public class Provider extends ContentProvider {
           K_EDFIN + " INTEGER," +
           K_EDATT + " INTEGER," +
           K_ESTATE + " INTEGER," +
+          K_ETSTAMP + " INTEGER," +
           K_EPID + " INTEGER," +
           "FOREIGN KEY(" + K_EPID + ") REFERENCES " + T_PODCAST + '(' + K_ID + ')' +
           ')');
