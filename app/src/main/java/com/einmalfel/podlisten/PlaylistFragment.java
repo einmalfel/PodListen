@@ -1,17 +1,12 @@
 package com.einmalfel.podlisten;
 
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,7 +16,6 @@ import android.view.ViewGroup;
 
 import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
 import com.einmalfel.podlisten.support.RecyclerItemClickListener;
-import java.io.File;
 
 
 public class PlaylistFragment extends Fragment
@@ -46,32 +40,11 @@ public class PlaylistFragment extends Fragment
     return layout;
   }
 
-  public static void deleteEpisode(long id, Context context) {
-    new File(context.getExternalFilesDir(Environment.DIRECTORY_PODCASTS), Long.toString(id)).delete();
-    ContentValues val = new ContentValues();
-    val.put(Provider.K_ESTATE, Provider.ESTATE_GONE);
-    context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), val, null, null);
-  }
-
-  public static void deleteEpisodeDialog(final long episodeId, final Context context) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int id) {
-        deleteEpisode(episodeId, context);
-      }
-    });
-    builder
-        .setNegativeButton(R.string.cancel, null)
-        .setTitle(context.getString(R.string.delete_episode))
-        .create()
-        .show();
-  }
-
   @Override
   public void onItemLongClick(View view, int position) {
     long episodeId = adapter.getItemId(position);
     Log.d(TAG, "long tap " + Long.toString(episodeId));
-    deleteEpisodeDialog(episodeId, activity);
+    PodcastHelper.deleteEpisodeDialog(episodeId, activity);
   }
 
   @Override

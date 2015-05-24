@@ -1,8 +1,6 @@
 package com.einmalfel.podlisten;
 
 
-import android.accounts.Account;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -73,7 +71,7 @@ public class NewEpisodesFragment extends Fragment
   public void onItemLongClick(View view, int position) {
     long id = adapter.getItemId(position);
     Log.d(TAG, "long tap " + Long.toString(id));
-    PlaylistFragment.deleteEpisodeDialog(id, activity);
+    PodcastHelper.deleteEpisodeDialog(id, activity);
   }
 
   @Override

@@ -122,7 +122,7 @@ public class MainActivity extends FragmentActivity implements MediaPlayer.OnComp
       }
     } else if (v == nextButton) {
       if (playingID != 0) {
-        PlaylistFragment.deleteEpisode(stop(), this);
+        PodcastHelper.getInstance().markEpisodeGone(stop());
       }
       Log.d(TAG, "NEXT");
       tryPlayNext();
@@ -166,7 +166,7 @@ public class MainActivity extends FragmentActivity implements MediaPlayer.OnComp
     Log.d(TAG, "Play complete");
     Long epEnded = stop();
     if (epEnded != 0) {
-      PlaylistFragment.deleteEpisode(epEnded, this);
+      PodcastHelper.getInstance().markEpisodeGone(epEnded);
     }
     tryPlayNext();
   }
