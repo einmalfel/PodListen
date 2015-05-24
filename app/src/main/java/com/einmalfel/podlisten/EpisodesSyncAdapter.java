@@ -180,14 +180,19 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     // of connection fail in the middle of sync
     updatePodcastInfo(pid, cpc, feed, timestamp);
 
-//    //cleanup episodes which are both not interesting for user (ESTATE_GONE) and absent in feed
-//    String presentInFeed = b.toString();
-//    try {
-//      //TODO check if this actually works
-//      cpc.delete(Provider.episodeUri, Provider.K_ESTATE + "=? AND " + Provider.K_ID + " NOT IN (?)",
-//          new String[]{Integer.toString(Provider.ESTATE_GONE), presentInFeed});
-//    } catch (RemoteException ignore) {
-//    }
+    //cleanup episodes which are both not interesting for user (ESTATE_GONE) and absent in feed
+    Cursor episodesToDelete = cpc.query(
+        Provider.episodeUri,
+        new String[]{Provider.K_ID},
+        Provider.K_ETSTAMP + " < ? AND " + Provider.K_ESTATE + " == ? AND " + Provider.K_EPID + " == ?",
+        new String[]{Long.toString(timestamp), Integer.toString(Provider.ESTATE_GONE), Long.toString(pid)},
+        null);
+    while (episodesToDelete.moveToNext()) {
+      long id = episodesToDelete.getLong(episodesToDelete.getColumnIndex(Provider.K_ID));
+      boolean result = PodcastHelper.getInstance().deleteEpisode(id);
+      Log.d(TAG, "Episode " + Long.toString(id) + " is absent in updated feed and gone. Deleted: " +
+          Boolean.toString(result));
+    }
   }
 
   private static void updatePodcastInfo(long id, ContentProviderClient cpc, SyndFeed feed,
