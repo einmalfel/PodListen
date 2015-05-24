@@ -49,4 +49,5 @@ dependencies {
     debugCompile 'com.facebook.stetho:stetho:1.1.1'
     compile 'com.android.support:recyclerview-v7:22.1.1'
     compile 'com.android.support:cardview-v7:22.1.1'
+    compile 'com.android.support:support-annotations:22.1.1'
 }
