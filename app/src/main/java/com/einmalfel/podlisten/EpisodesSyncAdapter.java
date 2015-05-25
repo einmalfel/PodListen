@@ -150,10 +150,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
   private void loadFeed(String url, long pid, ContentProviderClient cpc, int maxNewEpisodes)
       throws IOException, RemoteException, FeedException {
     Log.i(TAG, "Refreshing " + url);
-    if (!url.toLowerCase().matches("^\\w+://.*")) {
-      url = "http://" + url;
-      Log.w(TAG, "Feed download protocol defaults to http, new url: " + url);
-    }
+
     SyndFeedInput input = new SyndFeedInput();
     SyndFeed feed = input.build(new XmlReader(new URL(url)));
 

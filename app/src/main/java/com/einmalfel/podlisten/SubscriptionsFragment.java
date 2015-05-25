@@ -1,10 +1,8 @@
 package com.einmalfel.podlisten;
 
 
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -100,20 +98,19 @@ public class SubscriptionsFragment extends Fragment
     return layout;
   }
 
-  public boolean addSubscription(String url) {
-    ContentValues values = new ContentValues();
-    values.put(Provider.K_PFURL, url);
-    values.put(Provider.K_ID, (long) url.hashCode() - Integer.MIN_VALUE);
-    Uri result = activity.getContentResolver().insert(Provider.podcastUri, values);
-    if (result == null) {
-      Toast.makeText(activity, R.string.already_subscribed, Toast.LENGTH_SHORT).show();
-      return true;
-    } else {
-      activity.refresh();
-      return false;
+  public void addSubscription(String url) {
+    try {
+      if (PodcastHelper.getInstance().addSubscription(url)) {
+        activity.refresh();
+      } else {
+        Toast.makeText(activity, getString(R.string.already_subscribed) + url, Toast.LENGTH_SHORT)
+            .show();
+      }
+    } catch (PodcastHelper.SubscriptionNotInsertedException e) {
+      Toast.makeText(activity, getString(R.string.subscription_add_failed) + url, Toast.LENGTH_LONG)
+          .show();
     }
   }
-
 
   @Override
   public void onItemLongClick(View view, int position) {

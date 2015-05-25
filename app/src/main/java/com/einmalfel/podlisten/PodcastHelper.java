@@ -112,4 +112,37 @@ public class PodcastHelper {
     tryDeleteFiles(id);
     return resolver.delete(Provider.getUri(Provider.T_EPISODE, id), null, null) == 1;
   }
+
+  public class SubscriptionNotInsertedException extends Throwable {
+  }
+
+  /**
+   * Add subscription to podcasts table
+   *
+   * @param url url to subscribe
+   * @return true if success, false if already subscribed
+   * @throws SubscriptionNotInsertedException if failed to insert subscription into db
+   */
+  public boolean addSubscription(String url) throws SubscriptionNotInsertedException {
+    if (!url.toLowerCase().matches("^\\w+://.*")) {
+      url = "http://" + url;
+      Log.w(TAG, "Feed download protocol defaults to http, new url: " + url);
+    }
+    long id = (long) url.hashCode() - Integer.MIN_VALUE;
+    Cursor c = resolver.query(Provider.getUri(Provider.T_PODCAST, id), null, null, null, null);
+    int count = c.getCount();
+    c.close();
+    if (count == 1) {
+      return false;
+    } else {
+      ContentValues values = new ContentValues();
+      values.put(Provider.K_PFURL, url);
+      values.put(Provider.K_ID, id);
+      if (resolver.insert(Provider.podcastUri, values) == null) {
+        throw new SubscriptionNotInsertedException();
+      } else {
+        return true;
+      }
+    }
+  }
 }
