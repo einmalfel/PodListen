@@ -152,7 +152,8 @@ public class Provider extends ContentProvider {
     }
     if (code >= TABLES.length) {
       code -= TABLES.length;
-      selection = T_EPISODE + "._ID == " + uri.getLastPathSegment();
+      selection = (TABLES[code].equals(T_E_JOIN_P) ? T_EPISODE + '.' : "") +
+          "_ID == " + uri.getLastPathSegment();
     }
     SQLiteDatabase db = helper.getReadableDatabase();
     if (code == TABLES.length - 1) {
