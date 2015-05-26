@@ -9,7 +9,7 @@ public class PodListenApp extends InstanceAwareApplication {
   private static final String TAG = "PLA";
   public void onCreate() {
     super.onCreate();
-    Log.i(TAG, "Initalizing stetho...");
+    Log.i(TAG, "Initializing stetho...");
     Stetho.initialize(Stetho.newInitializerBuilder(this)
         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
         .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))

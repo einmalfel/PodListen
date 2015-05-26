@@ -66,7 +66,6 @@ public class MainActivity extends FragmentActivity implements MediaPlayer.OnComp
 
     @Override
     public Fragment getItem(int position) {
-      Log.v(TAG, "Making fragment for position " + position);
       switch (Pages.values()[position]) {
         case PLAYER:
           return new PlayerFragment();

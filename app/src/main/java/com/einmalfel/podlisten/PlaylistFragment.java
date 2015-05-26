@@ -66,7 +66,6 @@ public class PlaylistFragment extends Fragment
 
   @Override
   public void onLoadFinished(Loader loader, Cursor data) {
-    Log.d(TAG, "Finished loading cursor " + data.getCount());
     adapter.swapCursor(data);
   }
 
