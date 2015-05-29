@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -81,9 +82,14 @@ public class PodcastHelper {
     // TODO what if subscription is deleted?
     Cursor c = resolver.query(
         Provider.getUri(Provider.T_E_JOIN_P, id),
-        new String[]{Provider.K_ETSTAMP, Provider.K_PTSTAMP},
+        new String[]{Provider.K_ETSTAMP, Provider.K_PTSTAMP, Provider.K_ENAME},
         null, null, null);
     if (c.moveToFirst()) {
+      Toast.makeText(
+          context,
+          "Episode deleted: " + c.getString(c.getColumnIndex(Provider.K_ENAME)),
+          Toast.LENGTH_SHORT
+      ).show();
       if (c.getLong(c.getColumnIndexOrThrow(Provider.K_ETSTAMP)) < c.getLong(c.getColumnIndexOrThrow(Provider.K_PTSTAMP))) {
         Log.i(TAG, "Feed doesn't contain episode " + Long.toString(id) + " anymore. Deleting..");
         c.close();
