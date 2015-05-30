@@ -69,6 +69,10 @@ public class PodcastHelper {
     }
   }
 
+  public boolean markEpisodeGone(long id) {
+    return markEpisodeGone(id, false);
+  }
+
   /**
    * Marks episode as gone.
    * If episode is absent in origin feed, deletes it from DB.
@@ -77,7 +81,7 @@ public class PodcastHelper {
    * @param id episode id to delete
    * @return true if success, false if episode is already absent in db
    */
-  public boolean markEpisodeGone(long id) {
+  public boolean markEpisodeGone(long id, boolean quiet) {
     boolean result = false;
     // TODO what if subscription is deleted?
     Cursor c = resolver.query(
@@ -87,11 +91,13 @@ public class PodcastHelper {
         new String[]{Integer.toString(Provider.ESTATE_GONE)},
         null);
     if (c.moveToFirst()) {
-      Toast.makeText(
-          context,
-          "Episode deleted: " + c.getString(c.getColumnIndex(Provider.K_ENAME)),
-          Toast.LENGTH_SHORT
-      ).show();
+      if (!quiet) {
+        Toast.makeText(
+            context,
+            "Episode deleted: " + c.getString(c.getColumnIndex(Provider.K_ENAME)),
+            Toast.LENGTH_SHORT
+        ).show();
+      }
       if (c.getLong(c.getColumnIndexOrThrow(Provider.K_ETSTAMP)) < c.getLong(c.getColumnIndexOrThrow(Provider.K_PTSTAMP))) {
         Log.i(TAG, "Feed doesn't contain episode " + Long.toString(id) + " anymore. Deleting..");
         c.close();

@@ -58,7 +58,8 @@ public class NewEpisodesFragment extends Fragment
             new String[]{Integer.toString(Provider.ESTATE_NEW)},
             null);
         while (c.moveToNext()) {
-          PodcastHelper.getInstance().markEpisodeGone(c.getLong(c.getColumnIndex(Provider.K_ID)));
+          PodcastHelper.getInstance().markEpisodeGone(
+              c.getLong(c.getColumnIndex(Provider.K_ID)), true);
         }
         c.close();
       }
