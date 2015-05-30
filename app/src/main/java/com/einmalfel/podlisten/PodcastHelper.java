@@ -83,7 +83,9 @@ public class PodcastHelper {
     Cursor c = resolver.query(
         Provider.getUri(Provider.T_E_JOIN_P, id),
         new String[]{Provider.K_ETSTAMP, Provider.K_PTSTAMP, Provider.K_ENAME},
-        null, null, null);
+        Provider.K_ESTATE + " != ?",
+        new String[]{Integer.toString(Provider.ESTATE_GONE)},
+        null);
     if (c.moveToFirst()) {
       Toast.makeText(
           context,
