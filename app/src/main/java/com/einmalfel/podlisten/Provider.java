@@ -152,8 +152,13 @@ public class Provider extends ContentProvider {
     }
     if (code >= TABLES.length) {
       code -= TABLES.length;
-      selection = (TABLES[code].equals(T_E_JOIN_P) ? T_EPISODE + '.' : "") +
-          "_ID == " + uri.getLastPathSegment();
+      StringBuilder builder = new StringBuilder();
+      if (selection != null) {
+        builder.append(selection).append(" AND ");
+      }
+      builder.append(TABLES[code].equals(T_E_JOIN_P) ? T_EPISODE + "._ID == " : "_ID == ")
+        .append(uri.getLastPathSegment());
+      selection = builder.toString();
     }
     SQLiteDatabase db = helper.getReadableDatabase();
     if (code == TABLES.length - 1) {
