@@ -190,6 +190,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       Log.d(TAG, "Episode " + Long.toString(id) + " is absent in updated feed and gone. Deleted: " +
           Boolean.toString(result));
     }
+    episodesToDelete.close();
   }
 
   private static void updatePodcastInfo(long id, ContentProviderClient cpc, SyndFeed feed,
