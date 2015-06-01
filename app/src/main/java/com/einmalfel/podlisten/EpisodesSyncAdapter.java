@@ -2,8 +2,6 @@ package com.einmalfel.podlisten;
 
 
 import android.accounts.Account;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
@@ -14,6 +12,8 @@ import android.content.SyncResult;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEnclosure;
@@ -72,13 +72,14 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
     PendingIntent pendingIntent =
         PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT, opts);
-    NotificationManager nm = (NotificationManager) context.getSystemService(
-        Context.NOTIFICATION_SERVICE);
-    Notification.Builder nb = new Notification.Builder(context)
+    NotificationManagerCompat nm = NotificationManagerCompat.from(context);
+    NotificationCompat.Builder nb = new NotificationCompat.Builder(context)
         .setSmallIcon(R.mipmap.ic_sync_green_24dp)
         .setContentTitle(context.getString(R.string.refreshing))
         .setOngoing(true)
         .setProgress(c.getCount(), 0, false)
+        .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+        .setPriority(NotificationCompat.PRIORITY_LOW)
         .setContentIntent(pendingIntent);
     nm.notify(0, nb.build());
 
