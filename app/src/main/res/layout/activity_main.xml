@@ -34,7 +34,7 @@
             android:layout_height="match_parent"
             android:layout_margin="0dp"
             android:layout_weight="1"
-            android:src="@mipmap/ic_fast_rewind_grey600_36dp"
+            android:src="@drawable/fast_backward_foreground"
             android:background="@drawable/clickable_image_button_bg"/>
 
         <ImageButton
@@ -52,7 +52,7 @@
             android:layout_height="match_parent"
             android:layout_margin="0dp"
             android:layout_weight="1"
-            android:src="@mipmap/ic_fast_forward_grey600_36dp"
+            android:src="@drawable/fast_forward_foreground"
             android:background="@drawable/clickable_image_button_bg"/>
 
         <ImageButton
