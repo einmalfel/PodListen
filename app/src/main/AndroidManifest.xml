@@ -71,6 +71,12 @@
                 <action android:name="com.einmalfel.podlisten.REFRESH_FINISHED"/>
             </intent-filter>
         </receiver>
-    </application>
 
+        <service
+            android:name=".PlayerService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
+    </application>
 </manifest>
