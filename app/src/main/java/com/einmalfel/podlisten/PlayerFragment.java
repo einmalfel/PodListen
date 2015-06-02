@@ -94,7 +94,8 @@ public class PlayerFragment extends Fragment implements LoaderManager.LoaderCall
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-    if (!activity.isPlaying()) {
+    if (activity.connection.service == null ||
+        activity.connection.service.getState() == PlayerService.State.STOPPED) {
       if (data.moveToFirst()) {
         setText(
             data.getString(data.getColumnIndex(Provider.K_ENAME)),
