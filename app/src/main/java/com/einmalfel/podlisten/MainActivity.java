@@ -69,6 +69,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private ImageButton fbButton;
   private ImageButton nextButton;
   private ProgressBar progressBar;
+  private WidgetHelper widgetHelper;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +157,11 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
 
   @Override
   public synchronized void onClick(View v) {
+    if (widgetHelper == null && (v == playButton || v == nextButton)) {
+      // before playback launches, widget helper should be up and bound
+      widgetHelper = WidgetHelper.getInstance();
+    }
+
     if (connection.service == null) {
       // skip tap if not bound to player yet. This is quite unlikely
       Log.e(TAG, "Skipping player action. Service is not ready yet");
