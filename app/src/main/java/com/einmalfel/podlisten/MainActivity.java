@@ -75,7 +75,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   public static final int POLL_FREQUENCY = 60 * 60;
   private static final String TAG = "MAC";
 
-  final PlayerLocalConnection connection = new PlayerLocalConnection(this);
+  PlayerLocalConnection connection;
   private Account account;
   private ViewPager pager;
   private ImageButton playButton;
@@ -106,6 +106,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     fbButton.setOnClickListener(this);
     ffButton.setOnClickListener(this);
     progressBar = (ProgressBar) findViewById(R.id.play_progress);
+    connection = new PlayerLocalConnection(this);
   }
 
   @Override
