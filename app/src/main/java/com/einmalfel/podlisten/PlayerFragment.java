@@ -23,63 +23,46 @@ public class PlayerFragment extends Fragment implements LoaderManager.LoaderCall
   private TextView tView;
   private TextView dView;
   private TextView uView;
-  private static String htmlDescriptionField;
-  private static String urlField;
-  private static String titleField;
   private CardView uViewCard;
-  private CardView tViewCard;
   private CardView dViewCard;
-  private static PlayerFragment currentInstance = null;
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+      savedInstanceState) {
     activity = (MainActivity) getActivity();
     View layout = inflater.inflate(R.layout.fragment_player, container, false);
     tView = (TextView) layout.findViewById(R.id.player_title);
     dView = (TextView) layout.findViewById(R.id.player_description);
     uView = (TextView) layout.findViewById(R.id.player_url);
-    tViewCard = (CardView) layout.findViewById(R.id.player_title_card);
     dViewCard = (CardView) layout.findViewById(R.id.player_description_card);
     uViewCard = (CardView) layout.findViewById(R.id.player_url_card);
     uView.setMovementMethod(LinkMovementMethod.getInstance());
     activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), Bundle.EMPTY, this);
-    currentInstance = this;
-    updateTextViews();
+    setText(null, null, null);
     return layout;
   }
 
-  public static void updateTextViews() {
-    if (currentInstance == null) {
-      return;
+  public void setText(String title, String htmlDescription, String url) {
+    if (title != null) {
+      tView.setText(title);
     }
-    if (titleField != null) {
-      currentInstance.tView.setText(titleField);
-    }
-    if (htmlDescriptionField != null) {
-      Spanned spanned = PodcastListAdapter.strToSpanned(htmlDescriptionField);
+    if (htmlDescription != null) {
+      Spanned spanned = PodcastListAdapter.strToSpanned(htmlDescription);
       if (spanned.toString().trim().isEmpty()) {
-        currentInstance.dViewCard.setVisibility(View.GONE);
+        dViewCard.setVisibility(View.GONE);
       } else {
-        currentInstance.dView.setText(spanned);
-        currentInstance.dViewCard.setVisibility(View.VISIBLE);
+        dView.setText(spanned);
+        dViewCard.setVisibility(View.VISIBLE);
       }
     } else {
-      currentInstance.dViewCard.setVisibility(View.GONE);
+      dViewCard.setVisibility(View.GONE);
     }
-    if (urlField == null || urlField.trim().isEmpty()) {
-      currentInstance.uViewCard.setVisibility(View.GONE);
+    if (url == null || url.trim().isEmpty()) {
+      uViewCard.setVisibility(View.GONE);
     } else {
-      currentInstance.uView.setText(urlField);
-      currentInstance.uViewCard.setVisibility(View.VISIBLE);
+      uView.setText(url);
+      uViewCard.setVisibility(View.VISIBLE);
     }
-  }
-
-  public static void setText(String title, String htmlDescription, String url) {
-    titleField = title;
-    htmlDescriptionField = htmlDescription;
-    urlField = url;
-    updateTextViews();
   }
 
   @Override

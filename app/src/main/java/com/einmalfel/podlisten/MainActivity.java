@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
@@ -21,11 +22,14 @@ import com.astuetz.PagerSlidingTabStrip;
 public class MainActivity extends FragmentActivity implements PlayerService.PlayerStateListener,
     View.OnClickListener {
   enum Pages {PLAYER, PLAYLIST, NEW_EPISODES, SUBSCRIPTIONS}
+
+  private static final String[] TAB_NAMES = {"Playing", "Playlist", "New episodes",
+      "Subscriptions"};
+
   static final String PAGE_LAUNCH_OPTION = "Page";
 
-  private static class TabsAdapter extends FragmentPagerAdapter {
-    private static final String[] TAB_NAMES = {"Player", "Playlist", "New episodes",
-        "Subscriptions"};
+  private class TabsAdapter extends FragmentPagerAdapter {
+    PlayerFragment currentPlayerFragment = null;
 
     TabsAdapter(FragmentManager fm) {
       super(fm);
@@ -52,9 +56,19 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           return new NewEpisodesFragment();
         case SUBSCRIPTIONS:
           return new SubscriptionsFragment();
+        default:
+          Log.e(TAG, "Trying to create fragment for wrong position " + position);
+          return null;
       }
-      Log.e(TAG, "Wrong fragment number " + position);
-      return null;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+      Object newFragment = super.instantiateItem(container, position);
+      if (position == Pages.PLAYER.ordinal()) {
+        currentPlayerFragment = (PlayerFragment) newFragment;
+      }
+      return newFragment;
     }
   }
 
@@ -70,6 +84,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private ImageButton nextButton;
   private ProgressBar progressBar;
   private WidgetHelper widgetHelper;
+  private TabsAdapter tabsAdapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +93,8 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     ContentResolver.setSyncAutomatically(getAccount(), getString(R.string.app_id), true);
     setContentView(R.layout.activity_main);
     pager = (ViewPager) findViewById(R.id.pager);
-    pager.setAdapter(new TabsAdapter(getSupportFragmentManager()));
+    tabsAdapter = new TabsAdapter(getSupportFragmentManager());
+    pager.setAdapter(tabsAdapter);
     PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
     tabs.setViewPager(pager);
     playButton = (ImageButton) findViewById(R.id.play_button);
@@ -146,7 +162,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          PlayerFragment.setText(title, description, eURL);
+          tabsAdapter.currentPlayerFragment.setText(title, description, eURL);
         }
       });
     } else {
