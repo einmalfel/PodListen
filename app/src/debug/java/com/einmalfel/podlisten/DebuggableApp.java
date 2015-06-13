@@ -5,9 +5,12 @@ import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 public class DebuggableApp extends Application {
   private static final String TAG = "PLA";
+
+  RefWatcher refWatcher;
 
   public void onCreate() {
     Log.i(TAG, "Initializing stetho...");
@@ -15,7 +18,7 @@ public class DebuggableApp extends Application {
         .defaultDumperPluginsProvider(this)).enableWebKitInspector(Stetho
         .defaultInspectorModulesProvider(this)).build());
     Log.i(TAG, "Initializing leakcanary...");
-    LeakCanary.install(this);
+    refWatcher = LeakCanary.install(this);
     super.onCreate();
   }
 }

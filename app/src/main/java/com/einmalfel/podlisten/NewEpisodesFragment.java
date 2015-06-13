@@ -4,7 +4,6 @@ package com.einmalfel.podlisten;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -20,8 +19,8 @@ import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
 import com.einmalfel.podlisten.support.RecyclerItemClickListener;
 
 
-public class NewEpisodesFragment extends Fragment
-    implements LoaderManager.LoaderCallbacks<Cursor>, RecyclerItemClickListener.OnItemClickListener{
+public class NewEpisodesFragment extends DebuggableFragment implements LoaderManager
+    .LoaderCallbacks<Cursor>, RecyclerItemClickListener.OnItemClickListener {
   private MainActivity activity;
   private static final String TAG = "NEF";
   private static final MainActivity.Pages activityPage = MainActivity.Pages.NEW_EPISODES;

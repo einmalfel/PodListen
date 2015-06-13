@@ -3,7 +3,6 @@ package com.einmalfel.podlisten;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -16,7 +15,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-public class PlayerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class PlayerFragment extends DebuggableFragment implements LoaderManager
+    .LoaderCallbacks<Cursor> {
   private static final MainActivity.Pages activityPage = MainActivity.Pages.PLAYER;
   public static final String TAG = "PF";
   private MainActivity activity;

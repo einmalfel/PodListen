@@ -1,7 +1,6 @@
 package com.einmalfel.podlisten;
 
 import android.app.Notification;
-import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
@@ -18,7 +17,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class PlayerService extends Service implements MediaPlayer.OnSeekCompleteListener,
+public class PlayerService extends DebuggableService implements MediaPlayer.OnSeekCompleteListener,
     MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener {
 
   enum State {STOPPED, STOPPED_ERROR, PLAYING, PAUSED, UPDATE_ME}

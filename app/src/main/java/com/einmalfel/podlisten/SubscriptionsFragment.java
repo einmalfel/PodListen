@@ -4,7 +4,6 @@ package com.einmalfel.podlisten;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -26,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class SubscriptionsFragment extends Fragment
-    implements LoaderManager.LoaderCallbacks<Cursor>, RecyclerItemClickListener.OnItemClickListener {
+public class SubscriptionsFragment extends DebuggableFragment implements LoaderManager
+    .LoaderCallbacks<Cursor>, RecyclerItemClickListener.OnItemClickListener {
   private MainActivity activity;
   private static final MainActivity.Pages activityPage = MainActivity.Pages.SUBSCRIPTIONS;
   private static final String TAG = "SSF";
