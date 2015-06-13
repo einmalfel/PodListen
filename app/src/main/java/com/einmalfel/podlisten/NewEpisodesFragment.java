@@ -27,14 +27,25 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
   private EpisodeListAdapter adapter;
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    adapter = new EpisodeListAdapter(null, MainActivity.Pages.NEW_EPISODES);
+  }
+
+  @Override
+  public void onDestroy() {
+    adapter.swapCursor(null);
+    super.onDestroy();
+  }
+
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+      savedInstanceState) {
     View layout = inflater.inflate(R.layout.fragment_new_episodes, container, false);
     RecyclerView rv = (RecyclerView) layout.findViewById(R.id.recycler_view);
     activity = (MainActivity) getActivity();
     rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(activity));
     rv.setItemAnimator(new DefaultItemAnimator());
-    adapter = new EpisodeListAdapter(activity, null, MainActivity.Pages.NEW_EPISODES);
     activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), null, this);
     rv.setAdapter(adapter);
     rv.addOnItemTouchListener(new RecyclerItemClickListener(activity, rv, this));

@@ -43,14 +43,25 @@ public class SubscriptionsFragment extends DebuggableFragment implements LoaderM
   private PodcastListAdapter adapter;
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
+  public void onDestroy() {
+    adapter.swapCursor(null);
+    super.onDestroy();
+  }
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    adapter = new PodcastListAdapter(null);
+  }
+
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+      savedInstanceState) {
     View layout = inflater.inflate(R.layout.fragment_subscriptions, container, false);
     RecyclerView rv = (RecyclerView) layout.findViewById(R.id.recycler_view);
     activity = (MainActivity)getActivity();
     rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(activity));
     rv.setItemAnimator(new DefaultItemAnimator());
-    adapter = new PodcastListAdapter(null);
     rv.setAdapter(adapter);
     rv.addOnItemTouchListener(new RecyclerItemClickListener(activity, rv, this));
     activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), null, this);

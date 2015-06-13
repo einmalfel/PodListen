@@ -13,14 +13,13 @@ import android.widget.TextView;
 
 public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
     implements View.OnClickListener {
-  private final Context context;
+  private final Context context = PodListenApp.getContext();
   private static final String TAG = "ELA";
   private final MainActivity.Pages hostingPage;
 
 
-  public EpisodeListAdapter(Context activityContext, Cursor cursor, MainActivity.Pages page) {
+  public EpisodeListAdapter(Cursor cursor, MainActivity.Pages page) {
     super(cursor);
-    context = activityContext;
     hostingPage = page;
     setHasStableIds(true);
   }
