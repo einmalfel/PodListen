@@ -24,13 +24,7 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
   private MainActivity activity;
   private static final String TAG = "NEF";
   private static final MainActivity.Pages activityPage = MainActivity.Pages.NEW_EPISODES;
-  private EpisodeListAdapter adapter;
-
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    adapter = new EpisodeListAdapter(null);
-  }
+  private final EpisodeListAdapter adapter = new EpisodeListAdapter(null);
 
   @Override
   public void onDestroy() {

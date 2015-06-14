@@ -22,13 +22,7 @@ public class PlaylistFragment extends DebuggableFragment implements LoaderManage
   private MainActivity activity;
   private static final String TAG = "PLF";
   private static final MainActivity.Pages activityPage = MainActivity.Pages.PLAYLIST;
-  private EpisodeListAdapter adapter;
-
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    adapter = new EpisodeListAdapter(null);
-  }
+  private final EpisodeListAdapter adapter = new EpisodeListAdapter(null);
 
   @Override
   public void onDestroy() {

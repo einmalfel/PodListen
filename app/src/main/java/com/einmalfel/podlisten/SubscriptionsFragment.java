@@ -40,18 +40,12 @@ public class SubscriptionsFragment extends DebuggableFragment implements LoaderM
       "http://runetologia.podfm.ru/rss/rss.xml"
   };
   private static ArrayList<String> sampleList = null;
-  private PodcastListAdapter adapter;
+  private final PodcastListAdapter adapter = new PodcastListAdapter(null);
 
   @Override
   public void onDestroy() {
     adapter.swapCursor(null);
     super.onDestroy();
-  }
-
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    adapter = new PodcastListAdapter(null);
   }
 
   @Override
