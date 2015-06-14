@@ -47,8 +47,12 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       while (!isInterrupted()) {
         CallbackType ct;
         try {
-          // report progress every 500ms if queue is empty
-          ct = queue.poll(500, TimeUnit.MILLISECONDS);
+          // report progress every 500ms if playing and queue is empty
+          if (service.getState() == PlayerService.State.PLAYING) {
+            ct = queue.poll(500, TimeUnit.MILLISECONDS);
+          } else {
+            ct = queue.take();
+          }
           if (ct == null) {
             ct = CallbackType.PROGRESS;
           }
