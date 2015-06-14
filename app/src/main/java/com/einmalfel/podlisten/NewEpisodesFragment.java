@@ -29,7 +29,7 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    adapter = new EpisodeListAdapter(null, MainActivity.Pages.NEW_EPISODES);
+    adapter = new EpisodeListAdapter(null);
   }
 
   @Override

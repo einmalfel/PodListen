@@ -27,7 +27,7 @@ public class PlaylistFragment extends DebuggableFragment implements LoaderManage
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    adapter = new EpisodeListAdapter(null, MainActivity.Pages.PLAYLIST);
+    adapter = new EpisodeListAdapter(null);
   }
 
   @Override
