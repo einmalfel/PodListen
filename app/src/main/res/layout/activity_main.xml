@@ -5,9 +5,11 @@
               android:orientation="vertical"
               tools:context=".MainActivity">
 
-    <include
-        android:id="@+id/tabs"
-        layout="@layout/tab_strip"/>
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+    </android.support.design.widget.TabLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"

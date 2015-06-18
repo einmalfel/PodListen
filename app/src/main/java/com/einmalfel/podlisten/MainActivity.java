@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -16,8 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-
-import com.astuetz.PagerSlidingTabStrip;
 
 public class MainActivity extends FragmentActivity implements PlayerService.PlayerStateListener,
     View.OnClickListener {
@@ -83,6 +82,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private ImageButton fbButton;
   private ImageButton nextButton;
   private ProgressBar progressBar;
+  private TabLayout tabLayout;
   private WidgetHelper widgetHelper;
   private TabsAdapter tabsAdapter;
 
@@ -92,20 +92,25 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     ContentResolver.addPeriodicSync(getAccount(), getString(R.string.app_id), Bundle.EMPTY, POLL_FREQUENCY);
     ContentResolver.setSyncAutomatically(getAccount(), getString(R.string.app_id), true);
     setContentView(R.layout.activity_main);
-    pager = (ViewPager) findViewById(R.id.pager);
-    tabsAdapter = new TabsAdapter(getSupportFragmentManager());
-    pager.setAdapter(tabsAdapter);
-    PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-    tabs.setViewPager(pager);
+
     playButton = (ImageButton) findViewById(R.id.play_button);
     nextButton = (ImageButton) findViewById(R.id.next_button);
     fbButton = (ImageButton) findViewById(R.id.fb_button);
     ffButton = (ImageButton) findViewById(R.id.ff_button);
+    tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+    pager = (ViewPager) findViewById(R.id.pager);
     playButton.setOnClickListener(this);
     nextButton.setOnClickListener(this);
     fbButton.setOnClickListener(this);
     ffButton.setOnClickListener(this);
     progressBar = (ProgressBar) findViewById(R.id.play_progress);
+
+    tabsAdapter = new TabsAdapter(getSupportFragmentManager());
+    pager.setAdapter(tabsAdapter);
+    pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+    tabLayout.setTabsFromPagerAdapter(tabsAdapter);
+    tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(pager));
+
     connection = new PlayerLocalConnection(this);
   }
 
