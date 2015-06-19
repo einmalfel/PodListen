@@ -7,6 +7,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
+import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -47,7 +48,7 @@ public class PlayerFragment extends DebuggableFragment implements LoaderManager
       tView.setText(title);
     }
     if (htmlDescription != null) {
-      Spanned spanned = PodcastListAdapter.strToSpanned(htmlDescription);
+      Spanned spanned = Html.fromHtml(htmlDescription);
       if (spanned.toString().trim().isEmpty()) {
         dViewCard.setVisibility(View.GONE);
       } else {

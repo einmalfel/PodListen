@@ -199,7 +199,10 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     ContentValues values = new ContentValues();
     putStringIfNotNull(values, Provider.K_PURL, feed.getLink());
     putStringIfNotNull(values, Provider.K_PNAME, feed.getTitle());
-    putStringIfNotNull(values, Provider.K_PDESCR, feed.getDescription());
+    String description = feed.getDescription();
+    if (description != null) {
+      putStringIfNotNull(values, Provider.K_PDESCR, simplifyHTML(description));
+    }
     //TODO check if image file exists and download it
     values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
     values.put(Provider.K_PTSTAMP, timestamp);
@@ -219,7 +222,10 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     ContentValues values = new ContentValues();
     putStringIfNotNull(values, Provider.K_ENAME, title);
     putStringIfNotNull(values, Provider.K_EAURL, audioLink);
-    putStringIfNotNull(values, Provider.K_EDESCR, entry.getDescription().getValue());
+    String description = entry.getDescription().getValue();
+    if (description != null) {
+      putStringIfNotNull(values, Provider.K_EDESCR, simplifyHTML(description));
+    }
     putStringIfNotNull(values, Provider.K_EURL, entry.getLink());
     values.put(Provider.K_EDATT, 0);
     values.put(Provider.K_EDFIN, 0);
@@ -260,5 +266,15 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     if (s != null) {
       values.put(key, s);
     }
+  }
+
+  private static final Pattern brPattern = Pattern.compile("<br.*?/>\\s*<br.*/>|<p/?>|</li>");
+  private static final Pattern erasePattern = Pattern.compile("<img.+?>|</p>|</?ul/?>");
+  private static final Pattern listPattern = Pattern.compile("<li>");
+  private static String simplifyHTML(String text) {
+    text = erasePattern.matcher(text).replaceAll("");
+    text = listPattern.matcher(text).replaceAll("\u2022");
+    text = brPattern.matcher(text).replaceAll("<br/>");
+    return text.trim();
   }
 }

@@ -1,6 +1,7 @@
 package com.einmalfel.podlisten;
 
 import android.database.Cursor;
+import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
   @Override
   public void onBindViewHolderCursor(EpisodeViewHolder holder, Cursor cursor) {
     holder.titleView.setText(cursor.getString(cursor.getColumnIndex(Provider.K_ENAME)));
+    Spanned spannedText = Html.fromHtml(
     Spanned spannedText = PodcastListAdapter.strToSpanned(
         cursor.getString(cursor.getColumnIndex(Provider.K_EDESCR)));
     holder.descriptionView.setText(spannedText, TextView.BufferType.SPANNABLE);
