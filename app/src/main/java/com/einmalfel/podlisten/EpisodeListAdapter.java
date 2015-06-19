@@ -1,12 +1,9 @@
 package com.einmalfel.podlisten;
 
 import android.database.Cursor;
-import android.text.Html;
-import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder> {
   private static final String TAG = "ELA";
@@ -18,13 +15,10 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
 
   @Override
   public void onBindViewHolderCursor(EpisodeViewHolder holder, Cursor cursor) {
-    holder.titleView.setText(cursor.getString(cursor.getColumnIndex(Provider.K_ENAME)));
-    Spanned spannedText = Html.fromHtml(
-    Spanned spannedText = PodcastListAdapter.strToSpanned(
-        cursor.getString(cursor.getColumnIndex(Provider.K_EDESCR)));
-    holder.descriptionView.setText(spannedText, TextView.BufferType.SPANNABLE);
-    holder.downloadedImage.setVisibility(
-        cursor.getInt(cursor.getColumnIndex(Provider.K_EDFIN)) == 100 ? View.VISIBLE : View.GONE);
+    holder.bindEpisode(
+        cursor.getString(cursor.getColumnIndex(Provider.K_ENAME)),
+        cursor.getString(cursor.getColumnIndex(Provider.K_EDESCR)),
+        cursor.getInt(cursor.getColumnIndex(Provider.K_EDFIN)));
   }
 
   @Override
