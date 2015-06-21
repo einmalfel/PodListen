@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements PlayerService.PlayerStateListener,
     View.OnClickListener {
@@ -82,6 +83,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private ImageButton fbButton;
   private ImageButton nextButton;
   private ProgressBar progressBar;
+  private TextView progressBarTitle;
   private TabLayout tabLayout;
   private WidgetHelper widgetHelper;
   private TabsAdapter tabsAdapter;
@@ -104,6 +106,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     fbButton.setOnClickListener(this);
     ffButton.setOnClickListener(this);
     progressBar = (ProgressBar) findViewById(R.id.play_progress);
+    progressBarTitle = (TextView) findViewById(R.id.play_title);
 
     tabsAdapter = new TabsAdapter(getSupportFragmentManager());
     pager.setAdapter(tabsAdapter);
@@ -128,16 +131,13 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
 
   @Override
   public void progressUpdate(final int position, final int max) {
-    // progress bar present in portrait orientation only
-    if (progressBar != null) {
-      runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          progressBar.setMax(max);
-          progressBar.setProgress(position);
-        }
-      });
-    }
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        progressBar.setMax(max);
+        progressBar.setProgress(position);
+      }
+    });
   }
 
   @Override
@@ -169,6 +169,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         @Override
         public void run() {
           tabsAdapter.currentPlayerFragment.setText(title, description, eURL);
+          progressBarTitle.setText(title);
         }
       });
     } else {

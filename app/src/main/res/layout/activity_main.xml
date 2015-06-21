@@ -1,71 +1,17 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context=".MainActivity">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
-    </android.support.design.widget.TabLayout>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
+    <include
         android:layout_height="0dp"
-        android:layout_weight="0.8"/>
-
-    <ProgressBar
-        android:id="@+id/play_progress"
         android:layout_width="match_parent"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_height="0dp"
-        android:layout_weight="0.02"/>
+        android:layout_weight="1"
+        layout="@layout/tabbed_frame"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.15"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/fb_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="0dp"
-            android:layout_weight="1"
-            android:src="@drawable/fast_backward_foreground"
-            android:background="@drawable/clickable_image_button_bg"/>
-
-        <ImageButton
-            android:id="@+id/play_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="0dp"
-            android:layout_weight="1"
-            android:src="@mipmap/ic_play_arrow_grey600_36dp"
-            android:background="@drawable/clickable_image_button_bg"/>
-
-        <ImageButton
-            android:id="@+id/ff_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="0dp"
-            android:layout_weight="1"
-            android:src="@drawable/fast_forward_foreground"
-            android:background="@drawable/clickable_image_button_bg"/>
-
-        <ImageButton
-            android:id="@+id/next_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="0dp"
-            android:layout_weight="1"
-            android:src="@mipmap/ic_skip_next_grey600_36dp"
-            android:background="@drawable/clickable_image_button_bg"/>
-
-    </LinearLayout>
-
+    <include
+        layout="@layout/player"/>
 </LinearLayout>
