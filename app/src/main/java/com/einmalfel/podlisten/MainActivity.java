@@ -112,6 +112,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     pager.setAdapter(tabsAdapter);
     pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
     tabLayout.setTabsFromPagerAdapter(tabsAdapter);
+    tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
     tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(pager));
 
     connection = new PlayerLocalConnection(this);
