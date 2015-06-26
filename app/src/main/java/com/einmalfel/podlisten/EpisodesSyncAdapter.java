@@ -12,6 +12,8 @@ import android.content.SyncResult;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -134,7 +136,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
   }
 
-  private static int countNewInDB(ContentProviderClient cpc) throws RemoteException {
+  private static int countNewInDB(@NonNull ContentProviderClient cpc) throws RemoteException {
     Cursor cursorBefore = cpc.query(Provider.episodeUri, null, Provider.K_ESTATE + " = ?",
         new String[]{Integer.toString(Provider.ESTATE_NEW)}, null);
     int count = cursorBefore.getCount();
@@ -142,15 +144,15 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     return count;
   }
 
-  private boolean updateTimeStamp(long id, ContentProviderClient cpc, long timestamp)
+  private boolean updateTimeStamp(long id, @NonNull ContentProviderClient cpc, long timestamp)
       throws RemoteException {
     ContentValues values = new ContentValues();
     values.put(Provider.K_ETSTAMP, timestamp);
     return cpc.update(Provider.getUri(Provider.T_EPISODE, id), values, null, null) > 0;
   }
 
-  private void loadFeed(String url, long pid, ContentProviderClient cpc, int maxNewEpisodes)
-      throws IOException, RemoteException, FeedException {
+  private void loadFeed(@NonNull String url, long pid, @NonNull ContentProviderClient cpc,
+                        int maxNewEpisodes) throws IOException, RemoteException, FeedException {
     Log.i(TAG, "Refreshing " + url);
 
     SyndFeedInput input = new SyndFeedInput();
@@ -195,7 +197,9 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     episodesToDelete.close();
   }
 
-  private static void updatePodcastInfo(long id, ContentProviderClient cpc, SyndFeed feed,
+  private static void updatePodcastInfo(long id,
+                                        @NonNull ContentProviderClient cpc,
+                                        @NonNull SyndFeed feed,
                                         long timestamp) throws RemoteException {
     ContentValues values = new ContentValues();
     putStringIfNotNull(values, Provider.K_PURL, feed.getLink());
@@ -213,8 +217,10 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
   }
 
-  private Long tryInsertEntry(SyndEntry entry, long id, long pid, long timestamp, String audioLink,
-                              ContentProviderClient cpc, boolean gone) throws RemoteException {
+  @Nullable
+  private Long tryInsertEntry(@NonNull SyndEntry entry, long id, long pid, long timestamp,
+                              @NonNull String audioLink, @NonNull ContentProviderClient cpc,
+                              boolean gone) throws RemoteException {
     String title = entry.getTitle();
     if (title == null) {
       title = getContext().getString(R.string.no_title);
@@ -265,11 +271,11 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     return id;
   }
 
-  private static boolean isAudioEnclosure(SyndEnclosure enclosure) {
+  private static boolean isAudioEnclosure(@NonNull SyndEnclosure enclosure) {
     return AUDIO_PATTERN.matcher(enclosure.getType()).matches() && enclosure.getUrl() != null;
   }
 
-  private static long extractAudioLength(List enclosures) {
+  private static long extractAudioLength(@NonNull List enclosures) {
     for (Object o : enclosures) {
       SyndEnclosure enclosure = (SyndEnclosure) o;
       if (isAudioEnclosure(enclosure)) {
@@ -279,7 +285,8 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     throw new RuntimeException("extractAudioLength was called when no audio is available");
   }
 
-  private static String extractAudioUrl(List enclosures) {
+  @Nullable
+  private static String extractAudioUrl(@NonNull List enclosures) {
     for (Object o : enclosures) {
       SyndEnclosure enclosure = (SyndEnclosure) o;
       if (isAudioEnclosure(enclosure)) {
@@ -289,7 +296,8 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     return null;
   }
 
-  private static void putStringIfNotNull(ContentValues values, String key, String s) {
+  private static void putStringIfNotNull(@NonNull ContentValues values, @NonNull String key,
+                                         @Nullable String s) {
     if (s != null) {
       values.put(key, s);
     }
@@ -298,7 +306,8 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
   private static final Pattern brPattern = Pattern.compile("<br.*?/>\\s*<br.*/>|<p/?>|</li>");
   private static final Pattern erasePattern = Pattern.compile("<img.+?>|</p>|</?ul/?>");
   private static final Pattern listPattern = Pattern.compile("<li>");
-  private static String simplifyHTML(String text) {
+  @NonNull
+  private static String simplifyHTML(@NonNull String text) {
     text = erasePattern.matcher(text).replaceAll("");
     text = listPattern.matcher(text).replaceAll("\u2022");
     text = brPattern.matcher(text).replaceAll("<br/>");
