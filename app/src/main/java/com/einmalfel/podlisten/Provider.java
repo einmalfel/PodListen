@@ -44,6 +44,7 @@ public class Provider extends ContentProvider {
 
   public static final String authorityBase = "com.einmalfel.podlisten";
   public static final String commonUriString = ContentResolver.SCHEME_CONTENT + "://" + authorityBase;
+  public static final Uri baseUri = Uri.parse(commonUriString);
   public static final Uri podcastUri = Uri.parse(commonUriString + '/' + T_PODCAST);
   public static final Uri episodeUri = Uri.parse(commonUriString + '/' + T_EPISODE);
   public static final Uri episodeJoinPodcastUri = Uri.parse(commonUriString + '/' + T_E_JOIN_P);
@@ -174,7 +175,9 @@ public class Provider extends ContentProvider {
       if (sortOrder != null) {
         raw += " ORDER BY " + sortOrder;
       }
-      return db.rawQuery(raw, selectionArgs);
+      Cursor result = db.rawQuery(raw, selectionArgs);
+      result.setNotificationUri(resolver, baseUri);
+      return result;
     }
     Cursor result = db.query(TABLES[code], projection, selection, selectionArgs, null, null, sortOrder);
     result.setNotificationUri(resolver, uri);
