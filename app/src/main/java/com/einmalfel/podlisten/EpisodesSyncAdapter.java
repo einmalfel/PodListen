@@ -24,6 +24,7 @@ import com.google.code.rome.android.repackaged.com.sun.syndication.io.SyndFeedIn
 import com.google.code.rome.android.repackaged.com.sun.syndication.io.XmlReader;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -162,7 +163,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     int inserted = 0;
     for (Object entry : feed.getEntries()) {
       SyndEntry syndEntry = (SyndEntry) entry;
-      String audioLink = extractAudio(syndEntry.getEnclosures());
+      String audioLink = extractAudioUrl(syndEntry.getEnclosures());
       if (audioLink == null) {
         Log.i(TAG, syndEntry.getTitle() + " has no audio attachment, skipping");
         continue;
@@ -227,6 +228,19 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       putStringIfNotNull(values, Provider.K_EDESCR, simplifyHTML(description));
     }
     putStringIfNotNull(values, Provider.K_EURL, entry.getLink());
+    long size = extractAudioLength(entry.getEnclosures());
+    // sometimes rss doesn't contain length attribute; sometimes it has erroneously small value
+    if (size < 100 * 1024) {
+      try {
+        size = new URL(audioLink).openConnection().getContentLength();
+      } catch (MalformedURLException ex) {
+        Log.e(TAG, "Skipping episode " + entry.getLink() + ", malformed URL: " + ex);
+        return null;
+      } catch (IOException ex) {
+        Log.e(TAG, "Leaving wrong episode size for " + entry.getLink() + ", IO exception: " + ex);
+      }
+    }
+    values.put(Provider.K_ESIZE, size);
     values.put(Provider.K_EDATT, 0);
     values.put(Provider.K_EDFIN, 0);
     Date date = entry.getPublishedDate();
@@ -251,12 +265,25 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     return id;
   }
 
-  private static String extractAudio(List enclosures) {
+  private static boolean isAudioEnclosure(SyndEnclosure enclosure) {
+    return AUDIO_PATTERN.matcher(enclosure.getType()).matches() && enclosure.getUrl() != null;
+  }
+
+  private static long extractAudioLength(List enclosures) {
     for (Object o : enclosures) {
       SyndEnclosure enclosure = (SyndEnclosure) o;
-      String audioLink = enclosure.getUrl();
-      if (AUDIO_PATTERN.matcher(enclosure.getType()).matches() && audioLink != null) {
-        return audioLink;
+      if (isAudioEnclosure(enclosure)) {
+        return enclosure.getLength();
+      }
+    }
+    throw new RuntimeException("extractAudioLength was called when no audio is available");
+  }
+
+  private static String extractAudioUrl(List enclosures) {
+    for (Object o : enclosures) {
+      SyndEnclosure enclosure = (SyndEnclosure) o;
+      if (isAudioEnclosure(enclosure)) {
+        return enclosure.getUrl();
       }
     }
     return null;
