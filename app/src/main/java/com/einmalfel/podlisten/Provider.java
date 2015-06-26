@@ -17,6 +17,8 @@ public class Provider extends ContentProvider {
   public static final String T_PODCAST = "podcast";
   public static final String T_E_JOIN_P = "episode_join_podcast";
   public static final String K_ID = "_ID";
+  public static final String K_EID = T_EPISODE + "." + K_ID;
+  public static final String K_PID = T_PODCAST + "." + K_ID;
   public static final String K_ENAME = "episode_name";
   public static final String K_EDATE = "publication_date";
   public static final String K_EDESCR = "episode_description";
@@ -156,15 +158,16 @@ public class Provider extends ContentProvider {
       if (selection != null) {
         builder.append(selection).append(" AND ");
       }
-      builder.append(TABLES[code].equals(T_E_JOIN_P) ? T_EPISODE + "._ID == " : "_ID == ")
-        .append(uri.getLastPathSegment());
+      builder.append(TABLES[code].equals(T_E_JOIN_P) ? K_EID : K_ID)
+          .append(" == ")
+          .append(uri.getLastPathSegment());
       selection = builder.toString();
     }
     SQLiteDatabase db = helper.getReadableDatabase();
     if (code == TABLES.length - 1) {
       String raw = "SELECT " + (projection == null ? "*" : joinStrings(projection, ", ")) +
           " FROM " + T_EPISODE + " INNER JOIN " + T_PODCAST +
-          " ON " + T_EPISODE + '.' + K_EPID + " == " + T_PODCAST + '.' + K_ID;
+          " ON " + T_EPISODE + '.' + K_EPID + " == " + K_PID;
       if (selection != null) {
         raw += " WHERE " + selection;
       }
