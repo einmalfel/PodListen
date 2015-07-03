@@ -21,6 +21,7 @@ import android.util.Log;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEnclosure;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
+import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndImage;
 import com.google.code.rome.android.repackaged.com.sun.syndication.io.FeedException;
 import com.google.code.rome.android.repackaged.com.sun.syndication.io.SyndFeedInput;
 import com.google.code.rome.android.repackaged.com.sun.syndication.io.XmlReader;
@@ -208,9 +209,19 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     if (description != null) {
       putStringIfNotNull(values, Provider.K_PDESCR, simplifyHTML(description));
     }
-    //TODO check if image file exists and download it
     values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
     values.put(Provider.K_PTSTAMP, timestamp);
+    if (!ImageManager.getInstance().isDownloaded(id)) {
+      SyndImage image = feed.getImage();
+      if (image != null) {
+        try {
+          URL url = new URL(image.getUrl());
+          ImageManager.getInstance().download(id, url);
+        } catch (IOException ex) {
+          Log.e(TAG, "Skipping podcast image download, exception: " + ex);
+        }
+      }
+    }
     int updated = cpc.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null);
     if (updated != 1) {
       Log.e(TAG, "Unexpected number of items updated " + updated + " id " + id);
