@@ -247,6 +247,8 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       }
     }
     values.put(Provider.K_ESIZE, size);
+    values.put(Provider.K_EPLAYED, 0);
+    values.put(Provider.K_ELENGTH, 0);
     values.put(Provider.K_EDATT, 0);
     values.put(Provider.K_EDFIN, 0);
     Date date = entry.getPublishedDate();

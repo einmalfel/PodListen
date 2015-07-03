@@ -29,6 +29,8 @@ public class Provider extends ContentProvider {
   public static final String K_EDATT = "download_attempts";
   public static final String K_EPID = "podcast_id";
   public static final String K_ETSTAMP = "episode_timestamp";
+  public static final String K_EPLAYED = "episode_played"; //[ms]
+  public static final String K_ELENGTH = "episode_length"; //[ms]
   public static final String K_ESIZE = "episode_size"; //[Bytes]
   public static final String K_PNAME = "podcast_name";
   public static final String K_PDESCR = "podcast_description";
@@ -239,6 +241,8 @@ public class Provider extends ContentProvider {
           K_EDATT + " INTEGER," +
           K_ESTATE + " INTEGER," +
           K_ETSTAMP + " INTEGER," +
+          K_EPLAYED + " INTEGER," +
+          K_ELENGTH + " INTEGER," +
           K_ESIZE + " INTEGER," +
           K_EPID + " INTEGER," +
           "FOREIGN KEY(" + K_EPID + ") REFERENCES " + T_PODCAST + '(' + K_ID + ')' +
