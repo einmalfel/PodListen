@@ -33,7 +33,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   private final AppWidgetManager awm = AppWidgetManager.getInstance(context);
   private final NotificationManagerCompat nm = NotificationManagerCompat.from(context);
   private final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-  private final RemoteViews rvFull = new RemoteViews(context.getPackageName(), R.layout.widget);
+  private final RemoteViews rvFull = new RemoteViews(context.getPackageName(), R.layout.player);
   private boolean notificationLayoutSetUp = false;
 
   static WidgetHelper getInstance() {
@@ -130,12 +130,12 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   }
 
   public void progressUpdateRV(int position, int max, RemoteViews rv) {
-    rv.setProgressBar(R.id.widget_progress_bar, max, position, false);
+    rv.setProgressBar(R.id.play_progress, max, position, false);
   }
 
   @Override
   public void progressUpdate(int position, int max) {
-    RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.widget);
+    RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
     progressUpdateRV(position, max, rvPartial);
     progressUpdateRV(position, max, rvFull);
     updateWidgetsPartial(rvPartial);
@@ -159,7 +159,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
 
   @Override
   public void stateUpdate(PlayerService.State state) {
-    RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.widget);
+    RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
     stateUpdateRV(state, rvPartial);
     stateUpdateRV(state, rvFull);
     updateWidgetsPartial(rvPartial);

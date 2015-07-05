@@ -3,6 +3,6 @@
                     android:minHeight="40dp"
                     android:updatePeriodMillis="86400000"
                     android:previewImage="@drawable/main_icon"
-                    android:initialLayout="@layout/widget"
+                    android:initialLayout="@layout/player"
                     android:resizeMode="horizontal|vertical">
 </appwidget-provider>
