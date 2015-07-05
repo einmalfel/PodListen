@@ -116,6 +116,17 @@ public class PodcastHelper {
   }
 
   /**
+   * Based on http://stackoverflow.com/a/3758880/2015129
+   */
+  public static String humanReadableByteCount(long bytes, boolean si) {
+    int unit = si ? 1000 : 1024;
+    if (bytes < unit) return bytes + "B";
+    int exp = (int) (Math.log(bytes) / Math.log(unit));
+    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+    return String.format("%.1f%sB", bytes / Math.pow(unit, exp), pre);
+  }
+
+  /**
    * Try remove episode from db.
    * Remove media files if any.
    *

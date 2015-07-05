@@ -16,15 +16,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
-import com.einmalfel.podlisten.support.RecyclerItemClickListener;
 
 
 public class NewEpisodesFragment extends DebuggableFragment implements LoaderManager
-    .LoaderCallbacks<Cursor>, RecyclerItemClickListener.OnItemClickListener {
+    .LoaderCallbacks<Cursor>, EpisodeListAdapter.EpisodeClickListener {
   private MainActivity activity;
   private static final String TAG = "NEF";
   private static final MainActivity.Pages activityPage = MainActivity.Pages.NEW_EPISODES;
-  private final EpisodeListAdapter adapter = new EpisodeListAdapter(null);
+  private final EpisodeListAdapter adapter = new EpisodeListAdapter(null, this);
 
   @Override
   public void onDestroy() {
@@ -42,7 +41,6 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
     rv.setItemAnimator(new DefaultItemAnimator());
     activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), null, this);
     rv.setAdapter(adapter);
-    rv.addOnItemTouchListener(new RecyclerItemClickListener(activity, rv, this));
 
     Button b = (Button) layout.findViewById(R.id.refresh_button);
     b.setOnClickListener(new View.OnClickListener() {
@@ -73,26 +71,25 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
   }
 
   @Override
-  public void onItemLongClick(View view, int position) {
-    long id = adapter.getItemId(position);
-    Log.d(TAG, "long tap " + Long.toString(id));
+  public boolean onLongTap(long id) {
     PodcastHelper.deleteEpisodeDialog(id, activity);
+    return true;
   }
 
   @Override
-  public void onItemClick(View view, int position) {
-    long id = adapter.getItemId(position);
+  public void onButtonTap(long id) {
     ContentValues val = new ContentValues();
     val.put(Provider.K_ESTATE, Provider.ESTATE_IN_PLAYLIST);
     activity.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), val, null, null);
-    Log.d(TAG, "tap " + Long.toString(id));
   }
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(activity,
-        Provider.episodeUri,
-        new String[]{Provider.K_ID, Provider.K_ENAME, Provider.K_EDESCR, Provider.K_EDFIN},
+        Provider.episodeJoinPodcastUri,
+        new String[]{Provider.K_EID, Provider.K_ENAME, Provider.K_EDESCR, Provider.K_EDFIN,
+            Provider.K_ESIZE, Provider.K_ESTATE, Provider.K_PNAME, Provider.K_EPLAYED,
+            Provider.K_ELENGTH, Provider.K_EDATE, Provider.K_EPID},
         Provider.K_ESTATE + " = ?",
         new String[]{Integer.toString(Provider.ESTATE_NEW)},
         Provider.K_EDATE);
