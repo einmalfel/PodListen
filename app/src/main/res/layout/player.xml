@@ -67,7 +67,7 @@
             android:layout_weight="1"
             android:background="@drawable/clickable_image_button_bg"
             android:scaleType="fitCenter"
-            android:src="@mipmap/ic_play_arrow_grey600_36dp"/>
+            android:src="@mipmap/ic_play_arrow_white_36dp"/>
 
         <ImageButton
             android:id="@+id/ff_button"
@@ -87,7 +87,7 @@
             android:layout_weight="1"
             android:background="@drawable/clickable_image_button_bg"
             android:scaleType="fitCenter"
-            android:src="@mipmap/ic_skip_next_grey600_36dp"/>
+            android:src="@mipmap/ic_skip_next_white_36dp"/>
 
     </LinearLayout>
 </RelativeLayout>

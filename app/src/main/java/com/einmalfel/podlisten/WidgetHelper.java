@@ -147,13 +147,13 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     rv.setBoolean(R.id.ff_button, "setEnabled", seekable);
     rv.setBoolean(R.id.fb_button, "setEnabled", seekable);
     if (state == PlayerService.State.PLAYING) {
-      rv.setImageViewResource(R.id.play_button, R.mipmap.ic_pause_grey600_36dp);
+      rv.setImageViewResource(R.id.play_button, R.mipmap.ic_pause_white_36dp);
       if (!notificationLayoutSetUp) {
 
         notificationLayoutSetUp = true;
       }
     } else {
-      rv.setImageViewResource(R.id.play_button, R.mipmap.ic_play_arrow_grey600_36dp);
+      rv.setImageViewResource(R.id.play_button, R.mipmap.ic_play_arrow_white_36dp);
     }
   }
 

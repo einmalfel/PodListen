@@ -150,9 +150,9 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         fbButton.setEnabled(isRan);
         ffButton.setEnabled(isRan);
         if (state == PlayerService.State.PLAYING) {
-          playButton.setImageResource(R.mipmap.ic_pause_grey600_36dp);
+          playButton.setImageResource(R.mipmap.ic_pause_white_36dp);
         } else {
-          playButton.setImageResource(R.mipmap.ic_play_arrow_grey600_36dp);
+          playButton.setImageResource(R.mipmap.ic_play_arrow_white_36dp);
         }
       }
     });
