@@ -171,7 +171,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
         Log.i(TAG, syndEntry.getTitle() + " has no audio attachment, skipping");
         continue;
       }
-      long id = (long) audioLink.hashCode() - Integer.MIN_VALUE;
+      long id = PodcastHelper.generateId(audioLink);
       if (!updateTimeStamp(id, cpc, timestamp)) {
         tryInsertEntry(syndEntry, id, pid, timestamp, audioLink, cpc, inserted >= maxNewEpisodes);
         inserted++;

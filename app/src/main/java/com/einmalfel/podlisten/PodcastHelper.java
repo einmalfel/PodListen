@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -33,6 +34,10 @@ public class PodcastHelper {
       }
     }
     return instance;
+  }
+
+  public static long generateId(@NonNull String url) {
+    return (long) url.hashCode() - Integer.MIN_VALUE;
   }
 
   @Nullable
@@ -149,7 +154,7 @@ public class PodcastHelper {
       url = "http://" + url;
       Log.w(TAG, "Feed download protocol defaults to http, new url: " + url);
     }
-    long id = (long) url.hashCode() - Integer.MIN_VALUE;
+    long id = generateId(url);
     Cursor c = resolver.query(Provider.getUri(Provider.T_PODCAST, id), null, null, null, null);
     int count = c.getCount();
     c.close();
