@@ -62,6 +62,7 @@ public class PodcastHelper {
         Log.w(TAG, "Failed to delete " + f.toURI().toString());
       }
     }
+    ImageManager.getInstance().deleteImage(id);
   }
 
   public boolean markEpisodeGone(long id) {
