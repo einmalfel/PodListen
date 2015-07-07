@@ -34,7 +34,6 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   private final NotificationManagerCompat nm = NotificationManagerCompat.from(context);
   private final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
   private final RemoteViews rvFull = new RemoteViews(context.getPackageName(), R.layout.player);
-  private boolean notificationLayoutSetUp = false;
 
   static WidgetHelper getInstance() {
     if (instance == null) {
@@ -148,10 +147,6 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     rv.setBoolean(R.id.fb_button, "setEnabled", seekable);
     if (state == PlayerService.State.PLAYING) {
       rv.setImageViewResource(R.id.play_button, R.mipmap.ic_pause_white_36dp);
-      if (!notificationLayoutSetUp) {
-
-        notificationLayoutSetUp = true;
-      }
     } else {
       rv.setImageViewResource(R.id.play_button, R.mipmap.ic_play_arrow_white_36dp);
     }
