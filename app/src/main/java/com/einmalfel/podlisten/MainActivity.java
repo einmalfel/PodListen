@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -84,6 +86,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private ImageButton nextButton;
   private ProgressBar progressBar;
   private TextView progressBarTitle;
+  private ImageView episodeImage;
   private TabLayout tabLayout;
   private WidgetHelper widgetHelper;
   private TabsAdapter tabsAdapter;
@@ -107,6 +110,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     ffButton.setOnClickListener(this);
     progressBar = (ProgressBar) findViewById(R.id.play_progress);
     progressBarTitle = (TextView) findViewById(R.id.play_title);
+    episodeImage = (ImageView) findViewById(R.id.play_episode_image);
 
     tabsAdapter = new TabsAdapter(getSupportFragmentManager());
     pager.setAdapter(tabsAdapter);
@@ -149,6 +153,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         boolean isRan = state == PlayerService.State.PLAYING || state == PlayerService.State.PAUSED;
         fbButton.setEnabled(isRan);
         ffButton.setEnabled(isRan);
+        progressBarTitle.setVisibility(isRan ? View.VISIBLE : View.INVISIBLE);
         if (state == PlayerService.State.PLAYING) {
           playButton.setImageResource(R.mipmap.ic_pause_white_36dp);
         } else {
@@ -159,22 +164,39 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   }
 
   @Override
-  public void episodeUpdate(long id) {
+  public void episodeUpdate(final long id) {
     Cursor cursor = getContentResolver().query(Provider.getUri(Provider.T_EPISODE, id), null,
         null, null, null);
     if (cursor.moveToFirst()) {
       final String title = cursor.getString(cursor.getColumnIndex(Provider.K_ENAME));
       final String description = cursor.getString(cursor.getColumnIndex(Provider.K_EDESCR));
       final String eURL = cursor.getString(cursor.getColumnIndex(Provider.K_EURL));
+      final long pId = cursor.getLong(cursor.getColumnIndex(Provider.K_EPID));
       runOnUiThread(new Runnable() {
         @Override
         public void run() {
           tabsAdapter.currentPlayerFragment.setText(title, description, eURL);
           progressBarTitle.setText(title);
+          Bitmap image = ImageManager.getInstance().getImage(id);
+          if (image == null) {
+            image = ImageManager.getInstance().getImage(pId);
+          }
+          if (image == null) {
+            episodeImage.setImageResource(R.drawable.main_icon);
+          } else {
+            episodeImage.setImageBitmap(image);
+          }
         }
       });
     } else {
       Log.e(TAG, "Playing non-existent episode " + Long.toString(id));
+      runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          progressBarTitle.setText("Episode " + id + " doesn't exist");
+          episodeImage.setImageResource(R.drawable.main_icon);
+        }
+      });
     }
     cursor.close();
   }
