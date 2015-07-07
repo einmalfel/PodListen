@@ -6,7 +6,10 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -161,8 +164,37 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     updateNotification(rvFull);
   }
 
+  private void episodeUpdateRV(@Nullable Bitmap image, @NonNull String title,
+                               @NonNull RemoteViews rv) {
+    if (image == null) {
+      rv.setImageViewResource(R.id.play_episode_image, R.drawable.main_icon);
+    } else {
+      rv.setImageViewBitmap(R.id.play_episode_image, image);
+    }
+    rv.setTextViewText(R.id.play_title, title);
+  }
+
   @Override
   public void episodeUpdate(long id) {
-
+    Cursor c = context.getContentResolver().query(
+        Provider.getUri(Provider.T_EPISODE, id),
+        new String[]{Provider.K_ENAME, Provider.K_EPID},
+        null, null, null);
+    String title;
+    Bitmap image = ImageManager.getInstance().getImage(id);
+    if (c.moveToFirst()) {
+      title = c.getString(c.getColumnIndex(Provider.K_ENAME));
+      if (image == null) {
+        image = ImageManager.getInstance().getImage(c.getLong(c.getColumnIndex(Provider.K_EPID)));
+      }
+    } else {
+      title = "Episode " + id + " doesn't exist";
+    }
+    c.close();
+    RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
+    episodeUpdateRV(image, title, rvFull);
+    episodeUpdateRV(image, title, rvPartial);
+    updateWidgetsPartial(rvPartial);
+    updateNotification(rvFull);
   }
 }
