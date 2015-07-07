@@ -19,9 +19,9 @@ import java.io.File;
  */
 public class PodcastHelper {
   private static final String TAG = "EPM";
-  private final ContentResolver resolver;
   private static PodcastHelper instance;
-  private final Context context;
+  private final Context context = PodListenApp.getContext();
+  private final ContentResolver resolver= context.getContentResolver();
 
   //  not making synchronized method to speed up access
   public static PodcastHelper getInstance() {
@@ -33,11 +33,6 @@ public class PodcastHelper {
       }
     }
     return instance;
-  }
-
-  public PodcastHelper() {
-    context = PodListenApp.getContext();
-    resolver = context.getContentResolver();
   }
 
   @Nullable
