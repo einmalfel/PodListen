@@ -92,7 +92,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     }
 
     if (length != 0) {
-      timeSizeText.setText(DateUtils.formatElapsedTime(length) + " " +
+      timeSizeText.setText(DateUtils.formatElapsedTime(length / 1000) + " " +
           PodcastHelper.humanReadableByteCount(size, true));
     } else {
       timeSizeText.setText(PodcastHelper.humanReadableByteCount(size, true));
