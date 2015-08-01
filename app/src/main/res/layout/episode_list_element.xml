@@ -19,10 +19,11 @@
             android:layout_height="60sp"
             android:layout_alignParentRight="true"
             android:orientation="vertical">
+            android:minWidth="85sp"
 
             <TextView
                 android:id="@+id/time_size"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:singleLine="true"
@@ -52,7 +53,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:minWidth="75sp"
                 android:singleLine="true"
                 android:textSize="12sp"/>
         </LinearLayout>
