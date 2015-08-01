@@ -104,7 +104,7 @@ public class PodcastHelper {
         c.close();
         return deleteEpisode(id);
       } else {
-        ContentValues val = new ContentValues();
+        ContentValues val = new ContentValues(2);
         val.put(Provider.K_ESTATE, Provider.ESTATE_GONE);
         val.put(Provider.K_EDFIN, 0);
         result = resolver.update(Provider.getUri(Provider.T_EPISODE, id), val, null, null) == 1;

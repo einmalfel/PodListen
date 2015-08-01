@@ -78,7 +78,7 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
 
   @Override
   public void onButtonTap(long id) {
-    ContentValues val = new ContentValues();
+    ContentValues val = new ContentValues(1);
     val.put(Provider.K_ESTATE, Provider.ESTATE_IN_PLAYLIST);
     activity.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), val, null, null);
   }

@@ -69,7 +69,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     String url = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_URI));
     urls.remove(url);
     cursor.close();
-    ContentValues values = new ContentValues();
+    ContentValues values = new ContentValues(2);
     values.put(Provider.K_EDATT, 1);
     if (status == DownloadManager.STATUS_SUCCESSFUL) {
       values.put(Provider.K_EDFIN, 100);
