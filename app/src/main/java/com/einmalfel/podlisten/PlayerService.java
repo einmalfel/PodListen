@@ -154,12 +154,8 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   public void onCreate() {
     super.onCreate();
     Log.d(TAG, "Creating service");
-    player = new MediaPlayer();
+    initPlayer();
     callbackThread.start();
-    player.setOnPreparedListener(this);
-    player.setOnCompletionListener(this);
-    player.setOnErrorListener(this);
-    player.setOnSeekCompleteListener(this);
   }
 
   @Override
@@ -330,11 +326,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
     state = State.STOPPED_ERROR;
 
-    if (player == null) {
-      player = new MediaPlayer();
-    } else {
-      player.reset();
-    }
+    initPlayer();
     if (source != null && source.exists()) {
       Log.d(TAG, "Launching playback of " + source.getAbsolutePath());
       try {
@@ -360,7 +352,6 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
    */
   public synchronized boolean playNext() {
     if (currentId > 0) {
-      player.reset();
       PodcastHelper.getInstance().markEpisodeGone(currentId);
     }
     boolean result;
@@ -376,5 +367,17 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     }
     c.close();
     return result;
+  }
+
+  private void initPlayer() {
+    if (player == null) {
+      player = new MediaPlayer();
+      player.setOnPreparedListener(this);
+      player.setOnCompletionListener(this);
+      player.setOnErrorListener(this);
+      player.setOnSeekCompleteListener(this);
+    } else {
+      player.reset();
+    }
   }
 }
