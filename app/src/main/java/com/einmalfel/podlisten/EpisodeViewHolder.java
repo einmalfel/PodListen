@@ -1,12 +1,14 @@
 package com.einmalfel.podlisten;
 
+import android.graphics.PorterDuff;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class EpisodeViewHolder extends RecyclerView.ViewHolder {
@@ -14,8 +16,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private final TextView descriptionText;
   private final TextView titleText;
   private final TextView feedTitleText;
-  private final ImageView playImage;
-  private final ImageView addImage;
+  private final ImageView buttonImage;
   private final ImageView episodeImage;
   private final View dividerBottom;
   private final TextView dateText;
@@ -42,12 +43,11 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     titleText = (TextView) layout.findViewById(R.id.episode_title);
     descriptionText = (TextView) layout.findViewById(R.id.episode_description);
     dividerBottom = layout.findViewById(R.id.description_divider);
-    LinearLayout playAddFrame = (LinearLayout) layout.findViewById(R.id.play_add_frame);
+    FrameLayout playAddFrame = (FrameLayout) layout.findViewById(R.id.play_add_frame);
     dateText = (TextView) layout.findViewById(R.id.date);
     feedTitleText = (TextView) layout.findViewById(R.id.feed_title);
     descriptionText.setMovementMethod(LinkMovementMethod.getInstance());
-    playImage = (ImageView) layout.findViewById(R.id.play_image);
-    addImage = (ImageView) layout.findViewById(R.id.add_image);
+    buttonImage = (ImageView) layout.findViewById(R.id.play_add_image);
     timeSizeText = (TextView) layout.findViewById(R.id.time_size);
     episodeImage = (ImageView) layout.findViewById(R.id.episode_image);
     layout.setOnClickListener(new View.OnClickListener() {
@@ -83,12 +83,14 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     descriptionText.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
     feedTitleText.setText(feedTitle);
 
-    playImage.setVisibility(View.INVISIBLE);
-    addImage.setVisibility(View.INVISIBLE);
-    if (state == Provider.PSTATE_NEW) {
-      addImage.setVisibility(View.VISIBLE);
-    } else if (downloaded == 100) {
-      playImage.setVisibility(View.VISIBLE);
+    if (state == Provider.ESTATE_NEW) {
+      buttonImage.setImageDrawable(ContextCompat.getDrawable(
+          PodListenApp.getContext(),
+          R.mipmap.ic_playlist_add_white_36dp));
+    } else {
+      buttonImage.setImageDrawable(ContextCompat.getDrawable(
+          PodListenApp.getContext(),
+          R.mipmap.ic_play_arrow_white_36dp));
     }
 
     if (length != 0) {

@@ -13,54 +13,43 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/play_add_frame"
             android:layout_width="wrap_content"
-            android:layout_height="60sp"
+            android:layout_height="70sp"
             android:layout_alignParentRight="true"
-            android:orientation="vertical">
-            android:minWidth="85sp"
+            android:minWidth="85sp">
 
             <TextView
                 android:id="@+id/time_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal|top"
                 android:singleLine="true"
                 android:textSize="12sp"/>
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
-                <ImageView
-                    android:id="@+id/add_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@mipmap/ic_playlist_add_white_36dp"
-                    android:contentDescription="@string/add_episode_to_playlist"/>
 
-                <ImageView
-                    android:id="@+id/play_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@mipmap/ic_play_arrow_white_36dp"
-                    android:contentDescription="@string/play_episode"/>
-            </FrameLayout>
+            <ImageView
+                android:id="@+id/play_add_image"
+                android:layout_width="match_parent"
+                android:layout_height="36sp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/play_episode"
+                android:src="@mipmap/ic_play_arrow_white_36dp"/>
 
             <TextView
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_gravity="center_horizontal|bottom"
                 android:singleLine="true"
                 android:textSize="12sp"/>
-        </LinearLayout>
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/episode_image"
-            android:layout_width="60sp"
-            android:layout_height="60sp"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
             android:layout_marginRight="4dp"
             android:background="@drawable/main_icon"
             android:contentDescription="@string/episode_image_description"/>
@@ -95,7 +84,7 @@
             android:layout_above="@id/feed_title"
             android:layout_toLeftOf="@id/play_add_frame_divider"
             android:layout_toRightOf="@id/episode_image"
-            android:textSize="18sp"/>
+            android:textSize="20sp"/>
 
         <View
             android:id="@+id/description_divider"

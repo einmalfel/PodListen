@@ -25,8 +25,8 @@ import java.net.URL;
  */
 public class ImageManager {
   private static final String TAG = "IMG";
-  private static final int WIDTH_SP = 60;
-  private static final int HEIGHT_SP = 60;
+  private static final int WIDTH_SP = 70;
+  private static final int HEIGHT_SP = 70;
   private static final int PAGES_TO_CACHE = 10;
   private final int widthPx;
   private final int heightPx;
