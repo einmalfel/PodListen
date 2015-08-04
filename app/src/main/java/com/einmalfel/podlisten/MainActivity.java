@@ -6,6 +6,8 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -29,6 +31,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       "Subscriptions"};
 
   static final String PAGE_LAUNCH_OPTION = "Page";
+  static final LightingColorFilter disabledFilter = new LightingColorFilter(Color.GRAY, 0);
 
   private class TabsAdapter extends FragmentPagerAdapter {
     PlayerFragment currentPlayerFragment = null;
@@ -153,6 +156,8 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         boolean isRan = state == PlayerService.State.PLAYING || state == PlayerService.State.PAUSED;
         fbButton.setEnabled(isRan);
         ffButton.setEnabled(isRan);
+        fbButton.setColorFilter(isRan ? null : disabledFilter);
+        ffButton.setColorFilter(isRan ? null : disabledFilter);
         progressBarTitle.setVisibility(isRan ? View.VISIBLE : View.INVISIBLE);
         if (state == PlayerService.State.PLAYING) {
           playButton.setImageResource(R.mipmap.ic_pause_white_36dp);

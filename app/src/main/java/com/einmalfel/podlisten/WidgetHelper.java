@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -148,6 +149,8 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     boolean seekable = state == PlayerService.State.PLAYING || state == PlayerService.State.PAUSED;
     rv.setBoolean(R.id.ff_button, "setEnabled", seekable);
     rv.setBoolean(R.id.fb_button, "setEnabled", seekable);
+    rv.setInt(R.id.ff_button, "setColorFilter", seekable ? 0 : Color.GRAY);
+    rv.setInt(R.id.fb_button, "setColorFilter", seekable ? 0 : Color.GRAY);
     if (state == PlayerService.State.PLAYING) {
       rv.setImageViewResource(R.id.play_button, R.mipmap.ic_pause_white_36dp);
     } else {

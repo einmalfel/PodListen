@@ -1,5 +1,0 @@
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@mipmap/ic_fast_forward_grey600_36dp"
-          android:state_enabled="false"/>
-    <item android:drawable="@mipmap/ic_fast_forward_white_36dp"/>
-</selector>

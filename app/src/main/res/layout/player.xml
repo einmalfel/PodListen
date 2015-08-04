@@ -57,7 +57,7 @@
             android:layout_weight="1"
             android:background="@drawable/clickable_image_button_bg"
             android:scaleType="fitCenter"
-            android:src="@drawable/fast_backward_foreground"/>
+            android:src="@mipmap/ic_fast_rewind_white_36dp"/>
 
         <ImageButton
             android:id="@+id/play_button"
@@ -77,7 +77,7 @@
             android:layout_weight="1"
             android:background="@drawable/clickable_image_button_bg"
             android:scaleType="fitCenter"
-            android:src="@drawable/fast_forward_foreground"/>
+            android:src="@mipmap/ic_fast_forward_white_36dp"/>
 
         <ImageButton
             android:id="@+id/next_button"
