@@ -8,7 +8,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,16 +16,36 @@ import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
 
 
 public class PlaylistFragment extends DebuggableFragment implements
-    LoaderManager.LoaderCallbacks<Cursor>, EpisodeListAdapter.EpisodeClickListener {
+    LoaderManager.LoaderCallbacks<Cursor>, EpisodeListAdapter.EpisodeClickListener,
+    PlayerService.PlayerStateListener {
   private MainActivity activity;
   private static final String TAG = "PLF";
   private static final MainActivity.Pages activityPage = MainActivity.Pages.PLAYLIST;
   private final EpisodeListAdapter adapter = new EpisodeListAdapter(null, this);
+  private PlayerLocalConnection conn;
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    conn = new PlayerLocalConnection(this);
+  }
 
   @Override
   public void onDestroy() {
     adapter.swapCursor(null);
     super.onDestroy();
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    conn.unbind();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    conn.bind();
   }
 
   @Override
@@ -50,8 +69,12 @@ public class PlaylistFragment extends DebuggableFragment implements
 
   @Override
   public void onButtonTap(long id) {
-    if (activity.connection.service != null) {
-      activity.connection.service.playEpisode(id);
+    if (conn.service != null) {
+      if (id == conn.service.getEpisodeId()) {
+        conn.service.playPauseResume();
+      } else {
+        conn.service.playEpisode(id);
+      }
     }
   }
 
@@ -75,5 +98,26 @@ public class PlaylistFragment extends DebuggableFragment implements
   @Override
   public void onLoaderReset(Loader loader) {
     adapter.swapCursor(null);
+  }
+
+  @Override
+  public void progressUpdate(int position, int max) {}
+
+  @Override
+  public void stateUpdate(PlayerService.State state) {
+    if (conn.service == null || state != PlayerService.State.PLAYING) {
+      adapter.setCurrentId(0);
+    } else {
+      adapter.setCurrentId(conn.service.getEpisodeId());
+    }
+  }
+
+  @Override
+  public void episodeUpdate(long id) {
+    if (conn.service == null || conn.service.getState() != PlayerService.State.PLAYING) {
+      adapter.setCurrentId(0);
+    } else {
+      adapter.setCurrentId(id);
+    }
   }
 }

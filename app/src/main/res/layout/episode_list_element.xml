@@ -28,6 +28,17 @@
                 android:singleLine="true"
                 android:textSize="12sp"/>
 
+            <ProgressBar
+                android:id="@+id/play_load_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="65"
+                android:progressDrawable="@drawable/episode_progress_bar"/>
 
             <ImageView
                 android:id="@+id/play_add_image"
