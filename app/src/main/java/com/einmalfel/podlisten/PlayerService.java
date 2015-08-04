@@ -369,6 +369,21 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     return result;
   }
 
+  public synchronized void playPauseResume() {
+    switch (state) {
+      case STOPPED:
+      case STOPPED_ERROR:
+        playNext();
+        break;
+      case PLAYING:
+        pause();
+        break;
+      case PAUSED:
+        resume();
+        break;
+    }
+  }
+
   private void initPlayer() {
     if (player == null) {
       player = new MediaPlayer();

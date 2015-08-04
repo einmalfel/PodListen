@@ -220,18 +220,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     }
 
     if (v == playButton) {
-      switch (connection.service.getState()) {
-        case STOPPED:
-        case STOPPED_ERROR:
-          connection.service.playNext();
-          break;
-        case PLAYING:
-          connection.service.pause();
-          break;
-        case PAUSED:
-          connection.service.resume();
-          break;
-      }
+      connection.service.playPauseResume();
     } else if (v == nextButton) {
       connection.service.playNext();
     } else if (v == ffButton) {

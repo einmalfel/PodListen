@@ -91,18 +91,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     }
     switch (action) {
       case PLAY_PAUSE:
-        switch (connection.service.getState()) {
-          case STOPPED:
-          case STOPPED_ERROR:
-            connection.service.playNext();
-            break;
-          case PLAYING:
-            connection.service.pause();
-            break;
-          case PAUSED:
-            connection.service.resume();
-            break;
-        }
+        connection.service.playPauseResume();
         break;
       case NEXT_EPISODE:
         connection.service.playNext();
