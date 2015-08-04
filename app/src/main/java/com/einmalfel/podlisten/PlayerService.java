@@ -1,6 +1,7 @@
 package com.einmalfel.podlisten;
 
 import android.app.Notification;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
@@ -86,6 +87,11 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
                 for (PlayerStateListener listener : listeners) {
                   listener.progressUpdate(service.progress, service.length);
                 }
+                ContentValues values = new ContentValues(2);
+                values.put(Provider.K_EPLAYED, service.progress);
+                values.put(Provider.K_ELENGTH, service.length);
+                service.getContentResolver().update(
+                    Provider.getUri(Provider.T_EPISODE, service.currentId), values, null, null);
                 lastLength = service.length;
                 lastProgress = service.progress;
               }
