@@ -132,8 +132,6 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
           .setProgress(0, 0, false)
           .setContentTitle(context.getString(R.string.refreshed));
       nm.notify(0, nb.build());
-      Intent bi = new Intent(DownloadStartReceiver.REFRESH_FINISHED_INTENT);
-      getContext().sendBroadcast(bi);
     }
   }
 
@@ -262,6 +260,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     values.put(Provider.K_ELENGTH, 0);
     values.put(Provider.K_EDATT, 0);
     values.put(Provider.K_EDFIN, 0);
+    values.put(Provider.K_EDID, 0);
     Date date = entry.getPublishedDate();
     if (date != null) {
       values.put(Provider.K_EDATE, date.getTime());
@@ -274,7 +273,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
 
     if (!gone) {
       Log.d(TAG, "New episode! " + title);
-      Intent bi = new Intent(DownloadStartReceiver.NEW_EPISODE_INTENT);
+      Intent bi = new Intent(DownloadStartReceiver.NEW_EPISODE_ACTION);
       bi.putExtra(DownloadStartReceiver.URL_EXTRA_NAME, audioLink);
       bi.putExtra(DownloadStartReceiver.TITLE_EXTRA_NAME, title);
       bi.putExtra(DownloadStartReceiver.ID_EXTRA_NAME, id);

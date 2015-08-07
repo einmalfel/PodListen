@@ -2,10 +2,7 @@
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
     <!-- this is is still required on kitkat if app uses download manager-->
@@ -63,12 +60,10 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE"/>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.net.wifi.STATE_CHANGE"/>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
                 <action android:name="com.einmalfel.podlisten.NEW_EPISODE"/>
-                <action android:name="com.einmalfel.podlisten.REFRESH_FINISHED"/>
+                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED"/>
+                <action android:name="com.einmalfel.podlisten.DOWNLOAD_HEARTBEAT"/>
             </intent-filter>
         </receiver>
 

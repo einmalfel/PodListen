@@ -6,37 +6,23 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.io.File;
+
 
 public class DownloadStartReceiver extends BroadcastReceiver {
   private static final String TAG = "DSR";
-  static final String NEW_EPISODE_INTENT = "com.einmalfel.podlisten.NEW_EPISODE";
-  static final String REFRESH_FINISHED_INTENT = "com.einmalfel.podlisten.REFRESH_FINISHED";
+  static final String NEW_EPISODE_ACTION = "com.einmalfel.podlisten.NEW_EPISODE";
+  static final String DOWNLOAD_HEARTBEAT_ACTION = "com.einmalfel.podlisten.DOWNLOAD_HEARTBEAT";
   static final String URL_EXTRA_NAME = "URL";
   static final String TITLE_EXTRA_NAME = "TITLE";
   static final String ID_EXTRA_NAME = "ID";
-  private static final Collection<Long> ids = new LinkedHashSet<Long>(0);
-  private static final Collection<String> urls = new LinkedHashSet<String>(0);
-  private DownloadManager downloadManager;
-
-  private static boolean isWiFiConnected(Context context) {
-    ConnectivityManager cm = (ConnectivityManager) context.getSystemService(
-        Context.CONNECTIVITY_SERVICE);
-    return cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected();
-  }
 
   private void download(Context context, String url, String title, long id) {
-    if (urls.contains(url)) {
-      Log.w(TAG, "Already downloading episode id " + Long.toString(id) + ". Skipping..");
-      return;
-    }
-
     DownloadManager.Request rq = new DownloadManager.Request(Uri.parse(url))
         .setTitle(title)
         .setAllowedOverMetered(false)
@@ -46,81 +32,121 @@ public class DownloadStartReceiver extends BroadcastReceiver {
         .setVisibleInDownloadsUi(false)
         .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
 
-    ids.add(getDM(context).enqueue(rq));
-    urls.add(url);
+    DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+    long downloadId = dM.enqueue(rq);
+
+    ContentValues cv = new ContentValues(1);
+    cv.put(Provider.K_EDID, downloadId);
+    context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), cv, null, null);
   }
 
-  private DownloadManager getDM(Context context) {
-    if (downloadManager == null) {
-      downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+  private void processDownloadResult(Context context, long downloadId) {
+    // get episode id and attempts count
+    Cursor c = context.getContentResolver().query(
+        Provider.episodeUri,
+        new String[]{Provider.K_ID, Provider.K_EDATT},
+        Provider.K_EDID + " == ?",
+        new String[]{Long.toString(downloadId)},
+        null);
+    int count = c.getCount();
+    if (count != 1) {
+      Log.e(TAG, "Wrong number(" + count + ") of episodes for completed download #" + downloadId);
+      return;
     }
-    return downloadManager;
-  }
+    c.moveToFirst();
+    long episodeId = c.getLong(c.getColumnIndexOrThrow(Provider.K_ID));
+    long attempts = c.getLong(c.getColumnIndexOrThrow(Provider.K_EDATT));
+    c.close();
 
-  private void processDownloadResult(long id, Context context) {
-    DownloadManager.Query query = new DownloadManager.Query();
-    query.setFilterById(id);
-    Cursor cursor = getDM(context).query(query);
-    if (!cursor.moveToFirst()) {
+    // get download status and filename
+    DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+    c = dM.query(new DownloadManager.Query().setFilterById(downloadId));
+    if (!c.moveToFirst()) {
       Log.e(TAG, "DownloadManager query failed");
       return;
     }
-    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-    String url = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_URI));
-    urls.remove(url);
-    cursor.close();
-    ContentValues values = new ContentValues(2);
-    values.put(Provider.K_EDATT, 1);
+    int status = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
+    String fileName = c.getString(c.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_FILENAME));
+    c.close();
+
+    // update episode download state
+    ContentValues values = new ContentValues(4);
+    values.put(Provider.K_EDID, 0);
     if (status == DownloadManager.STATUS_SUCCESSFUL) {
+      Log.i(TAG, "Successfully downloaded " + episodeId);
       values.put(Provider.K_EDFIN, 100);
-      Log.i(TAG, "Successfully downloaded " + url);
+      values.put(Provider.K_ESIZE, new File(fileName).length());
+      // try get length
+      MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+      mmr.setDataSource(fileName);
+      String durationString = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+      if (durationString != null) {
+        try {
+          Long duration = Long.parseLong(durationString);
+          values.put(Provider.K_ELENGTH, duration);
+        } catch (NumberFormatException ignored) {
+          Log.e(TAG, fileName + ": Wrong duration metadata: " + durationString);
+        }
+      }
+      mmr.release();
     } else {
-      Log.w(TAG, url + " download Failed");
+      Log.w(TAG, episodeId + " download failed");
       values.put(Provider.K_EDFIN, 0);
+      values.put(Provider.K_EDATT, attempts + 1);
     }
     int updated = context.getContentResolver().update(
-        Provider.episodeUri,
-        values,
-        Provider.K_EAURL + " = ?",
-        new String[]{url});
+        Provider.getUri(Provider.T_EPISODE, episodeId), values, null, null);
     if (updated != 1) {
-      Log.e(TAG, "Something went wrong while updating episode. Url " + url + ", updated " + updated);
+      Log.e(TAG, "Something went wrong while updating " + episodeId + ", updated " + updated);
     }
   }
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    if (isWiFiConnected(context)) {
-      String action = intent.getAction();
-      if (intent.getAction().equals(NEW_EPISODE_INTENT)) {
-        download(context,
-            intent.getStringExtra(URL_EXTRA_NAME),
-            intent.getStringExtra(TITLE_EXTRA_NAME),
-            intent.getLongExtra(ID_EXTRA_NAME, -1));
-      } else if (action.equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
-        long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L);
-        if (ids.remove(id)) {
-          processDownloadResult(id, context);
-        }
-      } else {
-        //Restart all unfinished not gone downloads. Conditions here:
-        // - phone just booted up or wi-fi state changed or refresh finished
-        // - wi-fi connected
-        Log.i(TAG, "Restarting unfinished downloads");
-        Cursor c = context.getContentResolver().query(
-            Provider.episodeUri,
-            new String[]{Provider.K_EAURL, Provider.K_ID, Provider.K_ENAME},
-            Provider.K_EDFIN + " != ? AND " + Provider.K_ESTATE + " != ?",
-            new String[]{"100", Integer.toString(Provider.ESTATE_GONE)},
-            Provider.K_EDATE);
-        int urlIndex = c.getColumnIndex(Provider.K_EAURL);
-        int idIndex = c.getColumnIndex(Provider.K_ID);
-        int titleIndex = c.getColumnIndex(Provider.K_ENAME);
-        while (c.moveToNext()) {
-          download(context, c.getString(urlIndex), c.getString(titleIndex), c.getLong(idIndex));
-        }
-        c.close();
-      }
+    String action = intent.getAction();
+    if (action.equals(DOWNLOAD_HEARTBEAT_ACTION)) {
+      updateProgress(context);
+    } else if (action.equals(NEW_EPISODE_ACTION)) {
+      download(
+          context,
+          intent.getStringExtra(URL_EXTRA_NAME),
+          intent.getStringExtra(TITLE_EXTRA_NAME),
+          intent.getLongExtra(ID_EXTRA_NAME, -1));
+    } else if (action.equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
+      Intent i = new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      context.startActivity(i);
+    } else if (action.equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
+      processDownloadResult(context, intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L));
     }
+  }
+
+  private void updateProgress(Context context) {
+    //TODO call this asynchronously
+    Cursor c = context.getContentResolver().query(
+        Provider.episodeUri,
+        new String[]{Provider.K_ID, Provider.K_EDID},
+        Provider.K_EDID + " != ?",
+        new String[]{"0"},
+        null);
+    while (c.moveToNext()) {
+      DownloadManager.Query query = new DownloadManager.Query();
+      query.setFilterById(c.getLong(c.getColumnIndexOrThrow(Provider.K_EDID)));
+      long id = c.getLong(c.getColumnIndexOrThrow(Provider.K_ID));
+      DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+      Cursor q = dM.query(query);
+      ContentValues v = new ContentValues(2);
+      if (q.moveToFirst()) {
+        int got = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+        int total = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+        v.put(Provider.K_EDFIN, 100L * got / total);
+        v.put(Provider.K_ESIZE, total);
+      } else {
+        Log.e(TAG, "Failed to obtain download info for episode " + id + ". Resetting K_EDID to 0");
+        v.put(Provider.K_EDID, 0);
+      }
+      context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), v, null, null);
+      q.close();
+    }
+    c.close();
   }
 }

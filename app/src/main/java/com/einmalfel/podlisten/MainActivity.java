@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends FragmentActivity implements PlayerService.PlayerStateListener,
     View.OnClickListener {
   enum Pages {PLAYER, PLAYLIST, NEW_EPISODES, SUBSCRIPTIONS}
@@ -78,6 +81,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   }
 
   public static final int POLL_FREQUENCY = 60 * 60;
+  private static final int DOWNLOAD_CHECK_PERIOD = 500;
   private static final String TAG = "MAC";
 
   PlayerLocalConnection connection;
@@ -93,6 +97,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private TabLayout tabLayout;
   private WidgetHelper widgetHelper;
   private TabsAdapter tabsAdapter;
+  private Timer timer;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -129,12 +134,21 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   protected void onPause() {
     super.onPause();
     connection.unbind();
+    timer.cancel();
+    timer = null;
   }
 
   @Override
   protected void onResume() {
     super.onResume();
     connection.bind();
+    timer = new Timer(true);
+    timer.scheduleAtFixedRate(new TimerTask() {
+      @Override
+      public void run() {
+        sendBroadcast(new Intent(DownloadStartReceiver.DOWNLOAD_HEARTBEAT_ACTION));
+      }
+    }, 0, DOWNLOAD_CHECK_PERIOD);
   }
 
   @Override

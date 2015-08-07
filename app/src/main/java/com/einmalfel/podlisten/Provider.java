@@ -27,6 +27,7 @@ public class Provider extends ContentProvider {
   public static final String K_EURL = "episode_url";
   public static final String K_EDFIN = "download_finished";
   public static final String K_EDATT = "download_attempts";
+  public static final String K_EDID = "download_id";
   public static final String K_EPID = "podcast_id";
   public static final String K_ETSTAMP = "episode_timestamp";
   public static final String K_EPLAYED = "episode_played"; //[ms]
@@ -239,6 +240,7 @@ public class Provider extends ContentProvider {
           K_EDATE + " INTEGER," +
           K_EDFIN + " INTEGER," +
           K_EDATT + " INTEGER," +
+          K_EDID + " INTEGER," +
           K_ESTATE + " INTEGER," +
           K_ETSTAMP + " INTEGER," +
           K_EPLAYED + " INTEGER," +

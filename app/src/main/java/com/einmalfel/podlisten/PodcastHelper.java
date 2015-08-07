@@ -1,6 +1,7 @@
 package com.einmalfel.podlisten;
 
 
+import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -87,7 +88,7 @@ public class PodcastHelper {
     // TODO what if subscription is deleted?
     Cursor c = resolver.query(
         Provider.getUri(Provider.T_E_JOIN_P, id),
-        new String[]{Provider.K_ETSTAMP, Provider.K_PTSTAMP, Provider.K_ENAME},
+        new String[]{Provider.K_ETSTAMP, Provider.K_PTSTAMP, Provider.K_ENAME, Provider.K_EDID},
         Provider.K_ESTATE + " != ?",
         new String[]{Integer.toString(Provider.ESTATE_GONE)},
         null);
@@ -99,14 +100,20 @@ public class PodcastHelper {
             Toast.LENGTH_SHORT
         ).show();
       }
+      long dId = c.getLong(c.getColumnIndexOrThrow(Provider.K_EDID));
+      if (dId != 0) {
+        DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        dm.remove(dId);
+      }
       if (c.getLong(c.getColumnIndexOrThrow(Provider.K_ETSTAMP)) < c.getLong(c.getColumnIndexOrThrow(Provider.K_PTSTAMP))) {
         Log.i(TAG, "Feed doesn't contain episode " + Long.toString(id) + " anymore. Deleting..");
         c.close();
         return deleteEpisode(id);
       } else {
-        ContentValues val = new ContentValues(2);
+        ContentValues val = new ContentValues(3);
         val.put(Provider.K_ESTATE, Provider.ESTATE_GONE);
         val.put(Provider.K_EDFIN, 0);
+        val.put(Provider.K_EDID, 0);
         result = resolver.update(Provider.getUri(Provider.T_EPISODE, id), val, null, null) == 1;
       }
     }
