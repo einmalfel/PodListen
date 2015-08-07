@@ -139,6 +139,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   private final CallbackThread callbackThread = new CallbackThread(this);
   private MediaPlayer player;
   private long currentId;
+  private int startSeek;
   private int progress;
   private int length;
   private boolean preparing = false;
@@ -205,11 +206,16 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
   @Override
   public void onPrepared(MediaPlayer mp) {
+    Log.e(TAG, "onprepared");
     synchronized (this) {
       preparing = false;
       length = mp.getDuration();
-      callbackThread.post(CallbackType.PROGRESS);
       Log.d(TAG, "Playback prepared (length " + length + "), starting..");
+      if (startSeek > 0) {
+        mp.seekTo(startSeek); // progress will be reported in seek callback
+      } else {
+        callbackThread.post(CallbackType.PROGRESS);
+      }
       mp.start();
     }
   }
@@ -323,7 +329,6 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     progress = 0;
     File source = PodcastHelper.getInstance().getEpisodeFile(id);
 
-    callbackThread.post(CallbackType.PROGRESS);
     callbackThread.post(CallbackType.EPISODE);
 
     if (state == State.STOPPED) {
@@ -347,6 +352,13 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     if (state == State.PLAYING) {
       preparing = true;
       player.prepareAsync();
+      // while playback is being prepared, check if episode was previously played to some position
+      Cursor c = getContentResolver().query(
+          Provider.getUri(Provider.T_EPISODE, id),
+          new String[]{Provider.K_EPLAYED},
+          null, null, null);
+      startSeek = c.moveToFirst() ? c.getInt(c.getColumnIndexOrThrow(Provider.K_EPLAYED)) : 0;
+      c.close();
     }
     callbackThread.post(CallbackType.STATE);
     return state == State.PLAYING;
