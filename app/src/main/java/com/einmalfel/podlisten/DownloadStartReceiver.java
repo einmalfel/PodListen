@@ -138,13 +138,18 @@ public class DownloadStartReceiver extends BroadcastReceiver {
       if (q.moveToFirst()) {
         int got = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
         int total = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-        v.put(Provider.K_EDFIN, 100L * got / total);
-        v.put(Provider.K_ESIZE, total);
+        // ignore dubious data. E.g. sometimes it reports total size is -1B or 128B
+        if (got > 0 && total > 1000 && total > got) {
+          v.put(Provider.K_EDFIN, 100L * got / total);
+          v.put(Provider.K_ESIZE, total);
+        }
       } else {
         Log.e(TAG, "Failed to obtain download info for episode " + id + ". Resetting K_EDID to 0");
         v.put(Provider.K_EDID, 0);
       }
-      context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), v, null, null);
+      if (v.size() != 0) {
+        context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), v, null, null);
+      }
       q.close();
     }
     c.close();
