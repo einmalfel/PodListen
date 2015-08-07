@@ -171,8 +171,10 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       }
       long id = PodcastHelper.generateId(audioLink);
       if (!updateTimeStamp(id, cpc, timestamp)) {
-        tryInsertEntry(syndEntry, id, pid, timestamp, audioLink, cpc, inserted >= maxNewEpisodes);
-        inserted++;
+        if (tryInsertEntry(
+            syndEntry, id, pid, timestamp, audioLink, cpc, inserted >= maxNewEpisodes) != null) {
+          inserted++;
+        }
       }
     }
 
