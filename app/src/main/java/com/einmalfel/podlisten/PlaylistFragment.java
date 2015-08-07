@@ -105,19 +105,11 @@ public class PlaylistFragment extends DebuggableFragment implements
 
   @Override
   public void stateUpdate(PlayerService.State state) {
-    if (conn.service == null || state != PlayerService.State.PLAYING) {
-      adapter.setCurrentId(0);
-    } else {
-      adapter.setCurrentId(conn.service.getEpisodeId());
-    }
+    adapter.setCurrentIdState(conn.service.getEpisodeId(), state);
   }
 
   @Override
   public void episodeUpdate(long id) {
-    if (conn.service == null || conn.service.getState() != PlayerService.State.PLAYING) {
-      adapter.setCurrentId(0);
-    } else {
-      adapter.setCurrentId(id);
-    }
+    adapter.setCurrentIdState(id, conn.service.getState());
   }
 }

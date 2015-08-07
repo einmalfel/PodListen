@@ -22,6 +22,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private static PorterDuffColorFilter loadingFilter;
   private static PorterDuffColorFilter playingFilter;
   private static PorterDuffColorFilter loadedFilter;
+  private static PorterDuffColorFilter playedFilter;
   private static Drawable playButtonDrawable;
   private static Drawable loadingButtonDrawable;
   private static Drawable pauseButtonDrawable;
@@ -93,7 +94,9 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       loadedFilter = new PorterDuffColorFilter(
           context.getResources().getColor(R.color.downloaded_progress), PorterDuff.Mode.MULTIPLY);
       playingFilter = new PorterDuffColorFilter(
-          context.getResources().getColor(R.color.play_progress), PorterDuff.Mode.MULTIPLY);
+          context.getResources().getColor(R.color.playing_progress), PorterDuff.Mode.MULTIPLY);
+      playedFilter = new PorterDuffColorFilter(
+          context.getResources().getColor(R.color.played_progress), PorterDuff.Mode.MULTIPLY);
       playButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_play_arrow_white_36dp);
       pauseButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_pause_white_36dp);
       addButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_playlist_add_white_36dp);
@@ -102,9 +105,18 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     }
   }
 
+  private void setTextColor(int color) {
+    titleText.setTextColor(color);
+    feedTitleText.setTextColor(color);
+    descriptionText.setTextColor(color);
+    timeSizeText.setTextColor(color);
+    dateText.setTextColor(color);
+  }
+
+
   public void bindEpisode(String title, String description, long id, long pid, long size, int state,
                           String feedTitle, long played, long length, long date, long downloaded,
-                          boolean playingNow) {
+                          PlayerService.State playerState) {
     titleText.setText(title);
     if (description.trim().isEmpty()) {
       dividerBottom.setVisibility(View.GONE);
@@ -117,10 +129,17 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     feedTitleText.setText(feedTitle);
 
     if (downloaded == 100 && state != Provider.ESTATE_NEW) {
-      progressBar.getProgressDrawable().setColorFilter(playingFilter);
+      if (playerState == PlayerService.State.STOPPED) {
+        progressBar.getProgressDrawable().setColorFilter(playedFilter);
+        setTextColor(context.getResources().getColor(R.color.secondary_text_default_material_dark));
+      } else {
+        progressBar.getProgressDrawable().setColorFilter(playingFilter);
+        setTextColor(context.getResources().getColor(R.color.primary_text_default_material_dark));
+      }
       progressBar.setMax((int) length);
       progressBar.setProgress((int) played);
     } else {
+      setTextColor(context.getResources().getColor(R.color.secondary_text_default_material_dark));
       if (downloaded == 100) {
         progressBar.getProgressDrawable().setColorFilter(loadedFilter);
       } else {
@@ -137,7 +156,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       playAddFrame.setEnabled(true);
       if (state == Provider.ESTATE_NEW) {
         buttonImage.setImageDrawable(addButtonDrawable);
-      } else if (playingNow) {
+      } else if (playerState == PlayerService.State.PLAYING) {
         buttonImage.setImageDrawable(pauseButtonDrawable);
       } else {
         buttonImage.setImageDrawable(playButtonDrawable);

@@ -24,6 +24,7 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
   private final EpisodeClickListener listener;
   private final Set<Long> expandedElements = new HashSet<Long>(10);
   private long currentPlayingId = 0;
+  private PlayerService.State currentState = PlayerService.State.STOPPED;
 
   public EpisodeListAdapter(Cursor cursor, EpisodeClickListener listener) {
     super(cursor);
@@ -31,9 +32,10 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
     setHasStableIds(true);
   }
 
-  void setCurrentId(long id) {
-    if (id != currentPlayingId) {
+  void setCurrentIdState(long id, PlayerService.State state) {
+    if (id != currentPlayingId || currentState != state) {
       currentPlayingId = id;
+      currentState = state;
       new Handler(Looper.getMainLooper()).post(new Runnable() {
         @Override
         public void run() {
@@ -63,7 +65,7 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
         cursor.getLong(cursor.getColumnIndex(Provider.K_ELENGTH)),
         cursor.getLong(cursor.getColumnIndex(Provider.K_EDATE)),
         cursor.getLong(cursor.getColumnIndex(Provider.K_EDFIN)),
-        id == currentPlayingId);
+        currentPlayingId == id ? currentState : PlayerService.State.STOPPED);
     holder.setExpanded(expandedElements.contains(id));
   }
 

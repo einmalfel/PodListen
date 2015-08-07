@@ -1,5 +1,6 @@
 <resources>
-    <color name="play_progress">#ffff8800</color>
+    <color name="playing_progress">#ffff8800</color>
+    <color name="played_progress">#60ff8800</color>
     <color name="download_progress">#ff80cbc4</color>
     <color name="downloaded_progress">#4080cbc4</color>
 </resources>
