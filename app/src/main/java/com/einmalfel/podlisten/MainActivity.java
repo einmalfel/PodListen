@@ -17,7 +17,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -28,16 +27,15 @@ import java.util.TimerTask;
 
 public class MainActivity extends FragmentActivity implements PlayerService.PlayerStateListener,
     View.OnClickListener {
-  enum Pages {PLAYER, PLAYLIST, NEW_EPISODES, SUBSCRIPTIONS}
+  enum Pages {PLAYLIST, NEW_EPISODES, SUBSCRIPTIONS}
 
-  private static final String[] TAB_NAMES = {"Playing", "Playlist", "New episodes",
+  private static final String[] TAB_NAMES = {"Playlist", "New episodes",
       "Subscriptions"};
 
   static final String PAGE_LAUNCH_OPTION = "Page";
   static final LightingColorFilter disabledFilter = new LightingColorFilter(Color.GRAY, 0);
 
   private class TabsAdapter extends FragmentPagerAdapter {
-    PlayerFragment currentPlayerFragment = null;
 
     TabsAdapter(FragmentManager fm) {
       super(fm);
@@ -56,8 +54,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     @Override
     public Fragment getItem(int position) {
       switch (Pages.values()[position]) {
-        case PLAYER:
-          return new PlayerFragment();
         case PLAYLIST:
           return new PlaylistFragment();
         case NEW_EPISODES:
@@ -68,15 +64,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           Log.e(TAG, "Trying to create fragment for wrong position " + position);
           return null;
       }
-    }
-
-    @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-      Object newFragment = super.instantiateItem(container, position);
-      if (position == Pages.PLAYER.ordinal()) {
-        currentPlayerFragment = (PlayerFragment) newFragment;
-      }
-      return newFragment;
     }
   }
 
@@ -194,7 +181,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          tabsAdapter.currentPlayerFragment.setText(title, description, eURL);
           progressBarTitle.setText(title);
           Bitmap image = ImageManager.getInstance().getImage(id);
           if (image == null) {
