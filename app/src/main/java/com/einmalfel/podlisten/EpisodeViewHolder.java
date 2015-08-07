@@ -144,12 +144,15 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       }
     }
 
-    if (length != 0) {
-      timeSizeText.setText(DateUtils.formatElapsedTime(length / 1000) + " " +
-          PodcastHelper.humanReadableByteCount(size, true));
-    } else {
-      timeSizeText.setText(PodcastHelper.humanReadableByteCount(size, true));
+    StringBuilder timeSize = new StringBuilder();
+    if (length > 0) {
+      timeSize.append(DateUtils.formatElapsedTime(length / 1000));
+      timeSize.append(" ");
     }
+    if (size > 1024) {
+      timeSize.append(PodcastHelper.humanReadableByteCount(size, true));
+    }
+    timeSizeText.setText(timeSize);
     dateText.setText(DateUtils.getRelativeTimeSpanString(date));
     episodeImage.setImageBitmap(ImageManager.getInstance().getImage(pid));
     this.id = id;
