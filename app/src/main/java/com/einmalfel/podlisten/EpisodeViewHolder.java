@@ -21,6 +21,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private static Context context = null;
   private static PorterDuffColorFilter loadingFilter;
   private static PorterDuffColorFilter playingFilter;
+  private static PorterDuffColorFilter loadedFilter;
   private static Drawable playButtonDrawable;
   private static Drawable loadingButtonDrawable;
   private static Drawable pauseButtonDrawable;
@@ -88,7 +89,9 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     if (context == null) {
       context = PodListenApp.getContext();
       loadingFilter = new PorterDuffColorFilter(
-          context.getResources().getColor(R.color.accent_material_dark), PorterDuff.Mode.MULTIPLY);
+          context.getResources().getColor(R.color.download_progress), PorterDuff.Mode.MULTIPLY);
+      loadedFilter = new PorterDuffColorFilter(
+          context.getResources().getColor(R.color.downloaded_progress), PorterDuff.Mode.MULTIPLY);
       playingFilter = new PorterDuffColorFilter(
           context.getResources().getColor(R.color.play_progress), PorterDuff.Mode.MULTIPLY);
       playButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_play_arrow_white_36dp);
@@ -118,7 +121,11 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       progressBar.setMax((int) length);
       progressBar.setProgress((int) played);
     } else {
-      progressBar.getProgressDrawable().setColorFilter(loadingFilter);
+      if (downloaded == 100) {
+        progressBar.getProgressDrawable().setColorFilter(loadedFilter);
+      } else {
+        progressBar.getProgressDrawable().setColorFilter(loadingFilter);
+      }
       progressBar.setMax(100);
       progressBar.setProgress((int) downloaded);
     }
