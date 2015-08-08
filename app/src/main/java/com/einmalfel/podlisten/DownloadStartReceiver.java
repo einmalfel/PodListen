@@ -129,25 +129,36 @@ public class DownloadStartReceiver extends BroadcastReceiver {
         new String[]{"0"},
         null);
     while (c.moveToNext()) {
-      DownloadManager.Query query = new DownloadManager.Query();
-      query.setFilterById(c.getLong(c.getColumnIndexOrThrow(Provider.K_EDID)));
+      long downLoadId = c.getLong(c.getColumnIndexOrThrow(Provider.K_EDID));
       long id = c.getLong(c.getColumnIndexOrThrow(Provider.K_ID));
       DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-      Cursor q = dM.query(query);
-      ContentValues v = new ContentValues(2);
+      Cursor q = dM.query(new DownloadManager.Query().setFilterById(downLoadId));
       if (q.moveToFirst()) {
-        int got = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-        int total = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-        // ignore dubious data. E.g. sometimes it reports total size is -1B or 128B
-        if (got > 0 && total > 1000 && total > got) {
-          v.put(Provider.K_EDFIN, 100L * got / total);
-          v.put(Provider.K_ESIZE, total);
+        int state = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
+        // WORKAROUND: sometimes ACTION_DOWNLOAD_COMPLETE is somehow not received (or there was an
+        // exception in callback), so handle there episodes completed more than a minute ago
+        if (state == DownloadManager.STATUS_SUCCESSFUL || state == DownloadManager.STATUS_FAILED) {
+          long t = q.getLong(q.getColumnIndexOrThrow(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP));
+          Log.e(TAG, "Found lost completed download " + downLoadId);
+          if (System.currentTimeMillis() - t > 60000) {
+            processDownloadResult(context, downLoadId);
+          }
+        } else {
+          int got = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+          int total = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+          // ignore dubious data. E.g. sometimes it reports total size is -1B or 128B
+          if (got > 0 && total > 1000 && total > got) {
+            ContentValues v = new ContentValues(2);
+            v.put(Provider.K_EDFIN, 100L * got / total);
+            v.put(Provider.K_ESIZE, total);
+            context.getContentResolver().update(
+                Provider.getUri(Provider.T_EPISODE, id), v, null, null);
+          }
         }
       } else {
         Log.e(TAG, "Failed to obtain download info for episode " + id + ". Resetting K_EDID to 0");
+        ContentValues v = new ContentValues(2);
         v.put(Provider.K_EDID, 0);
-      }
-      if (v.size() != 0) {
         context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), v, null, null);
       }
       q.close();
