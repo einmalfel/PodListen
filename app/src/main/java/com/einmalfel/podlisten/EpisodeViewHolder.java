@@ -39,22 +39,15 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private final ProgressBar progressBar;
   private final FrameLayout playAddFrame;
   private long id = 0;
-  private boolean isExpanded = false;
-
-  boolean getExpanded() {
-    return isExpanded;
-  }
-
-  void setExpanded(boolean expanded) {
-    isExpanded = expanded;
-    descriptionText.setSingleLine(!expanded);
-  }
+  private boolean expanded;
 
   long getId() {
     return id;
   }
 
-  public EpisodeViewHolder(final View layout, final EpisodeListAdapter.EpisodeClickListener listener) {
+  public EpisodeViewHolder(final View layout,
+                           final EpisodeListAdapter.EpisodeClickListener listener,
+                           final EpisodeListAdapter adapter) {
     super(layout);
     this.id = 0;
     titleText = (TextView) layout.findViewById(R.id.episode_title);
@@ -71,7 +64,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     layout.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        setExpanded(!getExpanded());
+        adapter.setExpanded(id, !expanded);
       }
     });
     layout.setOnLongClickListener(new View.OnLongClickListener() {
@@ -113,10 +106,9 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     dateText.setTextColor(color);
   }
 
-
   public void bindEpisode(String title, String description, long id, long pid, long size, int state,
                           String feedTitle, long played, long length, long date, long downloaded,
-                          PlayerService.State playerState) {
+                          PlayerService.State playerState, boolean expanded) {
     titleText.setText(title);
     if (description.trim().isEmpty()) {
       dividerBottom.setVisibility(View.GONE);
@@ -126,6 +118,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       descriptionText.setVisibility(View.VISIBLE);
     }
     descriptionText.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
+    descriptionText.setSingleLine(!expanded);
     feedTitleText.setText(feedTitle);
 
     if (downloaded == 100 && state != Provider.ESTATE_NEW) {
@@ -175,5 +168,6 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     dateText.setText(DateUtils.getRelativeTimeSpanString(date));
     episodeImage.setImageBitmap(ImageManager.getInstance().getImage(pid));
     this.id = id;
+    this.expanded = expanded;
   }
 }

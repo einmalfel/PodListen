@@ -45,13 +45,28 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
     }
   }
 
+  void setExpanded(long id, boolean expanded) {
+    if (!expandedElements.contains(id) && expanded) {
+      expandedElements.add(id);
+      new Handler(Looper.getMainLooper()).post(new Runnable() {
+        @Override
+        public void run() {
+          notifyDataSetChanged();
+        }
+      });
+    } else if (expandedElements.contains(id) && !expanded) {
+      expandedElements.remove(id);
+      new Handler(Looper.getMainLooper()).post(new Runnable() {
+        @Override
+        public void run() {
+          notifyDataSetChanged();
+        }
+      });
+    }
+  }
+
   @Override
   public void onBindViewHolderCursor(EpisodeViewHolder holder, Cursor cursor) {
-    if (holder.getExpanded()) {
-      expandedElements.add(holder.getId());
-    } else {
-      expandedElements.remove(holder.getId());
-    }
     long id = cursor.getLong(cursor.getColumnIndex(Provider.K_ID));
     holder.bindEpisode(
         cursor.getString(cursor.getColumnIndex(Provider.K_ENAME)),
@@ -65,14 +80,14 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
         cursor.getLong(cursor.getColumnIndex(Provider.K_ELENGTH)),
         cursor.getLong(cursor.getColumnIndex(Provider.K_EDATE)),
         cursor.getLong(cursor.getColumnIndex(Provider.K_EDFIN)),
-        currentPlayingId == id ? currentState : PlayerService.State.STOPPED);
-    holder.setExpanded(expandedElements.contains(id));
+        currentPlayingId == id ? currentState : PlayerService.State.STOPPED,
+        expandedElements.contains(id));
   }
 
   @Override
   public EpisodeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     View v = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.episode_list_element, parent, false);
-    return new EpisodeViewHolder(v, listener);
+    return new EpisodeViewHolder(v, listener, this);
   }
 }

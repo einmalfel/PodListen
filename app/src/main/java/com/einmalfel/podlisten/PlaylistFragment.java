@@ -8,6 +8,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ public class PlaylistFragment extends DebuggableFragment implements
   private static final MainActivity.Pages activityPage = MainActivity.Pages.PLAYLIST;
   private final EpisodeListAdapter adapter = new EpisodeListAdapter(null, this);
   private PlayerLocalConnection conn;
+  private RecyclerView rv;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,7 @@ public class PlaylistFragment extends DebuggableFragment implements
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
       savedInstanceState) {
     View layout = inflater.inflate(R.layout.fragment_playlist, container, false);
-    RecyclerView rv = (RecyclerView) layout.findViewById(R.id.recycler_view);
+    rv = (RecyclerView) layout.findViewById(R.id.recycler_view);
     activity = (MainActivity) getActivity();
     rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(activity));
     rv.setItemAnimator(new DefaultItemAnimator());
@@ -111,5 +113,16 @@ public class PlaylistFragment extends DebuggableFragment implements
   @Override
   public void episodeUpdate(long id) {
     adapter.setCurrentIdState(id, conn.service.getState());
+  }
+
+  void showEpisode(long id) {
+    for (int pos = 0; pos < adapter.getItemCount(); pos++) {
+      if (adapter.getItemId(pos) == id) {
+        Log.d(TAG, "scrolling to " + pos + " id " + id);
+        rv.smoothScrollToPosition(pos);
+        adapter.setExpanded(id, true);
+        return;
+      }
+    }
   }
 }

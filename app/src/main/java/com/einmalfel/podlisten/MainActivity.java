@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -49,6 +50,15 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     @Override
     public CharSequence getPageTitle(int position) {
       return TAB_NAMES[position];
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+      Fragment newFragment = (Fragment) super.instantiateItem(container, position);
+      if (position == Pages.PLAYLIST.ordinal()) {
+        playlistFragment = (PlaylistFragment) newFragment;
+      }
+      return newFragment;
     }
 
     @Override
@@ -85,6 +95,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private WidgetHelper widgetHelper;
   private TabsAdapter tabsAdapter;
   private Timer timer;
+  private PlaylistFragment playlistFragment = null;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +117,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     progressBar = (ProgressBar) findViewById(R.id.play_progress);
     progressBarTitle = (TextView) findViewById(R.id.play_title);
     episodeImage = (ImageView) findViewById(R.id.play_episode_image);
+    episodeImage.setOnClickListener(this);
 
     tabsAdapter = new TabsAdapter(getSupportFragmentManager());
     pager.setAdapter(tabsAdapter);
@@ -227,6 +239,10 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       connection.service.jumpForward();
     } else if (v == fbButton) {
       connection.service.jumpBackward();
+    } else if (v == episodeImage) {
+      if (playlistFragment != null) {
+        playlistFragment.showEpisode(connection.service.getEpisodeId());
+      }
     }
   }
 
