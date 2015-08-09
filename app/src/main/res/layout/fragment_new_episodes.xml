@@ -12,6 +12,8 @@
         android:layout_height="wrap_content"
         android:background="@color/background_floating_material_dark"
         android:layout_alignParentTop ="true"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
         android:layout_above="@+id/new_episodes_buttons"/>
 
     <LinearLayout
