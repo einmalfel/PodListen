@@ -11,6 +11,8 @@
     card_view:cardBackgroundColor="@color/cardview_dark_background">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/card_layout"
+                    android:background="@drawable/clickable_list_element"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
         <FrameLayout
@@ -18,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="70sp"
             android:layout_alignParentRight="true"
+            android:background="@drawable/clickable_list_element"
             android:minWidth="85sp">
 
             <TextView

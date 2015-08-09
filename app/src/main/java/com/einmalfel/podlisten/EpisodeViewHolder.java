@@ -61,13 +61,14 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     timeSizeText = (TextView) layout.findViewById(R.id.time_size);
     episodeImage = (ImageView) layout.findViewById(R.id.episode_image);
     progressBar = (ProgressBar) layout.findViewById(R.id.play_load_progress);
-    layout.setOnClickListener(new View.OnClickListener() {
+    View relativeLayout = layout.findViewById(R.id.card_layout);
+    relativeLayout.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         adapter.setExpanded(id, !expanded);
       }
     });
-    layout.setOnLongClickListener(new View.OnLongClickListener() {
+    relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
       public boolean onLongClick(View v) {
         return listener.onLongTap(EpisodeViewHolder.this.id);
