@@ -45,13 +45,13 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
     }
   }
 
-  void setExpanded(long id, boolean expanded) {
+  void setExpanded(long id, boolean expanded, final int position) {
     if (!expandedElements.contains(id) && expanded) {
       expandedElements.add(id);
       new Handler(Looper.getMainLooper()).post(new Runnable() {
         @Override
         public void run() {
-          notifyDataSetChanged();
+          notifyItemChanged(position);
         }
       });
     } else if (expandedElements.contains(id) && !expanded) {
@@ -59,7 +59,7 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
       new Handler(Looper.getMainLooper()).post(new Runnable() {
         @Override
         public void run() {
-          notifyDataSetChanged();
+          notifyItemChanged(position);
         }
       });
     }

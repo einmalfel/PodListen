@@ -65,7 +65,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     relativeLayout.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        adapter.setExpanded(id, !expanded);
+        adapter.setExpanded(id, !expanded, getAdapterPosition());
       }
     });
     relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {

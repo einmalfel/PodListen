@@ -120,7 +120,7 @@ public class PlaylistFragment extends DebuggableFragment implements
       if (adapter.getItemId(pos) == id) {
         Log.d(TAG, "scrolling to " + pos + " id " + id);
         rv.smoothScrollToPosition(pos);
-        adapter.setExpanded(id, true);
+        adapter.setExpanded(id, true, pos);
         return;
       }
     }
