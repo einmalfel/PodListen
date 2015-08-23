@@ -34,9 +34,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   }
 
   private class CallbackThread extends Thread {
-    private final List<PlayerStateListener> listeners = new ArrayList<PlayerStateListener>(2);
+    private final List<PlayerStateListener> listeners = new ArrayList<>(2);
     private final PlayerService service;
-    private final BlockingQueue<CallbackType> queue = new LinkedBlockingQueue<CallbackType>();
+    private final BlockingQueue<CallbackType> queue = new LinkedBlockingQueue<>();
     private int lastLength = -1;
     private int lastProgress = -1;
     private PlayerService.State lastState = PlayerService.State.UPDATE_ME;

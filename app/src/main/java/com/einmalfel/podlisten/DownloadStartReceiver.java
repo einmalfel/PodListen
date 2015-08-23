@@ -103,20 +103,24 @@ public class DownloadStartReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    String action = intent.getAction();
-    if (action.equals(DOWNLOAD_HEARTBEAT_ACTION)) {
-      updateProgress(context);
-    } else if (action.equals(NEW_EPISODE_ACTION)) {
-      download(
-          context,
-          intent.getStringExtra(URL_EXTRA_NAME),
-          intent.getStringExtra(TITLE_EXTRA_NAME),
-          intent.getLongExtra(ID_EXTRA_NAME, -1));
-    } else if (action.equals(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
-      Intent i = new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      context.startActivity(i);
-    } else if (action.equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
-      processDownloadResult(context, intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L));
+    switch (intent.getAction()) {
+      case DOWNLOAD_HEARTBEAT_ACTION:
+        updateProgress(context);
+        break;
+      case NEW_EPISODE_ACTION:
+        download(
+            context,
+            intent.getStringExtra(URL_EXTRA_NAME),
+            intent.getStringExtra(TITLE_EXTRA_NAME),
+            intent.getLongExtra(ID_EXTRA_NAME, -1));
+        break;
+      case DownloadManager.ACTION_NOTIFICATION_CLICKED:
+        Intent i = new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(i);
+        break;
+      case DownloadManager.ACTION_DOWNLOAD_COMPLETE:
+        processDownloadResult(context, intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L));
+        break;
     }
   }
 

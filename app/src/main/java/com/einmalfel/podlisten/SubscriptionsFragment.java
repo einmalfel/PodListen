@@ -89,7 +89,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements LoaderM
       @Override
       public void onClick(View v) {
         if (sampleList == null) {
-          sampleList = new ArrayList<String>(samples.length);
+          sampleList = new ArrayList<>(samples.length);
           Collections.addAll(sampleList, samples);
         }
         if (sampleList.isEmpty()) {

@@ -136,6 +136,6 @@ public class ImageManager {
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     wm.getDefaultDisplay().getSize(displaySize);
     int imagesPerPage = displaySize.y / heightPx;
-    memoryCache = new LruCache<Long, Bitmap>(PAGES_TO_CACHE * imagesPerPage);
+    memoryCache = new LruCache<>(PAGES_TO_CACHE * imagesPerPage);
   }
 }

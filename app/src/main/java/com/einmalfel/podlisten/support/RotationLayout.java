@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * TODO: extract into separate library
  */
 public class RotationLayout extends ViewGroup {
-  private final ArrayList<View> mMatchParentChildren = new ArrayList<View>(1);
+  private final ArrayList<View> mMatchParentChildren = new ArrayList<>(1);
 
   public RotationLayout(Context context) {
     super(context);

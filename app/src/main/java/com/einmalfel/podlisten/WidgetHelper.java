@@ -72,8 +72,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
 
     try {
       action = WidgetAction.valueOf(intent.getAction());
-    } catch (IllegalArgumentException ignored) {
-    } catch (NullPointerException ignored) {}
+    } catch (IllegalArgumentException|NullPointerException ignored) {}
 
     if (action == null) {
       return false;
