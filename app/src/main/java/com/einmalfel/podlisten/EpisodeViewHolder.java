@@ -84,13 +84,13 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     if (context == null) {
       context = PodListenApp.getContext();
       loadingFilter = new PorterDuffColorFilter(
-          context.getResources().getColor(R.color.download_progress), PorterDuff.Mode.MULTIPLY);
+          ContextCompat.getColor(context, R.color.download_progress), PorterDuff.Mode.MULTIPLY);
       loadedFilter = new PorterDuffColorFilter(
-          context.getResources().getColor(R.color.downloaded_progress), PorterDuff.Mode.MULTIPLY);
+          ContextCompat.getColor(context, R.color.downloaded_progress), PorterDuff.Mode.MULTIPLY);
       playingFilter = new PorterDuffColorFilter(
-          context.getResources().getColor(R.color.playing_progress), PorterDuff.Mode.MULTIPLY);
+          ContextCompat.getColor(context, R.color.playing_progress), PorterDuff.Mode.MULTIPLY);
       playedFilter = new PorterDuffColorFilter(
-          context.getResources().getColor(R.color.played_progress), PorterDuff.Mode.MULTIPLY);
+          ContextCompat.getColor(context, R.color.played_progress), PorterDuff.Mode.MULTIPLY);
       playButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_play_arrow_white_36dp);
       pauseButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_pause_white_36dp);
       addButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_playlist_add_white_36dp);
@@ -125,15 +125,15 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     if (downloaded == 100 && state != Provider.ESTATE_NEW) {
       if (playerState == PlayerService.State.STOPPED) {
         progressBar.getProgressDrawable().setColorFilter(playedFilter);
-        setTextColor(context.getResources().getColor(R.color.secondary_text_default_material_dark));
+        setTextColor(ContextCompat.getColor(context, R.color.secondary_text_default_material_dark));
       } else {
         progressBar.getProgressDrawable().setColorFilter(playingFilter);
-        setTextColor(context.getResources().getColor(R.color.primary_text_default_material_dark));
+        setTextColor(ContextCompat.getColor(context, R.color.primary_text_default_material_dark));
       }
       progressBar.setMax((int) length);
       progressBar.setProgress((int) played);
     } else {
-      setTextColor(context.getResources().getColor(R.color.secondary_text_default_material_dark));
+      setTextColor(ContextCompat.getColor(context, R.color.secondary_text_default_material_dark));
       if (downloaded == 100) {
         progressBar.getProgressDrawable().setColorFilter(loadedFilter);
       } else {
