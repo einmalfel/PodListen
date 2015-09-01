@@ -82,7 +82,7 @@ public class Provider extends ContentProvider {
       selection = "_ID = " + uri.getLastPathSegment();
     }
     if (code == TABLES.length - 1) {
-      Log.e(TAG, "Trying to run delete on table join " + uri.toString());
+      Log.e(TAG, "Trying to run delete on table join " + uri);
       return 0;
     }
 
@@ -112,7 +112,7 @@ public class Provider extends ContentProvider {
       return null;
     }
     if (code == TABLES.length - 1) {
-      Log.e(TAG, "Trying to run insert on table join " + uri.toString());
+      Log.e(TAG, "Trying to run insert on table join " + uri);
       return null;
     }
 
@@ -202,7 +202,7 @@ public class Provider extends ContentProvider {
       selection = "_ID = " + uri.getLastPathSegment();
     }
     if (code == TABLES.length - 1) {
-      Log.e(TAG, "Trying to run update on table join " + uri.toString());
+      Log.e(TAG, "Trying to run update on table join " + uri);
       return 0;
     }
     SQLiteDatabase db = helper.getWritableDatabase();

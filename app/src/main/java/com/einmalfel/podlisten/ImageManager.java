@@ -69,11 +69,11 @@ public class ImageManager {
   }
 
   public void download(long id, URL url) throws IOException {
-    Log.d(TAG, "Downloading " + url);
     File file = getImageFile(id);
     if (file == null) {
       throw new FileNotFoundException("id " + id);
     }
+    Log.d(TAG, "Downloading " + url);
     HttpURLConnection urlConnection = null;
     Bitmap bitmap = null;
     try {
@@ -110,10 +110,10 @@ public class ImageManager {
 
   @Nullable
   private Bitmap loadFromDisk(long id) {
-    Log.d(TAG, "Loading " + id + " from sdcard. Cache size before " + getCacheSize());
     if (!isDownloaded(id)) {
       return null;
     }
+    Log.d(TAG, "Loading " + id + " from sdcard. Cache size before " + getCacheSize());
     File file = getImageFile(id);
     return file == null ? null : BitmapFactory.decodeFile(file.getAbsolutePath());
   }

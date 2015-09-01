@@ -143,8 +143,8 @@ public class DownloadStartReceiver extends BroadcastReceiver {
         // exception in callback), so handle there episodes completed more than a minute ago
         if (state == DownloadManager.STATUS_SUCCESSFUL || state == DownloadManager.STATUS_FAILED) {
           long t = q.getLong(q.getColumnIndexOrThrow(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP));
-          Log.e(TAG, "Found lost completed download " + downLoadId);
           if (System.currentTimeMillis() - t > 60000) {
+            Log.e(TAG, "Found lost completed download, processing " + downLoadId);
             processDownloadResult(context, downLoadId);
           }
         } else {

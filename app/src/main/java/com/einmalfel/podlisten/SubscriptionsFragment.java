@@ -119,7 +119,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements LoaderM
   @Override
   public void onItemLongClick(View view, int position) {
     final long pID = adapter.getItemId(position);
-    Log.d(TAG, "long tap " + Long.toString(pID));
+    Log.d(TAG, "long tap " + pID);
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
       @Override
@@ -137,7 +137,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements LoaderM
   @Override
   public void onItemClick(View view, int position) {
     long id = adapter.getItemId(position);
-    Log.d(TAG, "tap " + Long.toString(id));
+    Log.d(TAG, "tap " + id);
   }
 
   @Override

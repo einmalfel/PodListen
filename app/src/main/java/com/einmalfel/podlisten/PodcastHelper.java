@@ -65,7 +65,7 @@ public class PodcastHelper {
     File f = getEpisodeFile(id);
     if (f != null && f.exists()) {
       if (!f.delete()) {
-        Log.w(TAG, "Failed to delete " + f.toURI().toString());
+        Log.w(TAG, "Failed to delete " + f.toURI());
       }
     }
     ImageManager.getInstance().deleteImage(id);
@@ -106,7 +106,7 @@ public class PodcastHelper {
         dm.remove(dId);
       }
       if (c.getLong(c.getColumnIndexOrThrow(Provider.K_ETSTAMP)) < c.getLong(c.getColumnIndexOrThrow(Provider.K_PTSTAMP))) {
-        Log.i(TAG, "Feed doesn't contain episode " + Long.toString(id) + " anymore. Deleting..");
+        Log.i(TAG, "Feed doesn't contain episode " + id + " anymore. Deleting..");
         c.close();
         return deleteEpisode(id);
       } else {

@@ -206,7 +206,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         }
       });
     } else {
-      Log.e(TAG, "Playing non-existent episode " + Long.toString(id));
+      Log.e(TAG, "Playing non-existent episode " + id);
       runOnUiThread(new Runnable() {
         @Override
         public void run() {

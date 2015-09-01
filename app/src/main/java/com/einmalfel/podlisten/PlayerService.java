@@ -173,7 +173,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     try {
       callbackThread.join();
     } catch (InterruptedException e) {
-      Log.e(TAG, "unexpected interrupt " + e.toString());
+      Log.e(TAG, "unexpected interrupt ", e);
       Thread.currentThread().interrupt();
     }
     super.onDestroy();
@@ -257,7 +257,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       player.seekTo(timeMs);
       return true;
     } else {
-      Log.e(TAG, "Seek wrong state " + state.toString() + Boolean.toString(preparing));
+      Log.e(TAG, "Seek wrong state " + state + preparing);
       return false;
     }
   }
@@ -295,7 +295,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       callbackThread.post(CallbackType.STATE);
       return true;
     } else {
-      Log.e(TAG, "pause wrong state " + state.toString() + " " + Boolean.toString(preparing));
+      Log.e(TAG, "pause wrong state " + state + " " + preparing);
       return false;
     }
   }
@@ -311,7 +311,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       callbackThread.post(CallbackType.STATE);
       return true;
     } else {
-      Log.e(TAG, "resume wrong state " + state.toString() + " " + Boolean.toString(preparing));
+      Log.e(TAG, "resume wrong state " + state + " " + preparing);
       return false;
     }
   }
@@ -344,7 +344,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         player.setDataSource(this, Uri.fromFile(source));
         state = State.PLAYING;
       } catch (IOException e) {
-        Log.e(TAG, "set source produced an exception, playback stopped: " + e.toString());
+        Log.e(TAG, "set source produced an exception, playback stopped: ", e);
       }
     } else {
       Log.e(TAG, "Failed to start playback, media is absent for episode " + id);
