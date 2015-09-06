@@ -71,6 +71,10 @@ public class PlaylistFragment extends DebuggableFragment implements
 
   @Override
   public void onButtonTap(long id) {
+    if (activity.widgetHelper == null) {
+      // before playback launches, widget helper should be up and bound
+      activity.widgetHelper = WidgetHelper.getInstance();
+    }
     if (conn.service != null) {
       if (id == conn.service.getEpisodeId()) {
         conn.service.playPauseResume();

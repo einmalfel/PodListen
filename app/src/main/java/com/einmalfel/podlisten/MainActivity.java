@@ -81,6 +81,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private static final int DOWNLOAD_CHECK_PERIOD = 500;
   private static final String TAG = "MAC";
 
+  WidgetHelper widgetHelper;
   PlayerLocalConnection connection;
   private Account account;
   private ViewPager pager;
@@ -92,7 +93,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private TextView progressBarTitle;
   private ImageView episodeImage;
   private TabLayout tabLayout;
-  private WidgetHelper widgetHelper;
   private TabsAdapter tabsAdapter;
   private Timer timer;
   private PlaylistFragment playlistFragment = null;
