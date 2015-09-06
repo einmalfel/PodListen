@@ -51,6 +51,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     int count = c.getCount();
     if (count != 1) {
       Log.e(TAG, "Wrong number(" + count + ") of episodes for completed download #" + downloadId);
+      c.close();
       return;
     }
     c.moveToFirst();
@@ -63,6 +64,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     c = dM.query(new DownloadManager.Query().setFilterById(downloadId));
     if (!c.moveToFirst()) {
       Log.e(TAG, "DownloadManager query failed");
+      c.close();
       return;
     }
     int status = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
