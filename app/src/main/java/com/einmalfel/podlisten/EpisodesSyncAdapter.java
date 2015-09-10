@@ -38,6 +38,8 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
   @Override
   public void onPerformSync(Account account, Bundle extras, String authority,
                             ContentProviderClient provider, SyncResult syncResult) {
+    SyncState syncState = new SyncState(getContext(), syncResult);
+
     Cursor c = null;
     try {
       c = provider.query(Provider.podcastUri,
@@ -48,6 +50,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     if (c == null) {
       syncResult.databaseError = true;
+      syncState.error("DB error");
       return;
     }
     if (c.getCount() == 0) {
@@ -56,8 +59,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       return;
     }
 
-    SyncState syncState = new SyncState(getContext(), syncResult, c.getCount());
-    syncState.start();
+    syncState.start(c.getCount());
 
     ExecutorService executorService = Executors.newFixedThreadPool(WORKERS_NUMBER);
     while (c.moveToNext()) {
@@ -76,6 +78,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     try {
       workersDone = executorService.awaitTermination(SYNC_TIMEOUT, TimeUnit.SECONDS);
     } catch (InterruptedException interrupt) {
+      syncState.error("Refresh interrupted by system");
       // sync cancelled. Discard queue, try to interrupt workers and wait for them again
       executorService.shutdownNow();
       try {

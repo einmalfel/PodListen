@@ -48,6 +48,7 @@ class SyncWorker implements Runnable {
 
   @Override
   public void run() {
+    String title = null;
     try {
       InputStream inputStream = new URL(link).openConnection().getInputStream();
       Feed feed = EarlParser.parseOrThrow(inputStream, MAX_EPISODES_TO_PARSE);
@@ -64,7 +65,7 @@ class SyncWorker implements Runnable {
         }
       }
 
-      String title = updateFeed(id, feed, timestamp);
+      title = updateFeed(id, feed, timestamp);
 
       // delete every gone episode whose timestamp is less then feeds timestamp
       if (title != null) {
@@ -90,20 +91,20 @@ class SyncWorker implements Runnable {
         syncState.signalFeedSuccess(title, newEpisodesInserted);
       } else {
         Log.e(TAG, "Feed update failed, id " + id);
-        syncState.signalDBError();
+        syncState.signalDBError(link);
       }
     } catch (IOException exception) {
       Log.w(TAG, link + ": Failed to load feed: ", exception);
-      syncState.signalIOError();
+      syncState.signalIOError(link);
     } catch (RemoteException exception) {
       Log.w(TAG, link + ": Failed to load feed: ", exception);
-      syncState.signalDBError();
+      syncState.signalDBError(title == null ? link : title);
     } catch (DataFormatException | XmlPullParserException exception) {
       Log.w(TAG, link + ": Failed to load feed", exception);
-      syncState.signalParseError();
+      syncState.signalParseError(link);
     } catch (Exception exception) {
       Log.e(TAG, link + ": Something unexpected happened while refreshing", exception);
-      syncState.signalIOError();
+      syncState.signalIOError(title == null ? link : title);
     }
   }
 

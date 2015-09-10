@@ -17,15 +17,14 @@ public class SyncState {
   private final SyncResult syncResult;
   private final NotificationManagerCompat nm;
   private final NotificationCompat.Builder nb;
-  private final int maxFeeds;
+  private int maxFeeds = 0;
   private int errors = 0;
   private int parsed = 0;
   private int newEpisodes = 0;
   private boolean stopped = false;
 
-  SyncState(@Nonnull Context context, @Nonnull SyncResult syncResult, int maxFeeds) {
+  SyncState(@Nonnull Context context, @Nonnull SyncResult syncResult) {
     this.syncResult = syncResult;
-    this.maxFeeds = maxFeeds;
     nm = NotificationManagerCompat.from(context);
     nb = new NotificationCompat.Builder(context);
     Intent mainActivityIntent = new Intent(context, MainActivity.class);
@@ -35,11 +34,21 @@ public class SyncState {
       .setContentIntent(PendingIntent.getActivity(context, 0, mainActivityIntent, 0));
   }
 
-  synchronized void start() {
+  synchronized void start(int maxFeeds) {
+    this.maxFeeds = maxFeeds;
     nb.setContentTitle("Refreshing PodListen..")
       .setOngoing(true)
       .setProgress(0, 0, true);
     updateNotification();
+  }
+
+  synchronized void error(String message) {
+    nb.setOngoing(false)
+      .setProgress(0, 0, false)
+      .setContentTitle("Refresh failed")
+      .setContentText(message);
+    updateNotification();
+    stopped = true;
   }
 
   synchronized void stop() {
@@ -58,36 +67,36 @@ public class SyncState {
     stopped = true;
   }
 
-  synchronized private void updateProgress() {
+  synchronized private void updateProgress(String message) {
     nb.setProgress(maxFeeds, errors + parsed, false);
+    nb.setContentText(message);
     updateNotification();
   }
 
 
-  synchronized void signalParseError() {
+  synchronized void signalParseError(String feedTitle) {
     syncResult.stats.numSkippedEntries++;
     errors++;
-    updateProgress();
+    updateProgress("Parsing failed: " + feedTitle);
   }
 
-  synchronized void signalDBError() {
+  synchronized void signalDBError(String feedTitle) {
     syncResult.databaseError = true;
     errors++;
-    updateProgress();
+    updateProgress("DB error: " + feedTitle);
   }
 
-  synchronized void signalIOError() {
+  synchronized void signalIOError(String feedTitle) {
     syncResult.stats.numIoExceptions++;
     errors++;
-    updateProgress();
+    updateProgress("IO error: " + feedTitle);
   }
 
   synchronized void signalFeedSuccess(String feedTitle, int episodesAdded) {
     syncResult.stats.numUpdates++;
     parsed++;
     newEpisodes += episodesAdded;
-    nb.setContentText("Loaded: " + feedTitle);
-    updateProgress();
+    updateProgress("Loaded: " + feedTitle);
   }
 
   synchronized private void updateNotification() {
