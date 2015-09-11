@@ -58,6 +58,11 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
       int WidgetAction_id = action.ordinal();
       intents[WidgetAction_id] = PendingIntent.getBroadcast(context, WidgetAction_id, intent, 0);
     }
+    Intent intent = new Intent(context, MainActivity.class);
+    intent.putExtra(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.PLAYLIST.ordinal());
+    PendingIntent pendingIntent = PendingIntent.getActivity(
+        context, PlayerService.NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    rvFull.setOnClickPendingIntent(R.id.player, pendingIntent);
     rvFull.setOnClickPendingIntent(R.id.play_button, intents[WidgetAction.PLAY_PAUSE.ordinal()]);
     rvFull.setOnClickPendingIntent(R.id.next_button, intents[WidgetAction.NEXT_EPISODE.ordinal()]);
     rvFull.setOnClickPendingIntent(R.id.fb_button, intents[WidgetAction.SEEK_BACKWARD.ordinal()]);
