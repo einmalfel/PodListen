@@ -34,6 +34,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       "Subscriptions"};
 
   static final String PAGE_LAUNCH_OPTION = "Page";
+  static final String EPISODE_ID_OPTION = "Episode";
   static final LightingColorFilter disabledFilter = new LightingColorFilter(Color.GRAY, 0);
 
   private class TabsAdapter extends FragmentPagerAdapter {
@@ -250,8 +251,12 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     if (intent.hasExtra(PAGE_LAUNCH_OPTION)) {
-      Log.d(TAG, "Setting page " + intent.getIntExtra(PAGE_LAUNCH_OPTION, 0));
-      pager.setCurrentItem(intent.getIntExtra(PAGE_LAUNCH_OPTION, 0));
+      int page = intent.getIntExtra(PAGE_LAUNCH_OPTION, Pages.PLAYLIST.ordinal());
+      Log.d(TAG, "Setting page " + page);
+      pager.setCurrentItem(page);
+      if (intent.hasExtra(EPISODE_ID_OPTION) && playlistFragment != null) {
+        playlistFragment.showEpisode(intent.getLongExtra(EPISODE_ID_OPTION, 0));
+      }
     }
   }
 

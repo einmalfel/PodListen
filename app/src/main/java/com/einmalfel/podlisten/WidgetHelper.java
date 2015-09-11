@@ -24,6 +24,8 @@ import android.widget.RemoteViews;
  * - MainActivity launched
  */
 public class WidgetHelper implements PlayerService.PlayerStateListener {
+  private final Intent activityIntent;
+
   enum WidgetAction {PLAY_PAUSE, SEEK_FORWARD, SEEK_BACKWARD, NEXT_EPISODE}
 
   private static final String TAG = "WGH";
@@ -58,11 +60,8 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
       int WidgetAction_id = action.ordinal();
       intents[WidgetAction_id] = PendingIntent.getBroadcast(context, WidgetAction_id, intent, 0);
     }
-    Intent intent = new Intent(context, MainActivity.class);
-    intent.putExtra(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.PLAYLIST.ordinal());
-    PendingIntent pendingIntent = PendingIntent.getActivity(
-        context, PlayerService.NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    rvFull.setOnClickPendingIntent(R.id.player, pendingIntent);
+    activityIntent = new Intent(context, MainActivity.class);
+    activityIntent.putExtra(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.PLAYLIST.ordinal());
     rvFull.setOnClickPendingIntent(R.id.play_button, intents[WidgetAction.PLAY_PAUSE.ordinal()]);
     rvFull.setOnClickPendingIntent(R.id.next_button, intents[WidgetAction.NEXT_EPISODE.ordinal()]);
     rvFull.setOnClickPendingIntent(R.id.fb_button, intents[WidgetAction.SEEK_BACKWARD.ordinal()]);
@@ -160,7 +159,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     updateNotification(rvFull);
   }
 
-  private void episodeUpdateRV(@Nullable Bitmap image, @NonNull String title,
+  private void episodeUpdateRV(@Nullable Bitmap image, @NonNull String title, long id,
                                @NonNull RemoteViews rv) {
     if (image == null) {
       rv.setImageViewResource(R.id.play_episode_image, R.drawable.main_icon);
@@ -168,6 +167,15 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
       rv.setImageViewBitmap(R.id.play_episode_image, image);
     }
     rv.setTextViewText(R.id.play_title, title);
+
+    if (id == 0) {
+      activityIntent.removeExtra(MainActivity.EPISODE_ID_OPTION);
+    } else {
+      activityIntent.putExtra(MainActivity.EPISODE_ID_OPTION, id);
+    }
+    PendingIntent pendingIntent = PendingIntent.getActivity(
+        context, PlayerService.NOTIFICATION_ID, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    rv.setOnClickPendingIntent(R.id.player, pendingIntent);
   }
 
   @Override
@@ -188,8 +196,8 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     }
     c.close();
     RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
-    episodeUpdateRV(image, title, rvFull);
-    episodeUpdateRV(image, title, rvPartial);
+    episodeUpdateRV(image, title, id, rvFull);
+    episodeUpdateRV(image, title, id, rvPartial);
     updateWidgetsPartial(rvPartial);
     updateNotification(rvFull);
   }
