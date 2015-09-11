@@ -27,23 +27,28 @@ public class SyncState {
     this.syncResult = syncResult;
     nm = NotificationManagerCompat.from(context);
     nb = new NotificationCompat.Builder(context);
-    Intent mainActivityIntent = new Intent(context, MainActivity.class);
+    Intent intent = new Intent(context, MainActivity.class);
+    intent.putExtra(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.NEW_EPISODES.ordinal());
+    PendingIntent pendingIntent = PendingIntent.getActivity(
+        context, NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     nb.setSmallIcon(R.mipmap.ic_sync_green_24dp)
       .setCategory(NotificationCompat.CATEGORY_PROGRESS)
       .setPriority(NotificationCompat.PRIORITY_LOW)
-      .setContentIntent(PendingIntent.getActivity(context, 0, mainActivityIntent, 0));
+      .setContentIntent(pendingIntent);
   }
 
   synchronized void start(int maxFeeds) {
     this.maxFeeds = maxFeeds;
     nb.setContentTitle("Refreshing PodListen..")
       .setOngoing(true)
+      .setAutoCancel(false)
       .setProgress(0, 0, true);
     updateNotification();
   }
 
   synchronized void error(String message) {
     nb.setOngoing(false)
+      .setAutoCancel(true)
       .setProgress(0, 0, false)
       .setContentTitle("Refresh failed")
       .setContentText(message);
@@ -60,6 +65,7 @@ public class SyncState {
       stringBuilder.append(", ").append(errors).append(" feed(s) failed to refresh");
     }
     nb.setOngoing(false)
+      .setAutoCancel(true)
       .setProgress(0, 0, false)
       .setContentTitle("Podlisten refreshed")
       .setContentText(stringBuilder);
