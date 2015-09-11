@@ -1,6 +1,7 @@
 package com.einmalfel.podlisten;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
@@ -167,7 +168,13 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     }
     timeSizeText.setText(timeSize);
     dateText.setText(DateUtils.getRelativeTimeSpanString(date));
-    episodeImage.setImageBitmap(ImageManager.getInstance().getImage(pid));
+
+    // use feed image if there is no episode image
+    Bitmap image = ImageManager.getInstance().getImage(id);
+    if (image == null) {
+      image = ImageManager.getInstance().getImage(pid);
+    }
+    episodeImage.setImageBitmap(image);
     this.id = id;
     this.expanded = expanded;
   }

@@ -185,6 +185,14 @@ class SyncWorker implements Runnable {
     // notify DownloadStartReceiver about new episode
     if (markNew) {
       Log.d(TAG, "New episode! " + title);
+      String image = episode.getImageLink();
+      if (!ImageManager.getInstance().isDownloaded(id) && image != null) {
+        try {
+          ImageManager.getInstance().download(id, new URL(image));
+        } catch (IOException exception) {
+          Log.w(TAG, image + ": Episode image download failed: ", exception);
+        }
+      }
       Intent bi = new Intent(DownloadStartReceiver.NEW_EPISODE_ACTION);
       bi.putExtra(DownloadStartReceiver.URL_EXTRA_NAME, audioLink);
       bi.putExtra(DownloadStartReceiver.TITLE_EXTRA_NAME, title);
