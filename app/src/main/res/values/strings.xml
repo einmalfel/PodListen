@@ -21,7 +21,7 @@
     <string name="db_error">DB error while loading episodes</string>
     <string name="no_title">NO TITLE</string>
     <string name="subscription_add_failed">"Failed to add subscription to DB: "</string>
-    <string name="episode_image_description">Image of this podcast if any</string>
+    <string name="episode_image_description">Image of this episode if any</string>
     <string name="podcast_image_description">Image of this podcast if any</string>
     <string name="add_episode_to_playlist">Add this episode to playlist</string>
     <string name="play_episode">Play this episode</string>
