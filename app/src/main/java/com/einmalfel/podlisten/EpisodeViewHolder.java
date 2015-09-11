@@ -174,7 +174,14 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     if (image == null) {
       image = ImageManager.getInstance().getImage(pid);
     }
-    episodeImage.setImageBitmap(image);
+    if (image == null) {
+      episodeImage.getLayoutParams().width = PodcastHelper.getInstance().minImageWidthPX;
+      episodeImage.setImageResource(R.drawable.main_icon);
+    } else {
+      episodeImage.getLayoutParams().width = PodcastHelper.getInstance().getListImageWidth(image);
+      episodeImage.setImageBitmap(image);
+    }
+
     this.id = id;
     this.expanded = expanded;
   }

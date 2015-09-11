@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,16 +15,27 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.einmalfel.podlisten.support.UnitConverter;
+
 import java.io.File;
 
 /**
  * Helper class intended to do podcast-related stuff, like properly deleting episodes, etc
  */
 public class PodcastHelper {
+  static final int MIN_IMAGE_WIDTH_SP = 90;
+  static final int MAX_IMAGE_WIDTH_SP = 150;
   private static final String TAG = "EPM";
   private static PodcastHelper instance;
+  final int minImageWidthPX;
+  final int maxImageWidthPX;
   private final Context context = PodListenApp.getContext();
   private final ContentResolver resolver= context.getContentResolver();
+
+  public PodcastHelper() {
+    maxImageWidthPX = UnitConverter.getInstance().spToPx(MAX_IMAGE_WIDTH_SP);
+    minImageWidthPX = UnitConverter.getInstance().spToPx(MIN_IMAGE_WIDTH_SP);
+  }
 
   //  not making synchronized method to speed up access
   public static PodcastHelper getInstance() {
@@ -176,6 +188,17 @@ public class PodcastHelper {
       } else {
         return true;
       }
+    }
+  }
+
+  int getListImageWidth(@NonNull Bitmap image) {
+    final int width = image.getWidth();
+    if (width < minImageWidthPX) {
+      return minImageWidthPX;
+    } else if (width > maxImageWidthPX) {
+      return maxImageWidthPX;
+    } else {
+      return width;
     }
   }
 }
