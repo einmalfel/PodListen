@@ -7,11 +7,11 @@ import android.graphics.Point;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LruCache;
-import android.util.TypedValue;
 import android.view.WindowManager;
+
+import com.einmalfel.podlisten.support.UnitConverter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,10 +25,8 @@ import java.net.URL;
  */
 public class ImageManager {
   private static final String TAG = "IMG";
-  private static final int WIDTH_SP = 70;
   private static final int HEIGHT_SP = 70;
   private static final int PAGES_TO_CACHE = 10;
-  private final int widthPx;
   private final int heightPx;
   private static ImageManager instance;
 
@@ -88,7 +86,8 @@ public class ImageManager {
         urlConnection.disconnect();
       }
     }
-    Bitmap scaled = Bitmap.createScaledBitmap(bitmap, widthPx, heightPx, true);
+    Bitmap scaled = Bitmap.createScaledBitmap(
+        bitmap, bitmap.getWidth() * heightPx / bitmap.getHeight(), heightPx, true);
     // synchronize to be sure that isDownloaded won't return true while image file is being written
     synchronized (this) {
       FileOutputStream stream = new FileOutputStream(file);
@@ -128,10 +127,7 @@ public class ImageManager {
 
   private ImageManager() {
     context = PodListenApp.getContext();
-    DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-    widthPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, WIDTH_SP, metrics);
-    heightPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, HEIGHT_SP, metrics);
-
+    heightPx = UnitConverter.getInstance().spToPx(HEIGHT_SP);
     Point displaySize = new Point();
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     wm.getDefaultDisplay().getSize(displaySize);
