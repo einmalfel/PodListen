@@ -10,7 +10,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +18,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
-import com.einmalfel.podlisten.support.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class SubscriptionsFragment extends DebuggableFragment implements LoaderManager
-    .LoaderCallbacks<Cursor>, RecyclerItemClickListener.OnItemClickListener {
+public class SubscriptionsFragment extends DebuggableFragment implements
+    LoaderManager.LoaderCallbacks<Cursor>, EpisodeListAdapter.ItemClickListener {
   private MainActivity activity;
   private static final MainActivity.Pages activityPage = MainActivity.Pages.SUBSCRIPTIONS;
   private static final String TAG = "SSF";
@@ -40,7 +38,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements LoaderM
       "http://runetologia.podfm.ru/rss/rss.xml"
   };
   private static ArrayList<String> sampleList = null;
-  private final PodcastListAdapter adapter = new PodcastListAdapter(null);
+  private final PodcastListAdapter adapter = new PodcastListAdapter(null, this);
 
   @Override
   public void onDestroy() {
@@ -57,7 +55,6 @@ public class SubscriptionsFragment extends DebuggableFragment implements LoaderM
     rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(activity));
     rv.setItemAnimator(new DefaultItemAnimator());
     rv.setAdapter(adapter);
-    rv.addOnItemTouchListener(new RecyclerItemClickListener(activity, rv, this));
     activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), null, this);
     Button b = (Button) layout.findViewById(R.id.subscribe_button);
     b.setOnClickListener(new View.OnClickListener() {
@@ -117,14 +114,12 @@ public class SubscriptionsFragment extends DebuggableFragment implements LoaderM
   }
 
   @Override
-  public void onItemLongClick(View view, int position) {
-    final long pID = adapter.getItemId(position);
-    Log.d(TAG, "long tap " + pID);
+  public boolean onLongTap(final long pId) {
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int id) {
-        activity.getContentResolver().delete(Provider.getUri(Provider.T_PODCAST, pID), null, null);
+        activity.getContentResolver().delete(Provider.getUri(Provider.T_PODCAST, pId), null, null);
       }
     });
     builder
@@ -132,18 +127,17 @@ public class SubscriptionsFragment extends DebuggableFragment implements LoaderM
         .setTitle(activity.getString(R.string.delete_subscription))
         .create()
         .show();
+    return true;
   }
 
   @Override
-  public void onItemClick(View view, int position) {
-    long id = adapter.getItemId(position);
-    Log.d(TAG, "tap " + id);
-  }
+  public void onButtonTap(long id) {}
 
+  static final String[] projection = new String[]{
+      Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE};
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    return new CursorLoader(activity, Provider.podcastUri,
-        new String[]{Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE}, null, null, null);
+    return new CursorLoader(activity, Provider.podcastUri, projection, null, null, null);
   }
 
   @Override

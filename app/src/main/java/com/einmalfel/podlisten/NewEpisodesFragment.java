@@ -19,7 +19,7 @@ import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
 
 
 public class NewEpisodesFragment extends DebuggableFragment implements LoaderManager
-    .LoaderCallbacks<Cursor>, EpisodeListAdapter.EpisodeClickListener {
+    .LoaderCallbacks<Cursor>, EpisodeListAdapter.ItemClickListener {
   private MainActivity activity;
   private static final String TAG = "NEF";
   private static final MainActivity.Pages activityPage = MainActivity.Pages.NEW_EPISODES;

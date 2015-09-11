@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder> {
-  public interface EpisodeClickListener {
+  public interface ItemClickListener {
     /**
      * @return true if event was consumed
      */
@@ -21,12 +21,12 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
   }
 
   private static final String TAG = "ELA";
-  private final EpisodeClickListener listener;
+  private final ItemClickListener listener;
   private final Set<Long> expandedElements = new HashSet<>(10);
   private long currentPlayingId = 0;
   private PlayerService.State currentState = PlayerService.State.STOPPED;
 
-  public EpisodeListAdapter(Cursor cursor, EpisodeClickListener listener) {
+  public EpisodeListAdapter(Cursor cursor, ItemClickListener listener) {
     super(cursor);
     this.listener = listener;
     setHasStableIds(true);

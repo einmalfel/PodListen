@@ -17,7 +17,7 @@ import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
 
 
 public class PlaylistFragment extends DebuggableFragment implements
-    LoaderManager.LoaderCallbacks<Cursor>, EpisodeListAdapter.EpisodeClickListener,
+    LoaderManager.LoaderCallbacks<Cursor>, EpisodeListAdapter.ItemClickListener,
     PlayerService.PlayerStateListener {
   private MainActivity activity;
   private static final String TAG = "PLF";

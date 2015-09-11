@@ -47,7 +47,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   }
 
   public EpisodeViewHolder(final View layout,
-                           final EpisodeListAdapter.EpisodeClickListener listener,
+                           final EpisodeListAdapter.ItemClickListener listener,
                            final EpisodeListAdapter adapter) {
     super(layout);
     this.id = 0;

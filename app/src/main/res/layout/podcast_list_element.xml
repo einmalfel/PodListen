@@ -3,41 +3,71 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardElevation="5dp"
-    card_view:contentPadding="5dp"
+    card_view:cardBackgroundColor="@color/cardview_dark_background"
     card_view:cardCornerRadius="5dp"
+    card_view:cardElevation="5dp"
     card_view:cardPreventCornerOverlap="true"
     card_view:cardUseCompatPadding="true"
-    card_view:cardBackgroundColor="@color/cardview_dark_background">
+    card_view:contentPadding="3dp">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="vertical">
+    <RelativeLayout android:id="@+id/card_layout"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/podcast_image"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
+            android:layout_marginRight="2dp"
+            android:src="@drawable/main_icon"
+            android:contentDescription="@string/podcast_image_description"/>
+
+        <TextView
+            android:id="@+id/podcast_title"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:orientation="horizontal">
+            android:layout_height="30sp"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@id/podcast_image"
+            android:singleLine="true"
+            android:textSize="20sp"/>
 
-            <TextView
-                android:id="@+id/podcast_title"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:maxLines="2"
-                android:textSize="14sp"
-                android:gravity="center"/>
+        <TextView
+            android:id="@+id/podcast_url"
+            android:layout_width="match_parent"
+            android:layout_height="20sp"
+            android:layout_below="@id/podcast_title"
+            android:layout_toRightOf="@id/podcast_image"
+            android:singleLine="true"
+            android:linksClickable="true"
+            android:textSize="15sp"/>
 
-        </LinearLayout>
+        <TextView
+            android:id="@+id/podcast_status"
+            android:layout_width="match_parent"
+            android:layout_height="20sp"
+            android:layout_below="@id/podcast_url"
+            android:layout_toRightOf="@id/podcast_image"
+            android:singleLine="true"
+            android:textSize="15sp"/>
+
+        <View
+            android:id="@+id/description_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/podcast_status"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:background="@color/background_floating_material_dark"/>
 
         <com.einmalfel.podlisten.support.PatchedTextView
             android:id="@+id/podcast_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="10"
-            android:textSize="11sp"/>
-
-    </LinearLayout>
+            android:layout_below="@id/description_divider"
+            android:linksClickable="true"
+            android:textSize="15sp"
+            android:singleLine="true"/>
+    </RelativeLayout>
 
 </android.support.v7.widget.CardView>
