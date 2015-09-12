@@ -69,7 +69,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements
             if (url.isEmpty()) {
               Toast.makeText(activity, R.string.subscribe_failed_empty, Toast.LENGTH_SHORT).show();
             } else {
-              addSubscription(url);
+              activity.addSubscription(url);
             }
           }
         });
@@ -93,24 +93,10 @@ public class SubscriptionsFragment extends DebuggableFragment implements
           return;
         }
         String nextSample = sampleList.remove(0);
-        addSubscription(nextSample);
+        activity.addSubscription(nextSample);
       }
     });
     return layout;
-  }
-
-  public void addSubscription(String url) {
-    try {
-      if (PodcastHelper.getInstance().addSubscription(url)) {
-        activity.refresh();
-      } else {
-        Toast.makeText(activity, getString(R.string.already_subscribed) + url, Toast.LENGTH_SHORT)
-            .show();
-      }
-    } catch (PodcastHelper.SubscriptionNotInsertedException e) {
-      Toast.makeText(activity, getString(R.string.subscription_add_failed) + url, Toast.LENGTH_LONG)
-          .show();
-    }
   }
 
   @Override

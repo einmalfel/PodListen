@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -247,10 +249,29 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     }
   }
 
+  public void addSubscription(String url) {
+    try {
+      if (PodcastHelper.getInstance().addSubscription(url)) {
+        refresh();
+      } else {
+        Toast.makeText(this, getString(R.string.already_subscribed) + url, Toast.LENGTH_SHORT)
+             .show();
+      }
+    } catch (PodcastHelper.SubscriptionNotInsertedException e) {
+      Toast.makeText(this, getString(R.string.subscription_add_failed) + url, Toast.LENGTH_LONG)
+           .show();
+    }
+  }
+
   @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
-    if (intent.hasExtra(PAGE_LAUNCH_OPTION)) {
+    Log.e(TAG, intent.toString());
+    if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+      Uri uri = intent.getData();
+      pager.setCurrentItem(Pages.SUBSCRIPTIONS.ordinal());
+      addSubscription(uri.toString());
+    } else if (intent.hasExtra(PAGE_LAUNCH_OPTION)) {
       int page = intent.getIntExtra(PAGE_LAUNCH_OPTION, Pages.PLAYLIST.ordinal());
       Log.d(TAG, "Setting page " + page);
       pager.setCurrentItem(page);
