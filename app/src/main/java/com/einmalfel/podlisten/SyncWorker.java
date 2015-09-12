@@ -211,7 +211,8 @@ class SyncWorker implements Runnable {
   private String updateFeed(long id, @NonNull Feed feed, long timestamp) throws RemoteException {
     ContentValues values = new ContentValues();
     String title = feed.getTitle();
-    values.put(Provider.K_PURL, link);
+    values.put(Provider.K_PFURL, link);
+    values.put(Provider.K_PURL, feed.getLink());
     values.put(Provider.K_PNAME, title);
     String description = feed.getDescription();
     if (description != null) {
