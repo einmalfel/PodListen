@@ -90,24 +90,39 @@ class SyncWorker implements Runnable {
 
         syncState.signalFeedSuccess(title, newEpisodesInserted);
       } else {
-        Log.e(TAG, "Feed update failed, id " + id);
+        storeFeedError(new Exception("Failed to update podcast data in db"));
         syncState.signalDBError(link);
       }
     } catch (IOException exception) {
-      Log.w(TAG, link + ": Failed to load feed: ", exception);
+      storeFeedError(exception);
       syncState.signalIOError(link);
     } catch (RemoteException exception) {
-      Log.w(TAG, link + ": Failed to load feed: ", exception);
+      storeFeedError(exception);
       syncState.signalDBError(title == null ? link : title);
     } catch (DataFormatException | XmlPullParserException exception) {
-      Log.w(TAG, link + ": Failed to load feed", exception);
+      storeFeedError(exception);
       syncState.signalParseError(link);
     } catch (Exception exception) {
-      Log.e(TAG, link + ": Something unexpected happened while refreshing", exception);
+      storeFeedError(exception);
       syncState.signalIOError(title == null ? link : title);
     }
   }
 
+  void storeFeedError(@NonNull Exception exception) {
+    Log.w(TAG, "Failed to refresh " + link, exception);
+    ContentValues contentValues = new ContentValues();
+    contentValues.put(
+        Provider.K_PERROR,
+        exception.getLocalizedMessage() + " (" + exception.getClass().getSimpleName() + ")");
+    contentValues.put(Provider.K_PSTATE, Provider.PSTATE_LAST_REFRESH_FAILED);
+    try {
+      provider.update(Provider.getUri(Provider.T_PODCAST, id), contentValues, null, null);
+    } catch (RemoteException remoteException) {
+      Log.e(TAG, "Failed to write refresh error details to DB", remoteException);
+    }
+  }
+
+  /**@return true if episode was inserted, false in case of error or if episode was already in DB*/
   private boolean tryInsertEpisode(@NonNull Item episode, long subscriptionId, long timestamp,
                                    @NonNull ContentProviderClient provider, boolean markNew) {
     String title = episode.getTitle();

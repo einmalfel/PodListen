@@ -49,7 +49,10 @@ public class PodcastListAdapter extends CursorRecyclerAdapter<PodcastViewHolder>
                 cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_PNAME)),
                 cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_PDESCR)),
                 cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_PFURL)),
+                cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_PURL)),
                 id,
+                cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_PERROR)),
+                cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_PTSTAMP)),
                 expandedElements.contains(id));
   }
 

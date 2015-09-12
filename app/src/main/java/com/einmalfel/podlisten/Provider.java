@@ -39,12 +39,14 @@ public class Provider extends ContentProvider {
   public static final String K_PFURL = "feed_url";
   public static final String K_PSTATE = "podcast_state";
   public static final String K_PTSTAMP = "podcast_timestamp";
+  public static final String K_PERROR = "podcast_error"; // string describing feed refresh problem
   public static final int ESTATE_NEW = 0;
   public static final int ESTATE_SELECTED = 1;
   public static final int ESTATE_IN_PLAYLIST = 2;
   public static final int ESTATE_GONE = 3;
   public static final int PSTATE_NEW = 0;
   public static final int PSTATE_SEEN_ONCE = 1;
+  public static final int PSTATE_LAST_REFRESH_FAILED = 2;
 
   public static final String authorityBase = "com.einmalfel.podlisten";
   public static final String commonUriString = ContentResolver.SCHEME_CONTENT + "://" + authorityBase;
@@ -229,6 +231,7 @@ public class Provider extends ContentProvider {
           K_PSTATE + " INTEGER," +
           K_PURL + " TEXT," +
           K_PFURL + " TEXT," +
+          K_PERROR + " TEXT," +
           K_PTSTAMP + " INTEGER" +
           ')');
       db.execSQL("CREATE TABLE " + T_EPISODE + " (" +

@@ -135,7 +135,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements
 
   static final String[] projection = new String[]{
       Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE,
-      Provider.K_PURL};
+      Provider.K_PURL, Provider.K_PTSTAMP, Provider.K_PERROR};
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(activity, Provider.podcastUri, projection, null, null, null);

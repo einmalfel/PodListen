@@ -3,6 +3,7 @@ package com.einmalfel.podlisten;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -42,15 +43,19 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
     });
   }
 
-  void bind(int state, String title, String description, String url, long id, boolean expanded) {
+  void bind(int state, String title, String description, String url, String podcastPage, long id,
+            String error, long timestamp, boolean expanded) {
     titleView.setText(title);
+    titleView.setText(title == null ? "No title" : title);
+    descriptionView.setText(description == null ? "No description" : Html.fromHtml(description),
+                            TextView.BufferType.SPANNABLE);
+    urlView.setText(podcastPage == null ? url : podcastPage);
     if (state == Provider.PSTATE_NEW) {
       statusView.setText("Feed isn't loaded yet");
+    } else if (state == Provider.PSTATE_LAST_REFRESH_FAILED) {
+      statusView.setText("Refresh failed: " + error);
     } else {
-      titleView.setText(title == null ? "No title" : title);
-      descriptionView.setText(description == null ? "No description" : Html.fromHtml(description),
-                              TextView.BufferType.SPANNABLE);
-      urlView.setText(url == null ? "No url" : url);
+      statusView.setText("Refreshed " + DateUtils.getRelativeTimeSpanString(timestamp));
     }
     descriptionView.setSingleLine(!expanded);
 
