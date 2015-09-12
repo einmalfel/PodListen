@@ -92,6 +92,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private ImageButton ffButton;
   private ImageButton fbButton;
   private ImageButton nextButton;
+  private ImageButton optionsButton;
   private ProgressBar progressBar;
   private TextView progressBarTitle;
   private ImageView episodeImage;
@@ -111,10 +112,12 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     nextButton = (ImageButton) findViewById(R.id.next_button);
     fbButton = (ImageButton) findViewById(R.id.fb_button);
     ffButton = (ImageButton) findViewById(R.id.ff_button);
+    optionsButton = (ImageButton) findViewById(R.id.play_options);
     tabLayout = (TabLayout) findViewById(R.id.tab_layout);
     pager = (ViewPager) findViewById(R.id.pager);
     playButton.setOnClickListener(this);
     nextButton.setOnClickListener(this);
+    optionsButton.setOnClickListener(this);
     fbButton.setOnClickListener(this);
     ffButton.setOnClickListener(this);
     progressBar = (ProgressBar) findViewById(R.id.play_progress);
@@ -246,6 +249,8 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       if (playlistFragment != null) {
         playlistFragment.showEpisode(connection.service.getEpisodeId());
       }
+    } else if (v == optionsButton) {
+      PodListenApp.sendLogs();
     }
   }
 
