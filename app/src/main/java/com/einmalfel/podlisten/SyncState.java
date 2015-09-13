@@ -4,10 +4,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-
-import javax.annotation.Nonnull;
 
 /**
  * This class keeps records on sync errors and manages sync notification
@@ -23,7 +22,7 @@ public class SyncState {
   private int newEpisodes = 0;
   private boolean stopped = false;
 
-  SyncState(@Nonnull Context context, @Nonnull SyncResult syncResult) {
+  SyncState(@NonNull Context context, @NonNull SyncResult syncResult) {
     this.syncResult = syncResult;
     nm = NotificationManagerCompat.from(context);
     nb = new NotificationCompat.Builder(context);
