@@ -269,6 +269,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
    */
   public synchronized boolean stop() {
     Log.d(TAG, "Stopping playback");
+    MediaButtonReceiver.setService(null);
     if (player != null) {
       player.release();
       player = null;
@@ -361,6 +362,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       c.close();
     }
     callbackThread.post(CallbackType.STATE);
+
+    MediaButtonReceiver.setService(this);
+
     return state == State.PLAYING;
   }
 
