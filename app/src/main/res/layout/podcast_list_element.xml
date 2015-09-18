@@ -20,7 +20,6 @@
             android:layout_width="70sp"
             android:layout_height="70sp"
             android:layout_marginRight="2dp"
-            android:src="@drawable/main_icon"
             android:contentDescription="@string/podcast_image_description"/>
 
         <TextView

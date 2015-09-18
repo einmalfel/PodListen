@@ -37,9 +37,6 @@
                 android:layout_height="40sp"
                 android:layout_gravity="center"
                 android:background="@android:color/transparent"
-                android:indeterminate="false"
-                android:max="100"
-                android:progress="65"
                 android:progressDrawable="@drawable/episode_progress_bar"/>
 
             <ImageView
@@ -47,8 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="36sp"
                 android:layout_gravity="center"
-                android:contentDescription="@string/play_episode"
-                android:src="@mipmap/ic_play_arrow_white_36dp"/>
+                android:contentDescription="@string/play_episode"/>
 
             <TextView
                 android:id="@+id/date"
@@ -64,7 +60,6 @@
             android:layout_width="70sp"
             android:layout_height="70sp"
             android:layout_marginRight="2dp"
-            android:src="@drawable/main_icon"
             android:contentDescription="@string/episode_image_description"/>
 
         <View
@@ -97,6 +92,7 @@
             android:layout_above="@id/feed_title"
             android:layout_toLeftOf="@id/play_add_frame_divider"
             android:layout_toRightOf="@id/episode_image"
+            android:maxLines="2"
             android:textSize="20sp"/>
 
         <View
