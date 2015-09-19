@@ -253,9 +253,18 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
   public synchronized boolean seek(int timeMs) {
     if ((state == State.PLAYING && !preparing) || state == State.PAUSED) {
-      Log.d(TAG, "Seeking to " + timeMs);
-      player.seekTo(timeMs);
-      return true;
+      if (timeMs < 0) {
+        timeMs = 0;
+        Log.d(TAG, "Attempting to seek with negative position. Seeking to zero");
+      }
+      if (length != 0 && timeMs > length) {
+        Log.d(TAG, "Attempting to seek past file end, playing next episode");
+        return playNext();
+      } else {
+        Log.d(TAG, "Seeking to " + timeMs);
+        player.seekTo(timeMs);
+        return true;
+      }
     } else {
       Log.e(TAG, "Seek wrong state " + state + preparing);
       return false;
