@@ -6,8 +6,9 @@
 
     <ImageView
         android:id="@+id/play_episode_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"/>
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:adjustViewBounds="false"/>
 
     <FrameLayout
         android:id="@+id/progress_frame"
