@@ -1,17 +1,33 @@
-<LinearLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <include
-        android:layout_height="0dp"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_weight="1"
-        layout="@layout/tabbed_frame"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/tabbed_frame"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <include
+            layout="@layout/player"/>
+    </LinearLayout>
 
     <include
-        layout="@layout/player"/>
-</LinearLayout>
+        layout="@layout/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="75dp"
+        android:layout_marginRight="80dp"
+        app:layout_behavior="com.einmalfel.podlisten.ScrollTrackingBehaviour"/>
+
+</android.support.design.widget.CoordinatorLayout>

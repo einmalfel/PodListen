@@ -10,6 +10,8 @@ import android.graphics.Color;
 import android.graphics.LightingColorFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -86,6 +88,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
 
   WidgetHelper widgetHelper;
   PlayerLocalConnection connection;
+  int newEpisodesNumber = 0;
   private Account account;
   private ViewPager pager;
   private ImageButton playButton;
@@ -98,8 +101,10 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private ImageView episodeImage;
   private TabLayout tabLayout;
   private TabsAdapter tabsAdapter;
+  private FloatingActionButton fab;
   private Timer timer;
   private PlaylistFragment playlistFragment = null;
+  private FabAction currentFabAction;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +113,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     ContentResolver.setSyncAutomatically(getAccount(), getString(R.string.app_id), true);
     setContentView(R.layout.activity_main);
 
+    fab = (FloatingActionButton) findViewById(R.id.fab);
     playButton = (ImageButton) findViewById(R.id.play_button);
     nextButton = (ImageButton) findViewById(R.id.next_button);
     fbButton = (ImageButton) findViewById(R.id.fb_button);
@@ -131,8 +137,75 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     tabLayout.setTabsFromPagerAdapter(tabsAdapter);
     tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
     tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(pager));
+    pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+      @Override
+      public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        updateFAB(Pages.values()[position], positionOffset);
+      }
+
+      @Override
+      public void onPageSelected(int position) {
+        if (position < 0 || position >= Pages.values().length) {
+          Log.e(TAG, "Unexpected pager position " + position, new IndexOutOfBoundsException());
+        } else {
+          updateFAB(Pages.values()[position], 0f);
+        }
+      }
+
+      @Override
+      public void onPageScrollStateChanged(int state) {}
+    });
 
     connection = new PlayerLocalConnection(this);
+  }
+
+
+  enum FabAction {SORT, REFRESH, CLEAR, ADD}
+
+  void updateFAB() {
+    updateFAB(Pages.values()[pager.getCurrentItem()], 0);
+  }
+
+  void updateFAB(Pages fragment, float positionOffset) {
+    fab.show();
+    FabAction newEpisodesAction = newEpisodesNumber == 0 ? FabAction.REFRESH : FabAction.CLEAR;
+    switch (fragment) {
+      case PLAYLIST:
+        lerpFAB(FabAction.SORT, newEpisodesAction, positionOffset);
+        break;
+      case NEW_EPISODES:
+        lerpFAB(newEpisodesAction, FabAction.ADD, positionOffset);
+        break;
+      case SUBSCRIPTIONS:
+        lerpFAB(FabAction.ADD, FabAction.ADD, 0);
+        break;
+    }
+  }
+
+  private void setFabAction(@NonNull FabAction action) {
+    if (currentFabAction != action) {
+      switch (action) {
+        case SORT:
+          fab.setImageResource(R.mipmap.ic_sort_by_alpha_black_24dp);
+          break;
+        case REFRESH:
+          fab.setImageResource(R.mipmap.ic_refresh_black_24dp);
+          break;
+        case ADD:
+          fab.setImageResource(R.mipmap.ic_add_black_24dp);
+          break;
+        case CLEAR:
+          fab.setImageResource(R.mipmap.ic_clear_all_black_24dp);
+          break;
+      }
+      currentFabAction = action;
+    }
+  }
+
+  void lerpFAB(@NonNull FabAction prevAction, @NonNull FabAction nextAction, float offset) {
+    fab.setAlpha(0.5f + Math.abs(offset - 0.5f));
+    fab.setScaleX(2f * Math.abs(offset - 0.5f));
+    setFabAction(offset > 0.5f ? nextAction : prevAction);
   }
 
   @Override
@@ -141,6 +214,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     connection.unbind();
     timer.cancel();
     timer = null;
+    fab.hide();
   }
 
   @Override
@@ -154,6 +228,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         sendBroadcast(new Intent(DownloadStartReceiver.DOWNLOAD_HEARTBEAT_ACTION));
       }
     }, 0, DOWNLOAD_CHECK_PERIOD);
+    fab.show();
   }
 
   @Override
