@@ -9,11 +9,9 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
 
@@ -34,39 +32,13 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
       savedInstanceState) {
-    View layout = inflater.inflate(R.layout.fragment_new_episodes, container, false);
+    View layout = inflater.inflate(R.layout.common_list, container, false);
     RecyclerView rv = (RecyclerView) layout.findViewById(R.id.recycler_view);
     activity = (MainActivity) getActivity();
     rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(activity));
     rv.setItemAnimator(new DefaultItemAnimator());
     activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), null, this);
     rv.setAdapter(adapter);
-
-    Button b = (Button) layout.findViewById(R.id.refresh_button);
-    b.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        activity.refresh();
-      }
-    });
-    b = (Button) layout.findViewById(R.id.clear_button);
-    b.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        Cursor c = activity.getContentResolver().query(
-            Provider.episodeUri,
-            new String[]{Provider.K_ID},
-            Provider.K_ESTATE + " = ?",
-            new String[]{Integer.toString(Provider.ESTATE_NEW)},
-            null);
-        while (c.moveToNext()) {
-          PodcastHelper.getInstance().markEpisodeGone(
-              c.getLong(c.getColumnIndex(Provider.K_ID)), true);
-        }
-        c.close();
-      }
-    });
-
     return layout;
   }
 

@@ -53,13 +53,14 @@ public class PlaylistFragment extends DebuggableFragment implements
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
       savedInstanceState) {
-    View layout = inflater.inflate(R.layout.fragment_playlist, container, false);
+    View layout = inflater.inflate(R.layout.common_list, container, false);
     rv = (RecyclerView) layout.findViewById(R.id.recycler_view);
     activity = (MainActivity) getActivity();
     rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(activity));
     rv.setItemAnimator(new DefaultItemAnimator());
     activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), null, this);
     rv.setAdapter(adapter);
+
     return layout;
   }
 

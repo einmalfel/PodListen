@@ -201,4 +201,18 @@ public class PodcastHelper {
       return width;
     }
   }
+
+  void clearNewEpisodes() {
+    Cursor c = context.getContentResolver().query(
+        Provider.episodeUri,
+        new String[]{Provider.K_ID},
+        Provider.K_ESTATE + " = ?",
+        new String[]{Integer.toString(Provider.ESTATE_NEW)},
+        null);
+    while (c.moveToNext()) {
+      PodcastHelper.getInstance().markEpisodeGone(
+          c.getLong(c.getColumnIndex(Provider.K_ID)), true);
+    }
+    c.close();
+  }
 }

@@ -3,6 +3,7 @@ package com.einmalfel.podlisten;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -18,9 +19,11 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -121,6 +124,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     optionsButton = (ImageButton) findViewById(R.id.play_options);
     tabLayout = (TabLayout) findViewById(R.id.tab_layout);
     pager = (ViewPager) findViewById(R.id.pager);
+    fab.setOnClickListener(this);
     playButton.setOnClickListener(this);
     nextButton.setOnClickListener(this);
     optionsButton.setOnClickListener(this);
@@ -312,7 +316,38 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       return;
     }
 
-    if (v == playButton) {
+    if (v == fab) {
+      switch (currentFabAction) {
+        case CLEAR:
+          PodcastHelper.getInstance().clearNewEpisodes();
+          break;
+        case ADD:
+          AlertDialog.Builder builder = new AlertDialog.Builder(this);
+          final EditText input = new EditText(this);
+          builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+              String url = input.getText().toString().trim();
+              if (url.isEmpty()) {
+                Toast.makeText(MainActivity.this, R.string.subscribe_failed_empty, Toast.LENGTH_SHORT)
+                     .show();
+              } else {
+                addSubscription(url);
+              }
+            }
+          });
+          builder
+              .setNegativeButton(R.string.cancel, null)
+              .setTitle(getString(R.string.enter_feed_url))
+              .setView(input)
+              .create()
+              .show();
+          break;
+        case REFRESH:
+          refresh();
+          break;
+      }
+    } else if (v == playButton) {
       connection.service.playPauseResume();
     } else if (v == nextButton) {
       connection.service.playNext();

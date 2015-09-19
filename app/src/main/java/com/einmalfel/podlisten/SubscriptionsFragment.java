@@ -13,14 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 
 public class SubscriptionsFragment extends DebuggableFragment implements
@@ -28,16 +22,6 @@ public class SubscriptionsFragment extends DebuggableFragment implements
   private MainActivity activity;
   private static final MainActivity.Pages activityPage = MainActivity.Pages.SUBSCRIPTIONS;
   private static final String TAG = "SSF";
-  private static final String[] samples = {
-      "http://podster.fm/rss.xml?pid=15",
-      "http://www.radio-t.com/podcast.rss",
-      "http://podster.fm/rss.xml?pid=33",
-      "http://www.npr.org/rss/podcast.php?id=500005",
-      "http://thepetesantillishow.com/feed/",
-      "http://www.cbc.ca/podcasting/includes/hourlynews.xml",
-      "http://runetologia.podfm.ru/rss/rss.xml"
-  };
-  private static ArrayList<String> sampleList = null;
   private final PodcastListAdapter adapter = new PodcastListAdapter(null, this);
 
   @Override
@@ -49,53 +33,13 @@ public class SubscriptionsFragment extends DebuggableFragment implements
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
       savedInstanceState) {
-    View layout = inflater.inflate(R.layout.fragment_subscriptions, container, false);
+    View layout = inflater.inflate(R.layout.common_list, container, false);
     RecyclerView rv = (RecyclerView) layout.findViewById(R.id.recycler_view);
     activity = (MainActivity)getActivity();
     rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(activity));
     rv.setItemAnimator(new DefaultItemAnimator());
     rv.setAdapter(adapter);
     activity.getSupportLoaderManager().initLoader(activityPage.ordinal(), null, this);
-    Button b = (Button) layout.findViewById(R.id.subscribe_button);
-    b.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        final EditText input = new EditText(activity);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int id) {
-            String url = input.getText().toString().trim();
-            if (url.isEmpty()) {
-              Toast.makeText(activity, R.string.subscribe_failed_empty, Toast.LENGTH_SHORT).show();
-            } else {
-              activity.addSubscription(url);
-            }
-          }
-        });
-        builder
-            .setNegativeButton(R.string.cancel, null)
-            .setTitle(activity.getString(R.string.enter_feed_url))
-            .setView(input)
-            .create()
-            .show();
-      }
-    });
-    Button sampleButton = (Button) layout.findViewById(R.id.sample_button);
-    sampleButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (sampleList == null) {
-          sampleList = new ArrayList<>(samples.length);
-          Collections.addAll(sampleList, samples);
-        }
-        if (sampleList.isEmpty()) {
-          return;
-        }
-        String nextSample = sampleList.remove(0);
-        activity.addSubscription(nextSample);
-      }
-    });
     return layout;
   }
 
