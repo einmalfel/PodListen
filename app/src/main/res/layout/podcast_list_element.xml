@@ -34,12 +34,12 @@
 
         <TextView
             android:id="@+id/podcast_url"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="20sp"
             android:layout_below="@id/podcast_title"
             android:layout_toRightOf="@id/podcast_image"
             android:singleLine="true"
-            android:linksClickable="true"
+            android:autoLink="web"
             android:textSize="15sp"/>
 
         <TextView

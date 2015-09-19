@@ -134,7 +134,8 @@ public class SubscriptionsFragment extends DebuggableFragment implements
   public void onButtonTap(long id) {}
 
   static final String[] projection = new String[]{
-      Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE};
+      Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE,
+      Provider.K_PURL};
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(activity, Provider.podcastUri, projection, null, null, null);
