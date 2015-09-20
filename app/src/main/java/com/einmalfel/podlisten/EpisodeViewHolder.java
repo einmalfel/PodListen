@@ -85,13 +85,13 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     if (context == null) {
       context = PodListenApp.getContext();
       loadingFilter = new PorterDuffColorFilter(
-          ContextCompat.getColor(context, R.color.download_progress), PorterDuff.Mode.MULTIPLY);
+          ContextCompat.getColor(context, R.color.accent_primary), PorterDuff.Mode.MULTIPLY);
       loadedFilter = new PorterDuffColorFilter(
-          ContextCompat.getColor(context, R.color.downloaded_progress), PorterDuff.Mode.MULTIPLY);
+          ContextCompat.getColor(context, R.color.accent_primary_dim), PorterDuff.Mode.MULTIPLY);
       playingFilter = new PorterDuffColorFilter(
-          ContextCompat.getColor(context, R.color.playing_progress), PorterDuff.Mode.MULTIPLY);
+          ContextCompat.getColor(context, R.color.accent_secondary), PorterDuff.Mode.MULTIPLY);
       playedFilter = new PorterDuffColorFilter(
-          ContextCompat.getColor(context, R.color.played_progress), PorterDuff.Mode.MULTIPLY);
+          ContextCompat.getColor(context, R.color.accent_secondary_dim), PorterDuff.Mode.MULTIPLY);
       playButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_play_arrow_white_36dp);
       pauseButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_pause_white_36dp);
       addButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_playlist_add_white_36dp);
