@@ -1,7 +1,11 @@
 <resources>
 
     <style name="Theme.PodListen" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:fontFamily">sans-serif</item> <!--on android 4.1+ this is robo font-->
+        <!--sans-serif is roboto font on android 4.1+. Sadly, specifying it as fontFamily sometimes
+        leads to app crashes (encountered on SM-T231, Android 4.4). So, use system default font for
+        now. -->
+        <!--<item name="android:fontFamily">sans-serif</item>-->
+
         <item name="colorPrimary">@color/primary_material_dark</item>
         <item name="colorPrimaryDark">@color/primary_dark_material_dark</item>
     </style>
