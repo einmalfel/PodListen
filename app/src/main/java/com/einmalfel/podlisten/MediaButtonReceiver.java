@@ -56,13 +56,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
     }
     Log.d(TAG, "Processing media button: " + ev);
     switch (ev.getKeyCode()) {
-      case KeyEvent.KEYCODE_MEDIA_PLAY:
-        if (service.getState() == PlayerService.State.PAUSED) {
-          service.resume();
-        } else {
-          service.playNext();
-        }
-        break;
+      case KeyEvent.KEYCODE_MEDIA_PLAY: // sometimes this event means play/pause pressed during play
       case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
         service.playPauseResume();
         break;
