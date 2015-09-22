@@ -1,8 +1,5 @@
 package com.einmalfel.podlisten;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -92,7 +89,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   WidgetHelper widgetHelper;
   PlayerLocalConnection connection;
   int newEpisodesNumber = 0;
-  private Account account;
   private ViewPager pager;
   private ImageButton playButton;
   private ImageButton ffButton;
@@ -112,8 +108,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    ContentResolver.addPeriodicSync(getAccount(), getString(R.string.app_id), Bundle.EMPTY, POLL_FREQUENCY);
-    ContentResolver.setSyncAutomatically(getAccount(), getString(R.string.app_id), true);
+    PodlistenAccount.getInstance().setupSync(POLL_FREQUENCY);
     setContentView(R.layout.activity_main);
 
     fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -344,7 +339,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
               .show();
           break;
         case REFRESH:
-          refresh();
+          PodlistenAccount.getInstance().refresh();
           break;
       }
     } else if (v == playButton) {
@@ -394,24 +389,5 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         playlistFragment.showEpisode(intent.getLongExtra(EPISODE_ID_OPTION, 0));
       }
     }
-  }
-
-  public Account getAccount() {
-    if (account == null) {
-      // user base authority/app id as stub account type and name
-      String accountTypeName = getResources().getString(R.string.app_id);
-      account = new Account(accountTypeName, accountTypeName);
-      AccountManager accountManager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
-      accountManager.addAccountExplicitly(account, null, null);
-    }
-    return account;
-  }
-
-  public void refresh() {
-    Bundle settingsBundle = new Bundle();
-    settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-    settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-    Account acc = getAccount();
-    ContentResolver.requestSync(acc, acc.type, settingsBundle);
   }
 }
