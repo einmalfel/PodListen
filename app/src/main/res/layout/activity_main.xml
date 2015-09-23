@@ -1,4 +1,5 @@
 <android.support.design.widget.CoordinatorLayout
+    android:id="@+id/activity_coordinator_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -26,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_marginBottom="75dp"
+        android:layout_marginBottom="96dp"
         android:layout_marginRight="80dp"
         app:layout_behavior="com.einmalfel.podlisten.ScrollTrackingBehaviour"/>
 
