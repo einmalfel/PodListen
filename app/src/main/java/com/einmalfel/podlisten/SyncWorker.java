@@ -146,17 +146,6 @@ class SyncWorker implements Runnable {
       Log.i(TAG, title + " lacks audio, skipped");
       return false;
     }
-    if (audioSize == null || audioSize < 10 * 1024) {
-      try {
-        audioSize = openConnectionWithTO(new URL(audioLink)).getContentLength();
-      } catch (MalformedURLException ex) {
-        Log.e(TAG,
-              "Episode " + episode.getLink() + " has malformed URL: " + audioLink, ex);
-        return false;
-      } catch (IOException ex) {
-        Log.e(TAG, "Leaving wrong episode size for " + episode.getLink(), ex);
-      }
-    }
 
     // try update episode timestamp. If this fails, episode is not yet in db, insert it
     long id = PodcastHelper.generateId(audioLink);
@@ -167,6 +156,18 @@ class SyncWorker implements Runnable {
     } catch (RemoteException exception) {
       Log.e(TAG, "DB failed to timestamp episode " + id + ", skipping, exception: ", exception);
       return false;
+    }
+
+    if (audioSize == null || audioSize < 10 * 1024) {
+      try {
+        audioSize = openConnectionWithTO(new URL(audioLink)).getContentLength();
+      } catch (MalformedURLException ex) {
+        Log.e(TAG,
+              "Episode " + episode.getLink() + " has malformed URL: " + audioLink, ex);
+        return false;
+      } catch (IOException ex) {
+        Log.e(TAG, "Leaving wrong episode size for " + episode.getLink(), ex);
+      }
     }
 
     // put episode into DB
