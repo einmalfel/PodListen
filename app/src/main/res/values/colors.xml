@@ -1,6 +1,15 @@
 <resources>
+    <color name="background_primary">#ff303030</color>
+    <!--text doesn't contrast much with this color-->
+    <color name="background_soft">#ff424242</color>
+    <!--text looks brighter on this color-->
+    <color name="background_contrast">#ff212121</color>
+
     <color name="accent_primary">#ff80cbc4</color>
     <color name="accent_primary_dim">#4080cbc4</color>
     <color name="accent_secondary">#ffff8800</color>
     <color name="accent_secondary_dim">#60ff8800</color>
+
+    <color name="text_bright">#ffffffff</color>
+    <color name="text">#b3ffffff</color>
 </resources>

@@ -6,8 +6,12 @@
         now. -->
         <!--<item name="android:fontFamily">sans-serif</item>-->
 
-        <item name="colorPrimary">@color/primary_material_dark</item>
-        <item name="colorPrimaryDark">@color/primary_dark_material_dark</item>
+        <item name="colorPrimary">@color/background_primary</item>
+        <item name="colorPrimaryDark">@color/background_contrast</item>
+        <item name="android:textColorPrimary">@color/text_bright</item>
+        <item name="android:windowBackground">@color/background_primary</item>
+        <item name="colorAccent">@color/accent_primary</item>
+
     </style>
 
 </resources>

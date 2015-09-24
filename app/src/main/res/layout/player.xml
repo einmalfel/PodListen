@@ -30,7 +30,7 @@
             android:gravity="bottom|center_horizontal"
             android:linksClickable="false"
             android:singleLine="true"
-            android:textColor="@color/primary_text_default_material_dark"
+            android:textColor="@color/text"
             android:textSize="@dimen/abc_text_size_medium_material"/>
     </FrameLayout>
 

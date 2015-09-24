@@ -126,15 +126,15 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     if (downloaded == 100 && state != Provider.ESTATE_NEW) {
       if (playerState == PlayerService.State.STOPPED) {
         progressBar.getProgressDrawable().setColorFilter(playedFilter);
-        setTextColor(ContextCompat.getColor(context, R.color.secondary_text_default_material_dark));
+        setTextColor(ContextCompat.getColor(context, R.color.text));
       } else {
         progressBar.getProgressDrawable().setColorFilter(playingFilter);
-        setTextColor(ContextCompat.getColor(context, R.color.primary_text_default_material_dark));
+        setTextColor(ContextCompat.getColor(context, R.color.text_bright));
       }
       progressBar.setMax((int) length);
       progressBar.setProgress((int) played);
     } else {
-      setTextColor(ContextCompat.getColor(context, R.color.secondary_text_default_material_dark));
+      setTextColor(ContextCompat.getColor(context, R.color.text));
       if (downloaded == 100) {
         progressBar.getProgressDrawable().setColorFilter(loadedFilter);
       } else {
