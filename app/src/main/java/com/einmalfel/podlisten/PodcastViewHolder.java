@@ -1,6 +1,8 @@
 package com.einmalfel.podlisten;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -17,12 +19,14 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
   private final TextView urlView;
   private final TextView statusView;
   private final ImageView imageView;
+  private final Context context;
   private long id = 0;
   private boolean expanded = false;
 
   public PodcastViewHolder(View layout, final EpisodeListAdapter.ItemClickListener listener,
                            final PodcastListAdapter adapter) {
     super(layout);
+    context = layout.getContext();
     titleView = (TextView) layout.findViewById(R.id.podcast_title);
     descriptionView = (PatchedTextView) layout.findViewById(R.id.podcast_description);
     urlView = (TextView) layout.findViewById(R.id.podcast_url);
@@ -50,12 +54,16 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
     descriptionView.setText(description == null ? "No description" : Html.fromHtml(description),
                             TextView.BufferType.SPANNABLE);
     urlView.setText(podcastPage == null ? url : podcastPage);
-    if (state == Provider.PSTATE_NEW) {
-      statusView.setText("Feed isn't loaded yet");
-    } else if (state == Provider.PSTATE_LAST_REFRESH_FAILED) {
+    if (state == Provider.PSTATE_LAST_REFRESH_FAILED) {
       statusView.setText("Refresh failed: " + error);
+      statusView.setTextColor(ContextCompat.getColor(context, R.color.accent_secondary));
     } else {
-      statusView.setText("Refreshed " + DateUtils.getRelativeTimeSpanString(timestamp));
+      statusView.setTextColor(ContextCompat.getColor(context, R.color.text));
+      if (state == Provider.PSTATE_NEW) {
+        statusView.setText("Feed isn't loaded yet");
+      } else {
+        statusView.setText("Refreshed " + DateUtils.getRelativeTimeSpanString(timestamp));
+      }
     }
     descriptionView.setSingleLine(!expanded);
 
