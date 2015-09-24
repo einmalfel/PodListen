@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -97,11 +98,13 @@ public class SyncState {
     updateProgress("IO error: " + feedTitle);
   }
 
-  synchronized void signalFeedSuccess(String feedTitle, int episodesAdded) {
+  synchronized void signalFeedSuccess(@Nullable String feedTitle, int episodesAdded) {
     syncResult.stats.numUpdates++;
     parsed++;
     newEpisodes += episodesAdded;
-    updateProgress("Loaded: " + feedTitle);
+    if (feedTitle != null) {
+      updateProgress("Loaded: " + feedTitle);
+    }
   }
 
   synchronized private void updateNotification() {
