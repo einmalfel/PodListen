@@ -34,6 +34,7 @@ public class PodlistenAccount {
     Bundle settingsBundle = new Bundle();
     settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
     settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+    settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_DO_NOT_RETRY, true);
     ContentResolver.requestSync(account, appId, settingsBundle);
   }
 
