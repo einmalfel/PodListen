@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.util.Log;
 
 import com.einmalfel.earl.EarlParser;
@@ -14,6 +15,7 @@ import com.einmalfel.earl.Enclosure;
 import com.einmalfel.earl.Feed;
 import com.einmalfel.earl.Item;
 
+import org.unbescape.xml.XmlEscape;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -259,6 +261,14 @@ class SyncWorker implements Runnable {
     text = erasePattern.matcher(text).replaceAll("");
     text = listPattern.matcher(text).replaceAll("\u2022");
     text = brPattern.matcher(text).replaceAll("<br/>");
+
+    // on next line we throw out tags not supported by spanned text
+    text = Html.toHtml(Html.fromHtml(text));
+
+    // There is a problem: toHtml returns escaped html, thus making resulting string much longer.
+    // The only solution I found is to make use of unbescape library.
+    text = XmlEscape.unescapeXml(text);
+
     return text.trim();
   }
 
