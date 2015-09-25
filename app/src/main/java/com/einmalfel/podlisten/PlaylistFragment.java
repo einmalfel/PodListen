@@ -89,9 +89,7 @@ public class PlaylistFragment extends DebuggableFragment implements
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(activity,
         Provider.episodeJoinPodcastUri,
-        new String[]{Provider.K_EID, Provider.K_ENAME, Provider.K_EDESCR, Provider.K_EDFIN,
-            Provider.K_ESIZE, Provider.K_ESTATE, Provider.K_PNAME, Provider.K_EPLAYED,
-            Provider.K_ELENGTH, Provider.K_EDATE, Provider.K_EPID},
+        EpisodeListAdapter.REQUIRED_DB_COLUMNS,
         Provider.K_ESTATE + " = ?",
         new String[]{Integer.toString(Provider.ESTATE_IN_PLAYLIST)},
         Provider.K_EDATE);
