@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.File;
@@ -132,7 +133,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     }
   }
 
-  static final int NOTIFICATION_ID = 2;
+  private static final int NOTIFICATION_ID = 2;
   private static final String TAG = "PPS";
   private static final int JUMP_INTERVAL = 30000;
 
@@ -341,10 +342,6 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
     callbackThread.post(CallbackType.EPISODE);
 
-    if (state == State.STOPPED) {
-      startForeground(NOTIFICATION_ID, new Notification.Builder(this).build());
-    }
-
     state = State.STOPPED_ERROR;
 
     initPlayer();
@@ -425,5 +422,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     } else {
       player.reset();
     }
+  }
+
+  public void updateNotification(@NonNull Notification notification) {
+      startForeground(NOTIFICATION_ID, notification);
   }
 }

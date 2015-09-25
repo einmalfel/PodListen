@@ -1,6 +1,7 @@
 package com.einmalfel.podlisten;
 
 
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -12,7 +13,6 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -37,7 +37,6 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   private final Context context = PodListenApp.getContext();
   private final ComponentName receiverComponent = new ComponentName(context, rxClass);
   private final AppWidgetManager awm = AppWidgetManager.getInstance(context);
-  private final NotificationManagerCompat nm = NotificationManagerCompat.from(context);
   private final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
   private final RemoteViews rvFull = new RemoteViews(context.getPackageName(), R.layout.player);
 
@@ -117,11 +116,9 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   }
 
   private void updateNotification(RemoteViews rv) {
-    if (connection.service == null || connection.service.getState() == PlayerService.State
-        .STOPPED) {
-      return;
+    if (connection.service != null) {
+      connection.service.updateNotification(builder.setContent(rv).build());
     }
-    nm.notify(PlayerService.NOTIFICATION_ID, builder.setContent(rv).build());
   }
 
   public void progressUpdateRV(int position, int max, RemoteViews rv) {
@@ -174,7 +171,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
       activityIntent.putExtra(MainActivity.EPISODE_ID_OPTION, id);
     }
     PendingIntent pendingIntent = PendingIntent.getActivity(
-        context, PlayerService.NOTIFICATION_ID, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        context, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     rv.setOnClickPendingIntent(R.id.player, pendingIntent);
   }
 
