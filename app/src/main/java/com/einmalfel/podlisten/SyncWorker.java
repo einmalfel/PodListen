@@ -255,6 +255,8 @@ class SyncWorker implements Runnable {
   private static final Pattern brPattern = Pattern.compile("<br.*?/>\\s*<br.*/>|<p/?>|</li>");
   private static final Pattern erasePattern = Pattern.compile("<img.+?>|</p>|</?ul/?>");
   private static final Pattern listPattern = Pattern.compile("<li>");
+  private static final Pattern spannedStartPattern = Pattern.compile("\\A<p dir=\"ltr\">");
+  private static final Pattern spannedEndPattern = Pattern.compile("</p>\\z");
 
   @NonNull
   private static String simplifyHTML(@NonNull String text) {
@@ -267,7 +269,14 @@ class SyncWorker implements Runnable {
 
     // There is a problem: toHtml returns escaped html, thus making resulting string much longer.
     // The only solution I found is to make use of unbescape library.
-    text = XmlEscape.unescapeXml(text);
+    text = XmlEscape.unescapeXml(text).trim();
+
+    // toHtml frames result in <p dir="ltr">...</p> (direction could probably be locale-dependent).
+    // TextView will display it as additional whitespace at the end of text, so try to delete it.
+    if (spannedStartPattern.matcher(text).find() && spannedEndPattern.matcher(text).find()) {
+      text = spannedStartPattern.matcher(text).replaceAll("");
+      text = spannedEndPattern.matcher(text).replaceAll("");
+    }
 
     return text.trim();
   }
