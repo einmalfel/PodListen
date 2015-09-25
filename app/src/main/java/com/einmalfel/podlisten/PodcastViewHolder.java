@@ -48,11 +48,9 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
   }
 
   void bind(int state, String title, String description, String url, String podcastPage, long id,
-            String error, long timestamp, boolean expanded) {
+            String shortDescr, String error, long timestamp, boolean expanded) {
     titleView.setText(title);
     titleView.setText(title == null ? "No title" : title);
-    descriptionView.setText(description == null ? "No description" : Html.fromHtml(description),
-                            TextView.BufferType.SPANNABLE);
     urlView.setText(podcastPage == null ? url : podcastPage);
     if (state == Provider.PSTATE_LAST_REFRESH_FAILED) {
       statusView.setText("Refresh failed: " + error);
@@ -64,6 +62,12 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
       } else {
         statusView.setText("Refreshed " + DateUtils.getRelativeTimeSpanString(timestamp));
       }
+    }
+
+    if (expanded) {
+      descriptionView.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
+    } else {
+      descriptionView.setText(shortDescr, TextView.BufferType.NORMAL);
     }
     descriptionView.setSingleLine(!expanded);
 

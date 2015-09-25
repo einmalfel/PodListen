@@ -178,7 +178,9 @@ class SyncWorker implements Runnable {
     values.put(Provider.K_EAURL, audioLink);
     String description = episode.getDescription();
     if (description != null) {
-      values.put(Provider.K_EDESCR, simplifyHTML(description));
+      String simplifiedDescription = simplifyHTML(description);
+      values.put(Provider.K_EDESCR, simplifiedDescription);
+      values.put(Provider.K_ESDESCR, getShortDescription(simplifiedDescription));
     }
     values.put(Provider.K_EURL, episode.getLink());
     values.put(Provider.K_ESIZE, audioSize);
@@ -236,7 +238,9 @@ class SyncWorker implements Runnable {
     values.put(Provider.K_PNAME, title);
     String description = feed.getDescription();
     if (description != null) {
-      values.put(Provider.K_PDESCR, simplifyHTML(description));
+      String simplifiedDescription = simplifyHTML(description);
+      values.put(Provider.K_PDESCR, simplifiedDescription);
+      values.put(Provider.K_PSDESCR, getShortDescription(simplifiedDescription));
     }
     values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
     values.put(Provider.K_PTSTAMP, timestamp);
@@ -250,6 +254,13 @@ class SyncWorker implements Runnable {
     }
     int updated = provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null);
     return updated == 1 ? title : null;
+  }
+
+  @NonNull
+  private static String getShortDescription(@NonNull String htmlDescription) {
+    String plain = Html.fromHtml(htmlDescription).toString();
+    int pL = plain.length();
+    return plain.substring(0, pL > Provider.SHORT_DESCR_LENGTH ? Provider.SHORT_DESCR_LENGTH : pL);
   }
 
   private static final Pattern brPattern = Pattern.compile("<br.*?/>\\s*<br.*/>|<p/?>|</li>");

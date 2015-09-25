@@ -22,6 +22,7 @@ public class Provider extends ContentProvider {
   public static final String K_ENAME = "episode_name";
   public static final String K_EDATE = "publication_date";
   public static final String K_EDESCR = "episode_description";
+  public static final String K_ESDESCR = "episode_short_description";
   public static final String K_ESTATE = "episode_state";
   public static final String K_EAURL = "audio_url";
   public static final String K_EURL = "episode_url";
@@ -35,6 +36,7 @@ public class Provider extends ContentProvider {
   public static final String K_ESIZE = "episode_size"; //[Bytes]
   public static final String K_PNAME = "podcast_name";
   public static final String K_PDESCR = "podcast_description";
+  public static final String K_PSDESCR = "podcast_short_description";
   public static final String K_PURL = "podcast_url";
   public static final String K_PFURL = "feed_url";
   public static final String K_PSTATE = "podcast_state";
@@ -54,7 +56,7 @@ public class Provider extends ContentProvider {
   public static final Uri podcastUri = Uri.parse(commonUriString + '/' + T_PODCAST);
   public static final Uri episodeUri = Uri.parse(commonUriString + '/' + T_EPISODE);
   public static final Uri episodeJoinPodcastUri = Uri.parse(commonUriString + '/' + T_E_JOIN_P);
-
+  public static final int SHORT_DESCR_LENGTH = 200;
   private static final String[] TABLES = {T_EPISODE, T_PODCAST, T_E_JOIN_P};
   private static final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
   private static final String TAG = "PLP";
@@ -228,6 +230,7 @@ public class Provider extends ContentProvider {
           K_ID + " INTEGER PRIMARY KEY," +
           K_PNAME + " TEXT," +
           K_PDESCR + " TEXT," +
+          K_PSDESCR + " TEXT," +
           K_PSTATE + " INTEGER," +
           K_PURL + " TEXT," +
           K_PFURL + " TEXT," +
@@ -238,6 +241,7 @@ public class Provider extends ContentProvider {
           K_ID + " INTEGER PRIMARY KEY," +
           K_ENAME + " TEXT," +
           K_EDESCR + " TEXT," +
+          K_ESDESCR + " TEXT," +
           K_EURL + " TEXT," +
           K_EAURL + " TEXT," +
           K_EDATE + " INTEGER," +
