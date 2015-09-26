@@ -50,6 +50,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
                             ContentProviderClient provider, SyncResult syncResult) {
     Boolean manualSync = extras.getBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, false);
     Long requestedId = extras.getLong(FEED_ID_EXTRA_OPTION, 0);
+    syncResult.tooManyRetries = extras.getBoolean(ContentResolver.SYNC_EXTRAS_DO_NOT_RETRY, false);
     SyncState syncState = new SyncState(getContext(), syncResult);
 
     Cursor c = null;
