@@ -112,19 +112,19 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
                           String feedTitle, long played, long length, long date, long downloaded,
                           String shortDescr, PlayerService.State playerState, boolean expanded) {
     titleText.setText(title);
-    if (description.trim().isEmpty()) {
+    if (description == null || description.trim().isEmpty()) {
       dividerBottom.setVisibility(View.GONE);
       descriptionText.setVisibility(View.GONE);
     } else {
+      if (expanded) {
+        descriptionText.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
+      } else {
+        descriptionText.setText(shortDescr, TextView.BufferType.NORMAL);
+      }
+      descriptionText.setSingleLine(!expanded);
       dividerBottom.setVisibility(View.VISIBLE);
       descriptionText.setVisibility(View.VISIBLE);
     }
-    if (expanded) {
-      descriptionText.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
-    } else {
-      descriptionText.setText(shortDescr, TextView.BufferType.NORMAL);
-    }
-    descriptionText.setSingleLine(!expanded);
     feedTitleText.setText(feedTitle);
 
     if (downloaded == 100 && state != Provider.ESTATE_NEW) {

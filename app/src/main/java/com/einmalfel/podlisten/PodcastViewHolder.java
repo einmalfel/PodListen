@@ -20,6 +20,7 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
   private final TextView statusView;
   private final ImageView imageView;
   private final Context context;
+  private final View dividerBottom;
   private long id = 0;
   private boolean expanded = false;
 
@@ -29,6 +30,7 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
     context = layout.getContext();
     titleView = (TextView) layout.findViewById(R.id.podcast_title);
     descriptionView = (PatchedTextView) layout.findViewById(R.id.podcast_description);
+    dividerBottom = layout.findViewById(R.id.description_divider);
     urlView = (TextView) layout.findViewById(R.id.podcast_url);
     statusView = (TextView) layout.findViewById(R.id.podcast_status);
     imageView = (ImageView) layout.findViewById(R.id.podcast_image);
@@ -64,10 +66,17 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
       }
     }
 
-    if (expanded) {
-      descriptionView.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
+    if (description == null || description.isEmpty()) {
+      descriptionView.setVisibility(View.GONE);
+      dividerBottom.setVisibility(View.GONE);
     } else {
-      descriptionView.setText(shortDescr, TextView.BufferType.NORMAL);
+      if (expanded) {
+        descriptionView.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
+      } else {
+        descriptionView.setText(shortDescr, TextView.BufferType.NORMAL);
+      }
+      descriptionView.setVisibility(View.VISIBLE);
+      dividerBottom.setVisibility(View.VISIBLE);
     }
     descriptionView.setSingleLine(!expanded);
 
