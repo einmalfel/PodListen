@@ -11,8 +11,10 @@ import android.graphics.Bitmap;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.einmalfel.podlisten.support.UnitConverter;
@@ -165,10 +167,10 @@ public class PodcastHelper {
    * Add subscription to podcasts table
    *
    * @param url url to subscribe
-   * @return true if success, false if already subscribed
+   * @return ID of podcast or zero if already subscribed
    * @throws SubscriptionNotInsertedException if failed to insert subscription into db
    */
-  public boolean addSubscription(String url) throws SubscriptionNotInsertedException {
+  public long addSubscription(String url) throws SubscriptionNotInsertedException {
     if (!url.toLowerCase().matches("^\\w+://.*")) {
       url = "http://" + url;
       Log.w(TAG, "Feed download protocol defaults to http, new url: " + url);
@@ -178,7 +180,7 @@ public class PodcastHelper {
     int count = c.getCount();
     c.close();
     if (count == 1) {
-      return false;
+      return 0;
     } else {
       ContentValues values = new ContentValues();
       values.put(Provider.K_PFURL, url);
@@ -186,8 +188,23 @@ public class PodcastHelper {
       if (resolver.insert(Provider.podcastUri, values) == null) {
         throw new SubscriptionNotInsertedException();
       } else {
-        return true;
+        return id;
       }
+    }
+  }
+
+  long trySubscribe(@NonNull String url, @Nullable View container) {
+    try {
+      long result = addSubscription(url);
+      if (result == 0 && container != null) {
+        Snackbar.make(container, "Already subscribed to " + url, Snackbar.LENGTH_LONG).show();
+      }
+      return result;
+    } catch (PodcastHelper.SubscriptionNotInsertedException notInsertedException) {
+      if (container != null) {
+        Snackbar.make(container, "DB error - failed to subscribe", Snackbar.LENGTH_LONG).show();
+      }
+      return 0;
     }
   }
 

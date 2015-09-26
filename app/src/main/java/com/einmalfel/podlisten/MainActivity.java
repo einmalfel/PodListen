@@ -25,7 +25,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -326,8 +325,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
               if (url.isEmpty()) {
                 Toast.makeText(MainActivity.this, R.string.subscribe_failed_empty, Toast.LENGTH_SHORT)
                      .show();
-              } else {
-                addSubscription(url);
               }
             }
           });
@@ -356,19 +353,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       }
     } else if (v == optionsButton) {
       PodListenApp.sendLogs();
-    }
-  }
-
-  public void addSubscription(String url) {
-    try {
-      if (PodcastHelper.getInstance().addSubscription(url)) {
-      } else {
-        Toast.makeText(this, getString(R.string.already_subscribed) + url, Toast.LENGTH_SHORT)
-             .show();
-      }
-    } catch (PodcastHelper.SubscriptionNotInsertedException e) {
-      Toast.makeText(this, getString(R.string.subscription_add_failed) + url, Toast.LENGTH_LONG)
-           .show();
     }
   }
 
