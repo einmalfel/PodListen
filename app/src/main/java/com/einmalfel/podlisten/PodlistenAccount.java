@@ -30,11 +30,15 @@ public class PodlistenAccount {
     aManager.addAccountExplicitly(account, null, null);
   }
 
-  void refresh() {
+  /**
+   * @param feedId ID of feed to sync. If zero is given, will request sync for all feeds
+   */
+  void refresh(long feedId) {
     Bundle settingsBundle = new Bundle();
     settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
     settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
     settingsBundle.putBoolean(ContentResolver.SYNC_EXTRAS_DO_NOT_RETRY, true);
+    settingsBundle.putLong(EpisodesSyncAdapter.FEED_ID_EXTRA_OPTION, feedId);
     ContentResolver.requestSync(account, appId, settingsBundle);
   }
 

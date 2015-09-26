@@ -17,6 +17,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
+  static final String FEED_ID_EXTRA_OPTION = "com.einmalfel.podlisten.FEED_ID";
+
   private static final String TAG = "SSA";
 
   /**
@@ -47,12 +49,13 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
   public void onPerformSync(Account account, Bundle extras, String authority,
                             ContentProviderClient provider, SyncResult syncResult) {
     Boolean manualSync = extras.getBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, false);
+    Long requestedId = extras.getLong(FEED_ID_EXTRA_OPTION, 0);
     SyncState syncState = new SyncState(getContext(), syncResult);
 
     Cursor c = null;
     try {
       c = provider.query(
-          Provider.podcastUri,
+          requestedId == 0 ? Provider.podcastUri : Provider.getUri(Provider.T_PODCAST, requestedId),
           new String[]{Provider.K_ID, Provider.K_PFURL, Provider.K_PSTATE, Provider.K_PTSTAMP},
           null, null, null);
     } catch (RemoteException exception) {

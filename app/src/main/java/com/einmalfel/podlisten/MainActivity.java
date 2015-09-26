@@ -339,7 +339,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
               .show();
           break;
         case REFRESH:
-          PodlistenAccount.getInstance().refresh();
+          PodlistenAccount.getInstance().refresh(0);
           break;
       }
     } else if (v == playButton) {
@@ -362,7 +362,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   public void addSubscription(String url) {
     try {
       if (PodcastHelper.getInstance().addSubscription(url)) {
-        refresh();
       } else {
         Toast.makeText(this, getString(R.string.already_subscribed) + url, Toast.LENGTH_SHORT)
              .show();
