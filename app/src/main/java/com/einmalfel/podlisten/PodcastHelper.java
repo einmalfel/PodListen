@@ -170,7 +170,8 @@ public class PodcastHelper {
    * @return ID of podcast or zero if already subscribed
    * @throws SubscriptionNotInsertedException if failed to insert subscription into db
    */
-  public long addSubscription(String url) throws SubscriptionNotInsertedException {
+  public long addSubscription(String url, @NonNull Provider.RefreshMode refreshMode)
+      throws SubscriptionNotInsertedException {
     if (!url.toLowerCase().matches("^\\w+://.*")) {
       url = "http://" + url;
       Log.w(TAG, "Feed download protocol defaults to http, new url: " + url);
@@ -182,8 +183,9 @@ public class PodcastHelper {
     if (count == 1) {
       return 0;
     } else {
-      ContentValues values = new ContentValues();
+      ContentValues values = new ContentValues(3);
       values.put(Provider.K_PFURL, url);
+      values.put(Provider.K_PRMODE, refreshMode.ordinal());
       values.put(Provider.K_ID, id);
       if (resolver.insert(Provider.podcastUri, values) == null) {
         throw new SubscriptionNotInsertedException();
@@ -193,9 +195,10 @@ public class PodcastHelper {
     }
   }
 
-  long trySubscribe(@NonNull String url, @Nullable View container) {
+  long trySubscribe(@NonNull String url, @Nullable View container,
+                    @NonNull Provider.RefreshMode refreshMode) {
     try {
-      long result = addSubscription(url);
+      long result = addSubscription(url, refreshMode);
       if (result == 0 && container != null) {
         Snackbar.make(container, "Already subscribed to " + url, Snackbar.LENGTH_LONG).show();
       }

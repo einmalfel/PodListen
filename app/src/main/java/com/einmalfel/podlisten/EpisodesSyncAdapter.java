@@ -21,15 +21,6 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
 
   private static final String TAG = "SSA";
 
-  /**
-   * This much episodes will be added as new episodes when user adds subscription
-   */
-  private static final int MAX_NEW_EPISODES_NEW_FEED = 3;
-  /**
-   * This much episodes will be added as new episodes when user refreshes subscription
-   */
-  private static final int MAX_NEW_EPISODES_OLD_FEED = 50;
-
   private static final int WORKERS_NUMBER = 3;
 
   private static final int SYNC_TIMEOUT = 30 * 60; // [s]
@@ -40,6 +31,9 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
    * First retry occurs after 30 seconds, following ones double backoff (see SyncManager.java).
    */
   private static final int MINIMUM_SYNC_INTERVAL_MS = 5 * 60 * 1000;
+
+  private static final String[] queryColumns = new String[]{
+      Provider.K_ID, Provider.K_PFURL, Provider.K_PSTATE, Provider.K_PTSTAMP, Provider.K_PRMODE};
 
   public EpisodesSyncAdapter(Context context, boolean autoInitialize) {
     super(context, autoInitialize);
@@ -57,7 +51,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     try {
       c = provider.query(
           requestedId == 0 ? Provider.podcastUri : Provider.getUri(Provider.T_PODCAST, requestedId),
-          new String[]{Provider.K_ID, Provider.K_PFURL, Provider.K_PSTATE, Provider.K_PTSTAMP},
+          queryColumns,
           null, null, null);
     } catch (RemoteException exception) {
       Log.e(TAG, "Failed to query podcast db", exception);
@@ -78,9 +72,10 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     ExecutorService executorService = Executors.newFixedThreadPool(WORKERS_NUMBER);
     while (c.moveToNext()) {
       long id = c.getLong(c.getColumnIndexOrThrow(Provider.K_ID));
-      boolean newFeed = c.getInt(c.getColumnIndexOrThrow(Provider.K_PSTATE)) == Provider.PSTATE_NEW;
       String url = c.getString(c.getColumnIndexOrThrow(Provider.K_PFURL));
       long feedTimestamp = c.getLong(c.getColumnIndexOrThrow(Provider.K_PTSTAMP));
+      Provider.RefreshMode refreshMode = Provider.RefreshMode.values()[c.getInt(
+          c.getColumnIndexOrThrow(Provider.K_PRMODE))];
 
       if (!manualSync && (new Date().getTime() - feedTimestamp < MINIMUM_SYNC_INTERVAL_MS)) {
         Log.i(TAG, "Skipping feed refresh (syncing to often): " + id);
@@ -88,12 +83,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
         continue;
       }
 
-      executorService.execute(new SyncWorker(
-          id,
-          url,
-          provider,
-          syncState,
-          newFeed ? MAX_NEW_EPISODES_NEW_FEED : MAX_NEW_EPISODES_OLD_FEED));
+      executorService.execute(new SyncWorker(id, url, provider, syncState, refreshMode));
     }
     c.close();
 

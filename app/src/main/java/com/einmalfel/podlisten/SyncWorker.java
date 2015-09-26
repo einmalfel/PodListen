@@ -35,19 +35,21 @@ class SyncWorker implements Runnable {
   private static final int MAX_EPISODES_TO_PARSE = 1000;
   private static final Pattern AUDIO_PATTERN = Pattern.compile("^audio/\\w*");
   private static final int TIMEOUT_MS = 15000;
+
+
   private final long id;
   private final String link;
-  private final int maxNewEpisodes;
   private final SyncState syncState;
   private final ContentProviderClient provider;
+  private final Provider.RefreshMode refreshMode;
 
   public SyncWorker(long id, @NonNull String link, @NonNull ContentProviderClient provider,
-                    @NonNull SyncState syncState, int maxNewEpisodes) {
+                    @NonNull SyncState syncState, Provider.RefreshMode refreshMode) {
     this.id = id;
     this.link = link;
-    this.maxNewEpisodes = maxNewEpisodes;
     this.provider = provider;
     this.syncState = syncState;
+    this.refreshMode = refreshMode;
   }
 
   @Override
@@ -63,7 +65,11 @@ class SyncWorker implements Runnable {
 
       int newEpisodesInserted = 0;
       for (Item episode : feed.getItems()) {
-        boolean markNew = newEpisodesInserted < maxNewEpisodes;
+        boolean markNew = newEpisodesInserted < refreshMode.getCount();
+        Date pubDate = episode.getPublicationDate();
+        if (pubDate != null) {
+          markNew &= new Date().getTime() - pubDate.getTime() < refreshMode.getMaxAge();
+        }
         if (tryInsertEpisode(episode, id, timestamp, provider, markNew) && markNew) {
           newEpisodesInserted++;
         }
@@ -236,6 +242,8 @@ class SyncWorker implements Runnable {
     values.put(Provider.K_PFURL, link);
     values.put(Provider.K_PURL, feed.getLink());
     values.put(Provider.K_PNAME, title);
+    // refresh mode is set for one refresh only, so always reset it to default value
+    values.put(Provider.K_PRMODE, Provider.RefreshMode.ALL.ordinal());
     String description = feed.getDescription();
     if (description != null) {
       String simplifiedDescription = simplifyHTML(description);
