@@ -84,7 +84,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
 
   WidgetHelper widgetHelper;
   PlayerLocalConnection connection;
-  int newEpisodesNumber = 0;
+  private int newEpisodesNumber = 0;
   private ViewPager pager;
   private ImageButton playButton;
   private ImageButton ffButton;
@@ -156,6 +156,16 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
 
 
   enum FabAction {SORT, REFRESH, CLEAR, ADD}
+
+  void updateFAB(int newEpisodesUpdate) {
+    boolean stateChanged =
+        (newEpisodesNumber == 0 && newEpisodesUpdate != 0) ||
+        (newEpisodesNumber != 0 && newEpisodesUpdate == 0);
+    newEpisodesNumber = newEpisodesUpdate;
+    if (stateChanged && pager.getCurrentItem() == Pages.NEW_EPISODES.ordinal()) {
+      updateFAB();
+    }
+  }
 
   void updateFAB() {
     updateFAB(Pages.values()[pager.getCurrentItem()], 0);

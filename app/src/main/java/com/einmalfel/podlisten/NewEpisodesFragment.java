@@ -67,8 +67,7 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
 
   @Override
   public void onLoadFinished(Loader loader, Cursor data) {
-    activity.newEpisodesNumber = data.getCount();
-    activity.updateFAB();
+    activity.updateFAB(data.getCount());
     adapter.swapCursor(data);
   }
 
