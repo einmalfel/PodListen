@@ -105,6 +105,7 @@ public class Provider extends ContentProvider {
   public static final String K_PSTATE = "podcast_state";
   public static final String K_PRMODE = "podcast_refresh_mode";
   public static final String K_PTSTAMP = "podcast_timestamp";
+  public static final String K_PATSTAMP = "podcast_add_timestamp";
   public static final String K_PERROR = "podcast_error"; // string describing feed refresh problem
   public static final int ESTATE_NEW = 0;
   public static final int ESTATE_SELECTED = 1;
@@ -297,6 +298,7 @@ public class Provider extends ContentProvider {
           K_PSDESCR + " TEXT," +
           K_PSTATE + " INTEGER," +
           K_PRMODE + " INTEGER," +
+          K_PATSTAMP + " INTEGER," +
           K_PURL + " TEXT," +
           K_PFURL + " TEXT," +
           K_PERROR + " TEXT," +

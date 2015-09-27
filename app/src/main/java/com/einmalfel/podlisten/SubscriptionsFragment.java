@@ -68,7 +68,8 @@ public class SubscriptionsFragment extends DebuggableFragment implements
       Provider.K_PURL, Provider.K_PTSTAMP, Provider.K_PERROR, Provider.K_PSDESCR};
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    return new CursorLoader(activity, Provider.podcastUri, projection, null, null, null);
+    return new CursorLoader(
+        activity, Provider.podcastUri, projection, null, null, Provider.K_PATSTAMP + " DESC");
   }
 
   @Override

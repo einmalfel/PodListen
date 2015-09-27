@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.einmalfel.podlisten.support.UnitConverter;
 
 import java.io.File;
+import java.util.Date;
 
 /**
  * Helper class intended to do podcast-related stuff, like properly deleting episodes, etc
@@ -183,10 +184,11 @@ public class PodcastHelper {
     if (count == 1) {
       return 0;
     } else {
-      ContentValues values = new ContentValues(3);
+      ContentValues values = new ContentValues(4);
       values.put(Provider.K_PFURL, url);
       values.put(Provider.K_PRMODE, refreshMode.ordinal());
       values.put(Provider.K_ID, id);
+      values.put(Provider.K_PATSTAMP, new Date().getTime());
       if (resolver.insert(Provider.podcastUri, values) == null) {
         throw new SubscriptionNotInsertedException();
       } else {
