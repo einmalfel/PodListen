@@ -19,8 +19,9 @@
             android:layout_width="wrap_content"
             android:layout_height="70sp"
             android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
             android:background="@drawable/clickable_list_element"
-            android:minWidth="85sp">
+            android:minWidth="70sp">
 
             <TextView
                 android:id="@+id/time_size"
@@ -28,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|top"
                 android:singleLine="true"
-                android:textSize="12sp"/>
+                android:textSize="11sp"/>
 
             <ProgressBar
                 android:id="@+id/play_load_progress"
@@ -52,48 +53,49 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|bottom"
                 android:singleLine="true"
-                android:textSize="12sp"/>
+                android:textSize="11sp"/>
         </FrameLayout>
 
         <ImageView
             android:id="@+id/episode_image"
             android:layout_width="70sp"
             android:layout_height="70sp"
-            android:layout_marginRight="2dp"
+            android:layout_marginRight="2sp"
             android:contentDescription="@string/episode_image_description"/>
 
-        <View
-            android:id="@+id/play_add_frame_divider"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_alignBottom="@id/play_add_frame"
-            android:layout_alignTop="@id/play_add_frame"
-            android:layout_toLeftOf="@id/play_add_frame"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginBottom="-2dp"
-            android:background="@color/background_soft"/>
-
-        <TextView
-            android:id="@+id/feed_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/play_add_frame"
-            android:layout_toLeftOf="@id/play_add_frame_divider"
-            android:layout_toRightOf="@id/episode_image"
-            android:singleLine="true"
-            android:textSize="12sp"/>
 
         <TextView
             android:id="@+id/episode_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_above="@id/feed_title"
-            android:layout_toLeftOf="@id/play_add_frame_divider"
+            android:layout_toLeftOf="@id/play_add_frame"
             android:layout_toRightOf="@id/episode_image"
-            android:maxLines="2"
-            android:textSize="20sp"/>
+            android:minHeight="55sp"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/feed_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/episode_title"
+            android:layout_toLeftOf="@id/play_add_frame"
+            android:layout_toRightOf="@id/episode_image"
+            android:singleLine="true"
+            android:textSize="12sp"/>
+
+        <View
+            android:id="@+id/play_add_frame_divider"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/feed_title"
+            android:layout_alignTop="@id/episode_title"
+            android:layout_marginBottom="-2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_toRightOf="@id/episode_title"
+            android:background="@color/background_soft"/>
+
 
         <View
             android:id="@+id/description_divider"
@@ -110,7 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/description_divider"
             android:linksClickable="true"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:singleLine="true"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

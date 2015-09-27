@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -20,13 +21,16 @@ import android.widget.Toast;
 import com.einmalfel.podlisten.support.UnitConverter;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Helper class intended to do podcast-related stuff, like properly deleting episodes, etc
  */
 public class PodcastHelper {
-  static final int MIN_IMAGE_WIDTH_SP = 90;
+  static final int MIN_IMAGE_WIDTH_SP = 70;
   static final int MAX_IMAGE_WIDTH_SP = 150;
   private static final String TAG = "EPM";
   private static PodcastHelper instance;
@@ -36,7 +40,10 @@ public class PodcastHelper {
   private final ContentResolver resolver= context.getContentResolver();
 
   public PodcastHelper() {
-    maxImageWidthPX = UnitConverter.getInstance().spToPx(MAX_IMAGE_WIDTH_SP);
+    // allow image to take up to 150dp but not more then one fifth of screen width
+    int oneFifthScreenWidth = context.getResources().getDisplayMetrics().widthPixels / 5;
+    int boundSetInSp = UnitConverter.getInstance().spToPx(MAX_IMAGE_WIDTH_SP);
+    maxImageWidthPX = boundSetInSp > oneFifthScreenWidth ? oneFifthScreenWidth : boundSetInSp;
     minImageWidthPX = UnitConverter.getInstance().spToPx(MIN_IMAGE_WIDTH_SP);
   }
 
@@ -138,15 +145,34 @@ public class PodcastHelper {
 
   }
 
+  private static final DateFormat formatYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+  @NonNull
+  public static String shortDateFormat(long date) {
+    if (new Date().getTime() - date > 9 * 24 * 60 * 60 * 1000) {
+      return formatYYYYMMDD.format(date);
+    } else {
+      return DateUtils.getRelativeTimeSpanString(date).toString();
+    }
+  }
+
+  @NonNull
+  public static String shortFormatDurationMs(long milliseconds) {
+    long minutes = milliseconds / 60 / 1000;
+    long hours = minutes / 60;
+    return (hours > 0 ? hours + "h" : "") + minutes % 60 + "m";
+  }
+
   /**
    * Based on http://stackoverflow.com/a/3758880/2015129
    */
   public static String humanReadableByteCount(long bytes, boolean si) {
     int unit = si ? 1000 : 1024;
-    if (bytes < unit) return bytes + "B";
+    if (bytes < unit)
+      return bytes + "B";
     int exp = (int) (Math.log(bytes) / Math.log(unit));
-    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
-    return String.format("%.1f%sB", bytes / Math.pow(unit, exp), pre);
+    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
+    return String.format("%d%sB", (int) (bytes / Math.pow(unit, exp)), pre);
   }
 
   /**

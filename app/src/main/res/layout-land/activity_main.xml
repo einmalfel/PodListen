@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_marginBottom="16dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginRight="55sp"
         app:layout_behavior="com.einmalfel.podlisten.ScrollTrackingBehaviour"/>
 
 </android.support.design.widget.CoordinatorLayout>

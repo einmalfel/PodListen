@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -164,14 +163,14 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
 
     StringBuilder timeSize = new StringBuilder();
     if (length > 0) {
-      timeSize.append(DateUtils.formatElapsedTime(length / 1000));
+      timeSize.append(PodcastHelper.shortFormatDurationMs(length));
       timeSize.append(" ");
     }
     if (size > 1024) {
       timeSize.append(PodcastHelper.humanReadableByteCount(size, true));
     }
     timeSizeText.setText(timeSize);
-    dateText.setText(DateUtils.getRelativeTimeSpanString(date));
+    dateText.setText(PodcastHelper.shortDateFormat(date));
 
     // use feed image if there is no episode image
     Bitmap image = ImageManager.getInstance().getImage(id);
