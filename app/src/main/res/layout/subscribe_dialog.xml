@@ -1,0 +1,82 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="24dp"
+                android:paddingStart="24dp">
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <!--user will probably add subscription via OPML or by copy-pasting feed URL. This view was
+        added to take focus from EditText and thus show dialog without software keyboard on start-->
+        <requestFocus/>
+    </View>
+
+    <ImageButton
+        android:id="@+id/open_file_button"
+        android:layout_width="wrap_content"
+        android:layout_height="40sp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/clickable_image_button_bg"
+        android:contentDescription="@string/subscribe_dialog_open_opml_description"
+        android:paddingBottom="2sp"
+        android:paddingTop="2sp"
+        android:src="@mipmap/ic_folder_open_white_36dp"
+        android:tint="@color/accent_primary"/>
+
+    <EditText
+        android:id="@+id/url_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/open_file_button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@id/open_file_button"
+        android:layout_toLeftOf="@id/open_file_button"
+        android:layout_toStartOf="@id/open_file_button"
+        android:hint="@string/subscribe_dialog_edit_text_hint"
+        android:inputType="textUri"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/url_text"
+        android:gravity="start|center_vertical"
+        android:text="@string/subscribe_dialog_on_first_load_text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="16sp"/>
+
+    <Spinner
+        android:id="@+id/refresh_mode"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/textView2"
+        android:layout_marginBottom="24dp"
+        android:spinnerMode="dropdown"
+        />
+
+    <Button
+        android:id="@+id/subscribe_button"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="36sp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/refresh_mode"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:minWidth="64dp"
+        android:text="@string/subscribe_dialog_subscribe_button"
+        android:textAllCaps="true"
+        android:textColor="@color/accent_primary"
+        android:textSize="14sp"/>
+
+</RelativeLayout>

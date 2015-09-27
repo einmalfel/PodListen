@@ -1,6 +1,5 @@
 package com.einmalfel.podlisten;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -16,11 +15,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -316,24 +313,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           PodcastHelper.getInstance().clearNewEpisodes();
           break;
         case ADD:
-          AlertDialog.Builder builder = new AlertDialog.Builder(this);
-          final EditText input = new EditText(this);
-          builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-              String url = input.getText().toString().trim();
-              if (url.isEmpty()) {
-                Toast.makeText(MainActivity.this, R.string.subscribe_failed_empty, Toast.LENGTH_SHORT)
-                     .show();
-              }
-            }
-          });
-          builder
-              .setNegativeButton(R.string.cancel, null)
-              .setTitle(getString(R.string.enter_feed_url))
-              .setView(input)
-              .create()
-              .show();
+          new SubscribeDialog().show(getSupportFragmentManager(), "subscribe dialog");
           break;
         case REFRESH:
           PodlistenAccount.getInstance().refresh(0);
@@ -363,7 +343,11 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     if (Intent.ACTION_VIEW.equals(intent.getAction())) {
       Uri uri = intent.getData();
       pager.setCurrentItem(Pages.SUBSCRIPTIONS.ordinal());
-      addSubscription(uri.toString());
+      SubscribeDialog dialog = new SubscribeDialog();
+      Bundle dialogArguments = new Bundle(1);
+      dialogArguments.putString(SubscribeDialog.URL_ARG, uri.toString());
+      dialog.setArguments(dialogArguments);
+      dialog.show(getSupportFragmentManager(), "subscribe dialog");
     } else if (intent.hasExtra(PAGE_LAUNCH_OPTION)) {
       int page = intent.getIntExtra(PAGE_LAUNCH_OPTION, Pages.PLAYLIST.ordinal());
       Log.d(TAG, "Setting page " + page);
