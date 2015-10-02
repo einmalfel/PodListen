@@ -345,7 +345,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         playlistFragment.showEpisode(connection.service.getEpisodeId());
       }
     } else if (v == optionsButton) {
-      PodListenApp.sendLogs();
+      startActivity(new Intent(this, PreferencesActivity.class));
     }
   }
 

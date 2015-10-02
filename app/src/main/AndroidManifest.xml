@@ -71,6 +71,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".PreferencesActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity"/>
+
         <service
             android:name=".support.StubAuthenticatorService">
             <intent-filter>
