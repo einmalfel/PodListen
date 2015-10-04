@@ -1,2 +1,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:summary="@string/preferences_send_bug_report_summary"
+        android:title="@string/preferences_send_bug_report_title">
+        <intent
+            android:action="com.einmalfel.podlisten.SEND_BUG_REPORT"
+            android:targetClass="com.einmalfel.podlisten.PreferencesActivity"
+            android:targetPackage="com.einmalfel.podlisten"/>
+    </Preference>
 </PreferenceScreen>

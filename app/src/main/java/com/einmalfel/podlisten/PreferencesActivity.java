@@ -1,5 +1,6 @@
 package com.einmalfel.podlisten;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,16 @@ public class PreferencesActivity extends AppCompatActivity {
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     } else {
       Log.wtf(TAG, "Should never get here: failed to get action bar of preference activity");
+    }
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    switch (intent.getAction()) {
+      case "com.einmalfel.podlisten.SEND_BUG_REPORT":
+        PodListenApp.sendLogs();
+        break;
     }
   }
 }
