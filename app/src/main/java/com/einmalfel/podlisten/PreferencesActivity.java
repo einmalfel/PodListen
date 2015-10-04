@@ -9,18 +9,20 @@ import android.util.Log;
 
 public class PreferencesActivity extends AppCompatActivity {
   private static final String TAG = "PAC";
+  private final PreferenceFragmentCompat prefsFragment = new PreferenceFragmentCompat() {
+    @Override
+    public void onCreatePreferences(Bundle bundle, String s) {
+      addPreferencesFromResource(R.xml.preferences);
+    }
+  };
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    prefsFragment.setRetainInstance(true);
     getSupportFragmentManager()
         .beginTransaction()
-        .replace(android.R.id.content, new PreferenceFragmentCompat() {
-          @Override
-          public void onCreatePreferences(Bundle bundle, String s) {
-            addPreferencesFromResource(R.xml.preferences);
-          }
-        })
+        .add(android.R.id.content, prefsFragment)
         .commit();
 
     setTitle(getString(R.string.preferences_title));
