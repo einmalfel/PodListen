@@ -80,8 +80,14 @@ public class DownloadStartReceiver extends BroadcastReceiver {
       values.put(Provider.K_ESIZE, new File(fileName).length());
       // try get length
       MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-      mmr.setDataSource(fileName);
-      String durationString = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+      String durationString = null;
+      // setDataSource may throw RuntimeException for damaged media file
+      try {
+        mmr.setDataSource(fileName);
+        durationString = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+      } catch (RuntimeException exception) {
+        Log.e(TAG, "Failed to get duration of " + fileName, exception);
+      }
       if (durationString != null) {
         try {
           Long duration = Long.parseLong(durationString);
