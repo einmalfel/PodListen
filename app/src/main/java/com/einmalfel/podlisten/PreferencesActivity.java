@@ -10,6 +10,7 @@ import android.util.Log;
 
 public class PreferencesActivity extends AppCompatActivity {
   private static final String TAG = "PAC";
+  private final Preferences preferences = Preferences.getInstance();
   private final PreferenceFragmentCompat prefsFragment = new PreferenceFragmentCompat() {
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
