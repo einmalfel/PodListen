@@ -146,6 +146,42 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     }
   }
 
+  private int getRunningCount(Context context) {
+    DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+    DownloadManager.Query query = new DownloadManager.Query().setFilterByStatus(
+        DownloadManager.STATUS_PAUSED | DownloadManager.STATUS_PENDING | DownloadManager.STATUS_RUNNING);
+    Cursor cursor = dM.query(query);
+    int runningCount = cursor.getCount();
+    cursor.close();
+    return runningCount;
+  }
+
+  private void updateDownloadQueue(Context context) {
+    int runningDownloadsCount = getRunningCount(context);
+    int maxParallelDownloads = Preferences.getInstance().getMaxDownloads().toInt();
+    if (runningDownloadsCount >= maxParallelDownloads) {
+      return;
+    }
+
+    Cursor queue = context.getContentResolver().query(
+        Provider.episodeUri,
+        new String[]{Provider.K_EAURL, Provider.K_ENAME, Provider.K_ID},
+        Provider.K_EDID + " == ? AND " + Provider.K_EDATT + " < ? AND " + Provider.K_ESTATE + " != ? AND " + Provider.K_EDFIN + " != ?",
+        new String[]{"0", "50000000000", Integer.toString(Provider.ESTATE_GONE), "100"},
+        Provider.K_EDATE + " ASC");
+    if (queue == null) {
+      throw new AssertionError("Unexpectedly got null while querying provider");
+    }
+    int urlInd = queue.getColumnIndexOrThrow(Provider.K_EAURL);
+    int titleInd = queue.getColumnIndexOrThrow(Provider.K_ENAME);
+    int idInd = queue.getColumnIndexOrThrow(Provider.K_ID);
+    while (queue.moveToNext() && runningDownloadsCount < maxParallelDownloads) {
+      download(context, queue.getString(urlInd), queue.getString(titleInd), queue.getLong(idInd));
+      runningDownloadsCount++;
+    }
+    queue.close();
+  }
+
   @Override
   public void onReceive(Context context, Intent intent) {
     switch (intent.getAction()) {
@@ -153,11 +189,12 @@ public class DownloadStartReceiver extends BroadcastReceiver {
         updateProgress(context);
         break;
       case NEW_EPISODE_ACTION:
-        download(
-            context,
-            intent.getStringExtra(URL_EXTRA_NAME),
-            intent.getStringExtra(TITLE_EXTRA_NAME),
-            intent.getLongExtra(ID_EXTRA_NAME, -1));
+        if (getRunningCount(context) < Preferences.getInstance().getMaxDownloads().toInt()) {
+          download(context,
+                   intent.getStringExtra(URL_EXTRA_NAME),
+                   intent.getStringExtra(TITLE_EXTRA_NAME),
+                   intent.getLongExtra(ID_EXTRA_NAME, -1));
+        }
         break;
       case DownloadManager.ACTION_NOTIFICATION_CLICKED:
         Intent i = new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -165,6 +202,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
         break;
       case DownloadManager.ACTION_DOWNLOAD_COMPLETE:
         processDownloadResult(context, intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L));
+        updateDownloadQueue(context);
         break;
     }
   }

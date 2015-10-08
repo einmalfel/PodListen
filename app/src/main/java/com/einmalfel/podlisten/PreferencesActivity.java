@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
 
@@ -13,6 +14,22 @@ public class PreferencesActivity extends AppCompatActivity {
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
       addPreferencesFromResource(R.xml.preferences);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+
+      ListPreference maxDownloadsLP = (ListPreference) prefsFragment.findPreference(
+          Preferences.Key.MAX_DOWNLOADS.toString());
+      String[] maxDLEntries = new String[Preferences.MaxDownloadsOption.values().length];
+      String[] maxDLEntryValues = new String[Preferences.MaxDownloadsOption.values().length];
+      for (Preferences.MaxDownloadsOption option : Preferences.MaxDownloadsOption.values()) {
+        maxDLEntries[option.ordinal()] = option.toString();
+        maxDLEntryValues[option.ordinal()] = Integer.toString(option.ordinal());
+      }
+      maxDownloadsLP.setEntries(maxDLEntries);
+      maxDownloadsLP.setEntryValues(maxDLEntryValues);
     }
   };
 
