@@ -9,10 +9,17 @@ import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
-import java.io.File;
+import org.xml.sax.SAXException;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class DownloadStartReceiver extends BroadcastReceiver {
   private static final String TAG = "DSR";
@@ -38,6 +45,36 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     ContentValues cv = new ContentValues(1);
     cv.put(Provider.K_EDID, downloadId);
     context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), cv, null, null);
+  }
+
+
+  /**
+   * Sometimes body of redirect response is downloaded instead of media file (seen this on xperia
+   * Z2 with moscow metro wifi). Such body could be empty or could contain some html code.
+   * If downloaded file size is less then 1kB, consider it is an error. If file size is between
+   * 1kB and 5MB, check if it is an html page. Podcast episodes are often bigger then 5MB.
+   */
+  private boolean isDownloadedFileOk(@NonNull String filename) {
+    File downloadedFile = new File(filename);
+    if (downloadedFile.length() < 1024) {
+      return false; // it's to small to be audio file
+    } else if (downloadedFile.length() < 5 * 1024 * 1024) {
+      try {
+        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        db.parse(downloadedFile);
+        return false; // file parsed, assuming it's redirect response body
+      } catch (ParserConfigurationException e) {
+        Log.wtf(TAG, "Failed to create document builder with default params. Assume file is ok", e);
+        return true;
+      } catch (SAXException e) {
+        return true; // failed to build DOM, it's not html
+      } catch (IOException e) {
+        Log.e(TAG, "Failed to read file for redirect testing. Assume file is bad", e);
+        return false;
+      }
+    } else {
+      return true; // file is big enough, it's probably media, not html
+    }
   }
 
   private void processDownloadResult(Context context, long downloadId) {
@@ -74,7 +111,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     // update episode download state
     ContentValues values = new ContentValues(4);
     values.put(Provider.K_EDID, 0);
-    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+    if (status == DownloadManager.STATUS_SUCCESSFUL && isDownloadedFileOk(fileName)) {
       Log.i(TAG, "Successfully downloaded " + episodeId);
       values.put(Provider.K_EDFIN, 100);
       values.put(Provider.K_ESIZE, new File(fileName).length());
