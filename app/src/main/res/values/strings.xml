@@ -53,6 +53,8 @@
     <string name="subscribe_dialog_select_opml_prompt">Select OPML File</string>
 
     <string name="preferences_title">Preferences</string>
+    <string name="preferences_network_title">Network</string>
+    <string name="preferences_other_title">Other</string>
     <string name="preferences_send_bug_report_title">Send bug-report</string>
     <string name="preferences_send_bug_report_summary">Send developer a email. App log and device info will be included</string>
     <string name="preferences_max_downloads_title">Max parallel downloads</string>
