@@ -338,24 +338,27 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   public synchronized boolean playEpisode(long id) {
     currentId = id;
     progress = 0;
-    File source = PodcastHelper.getInstance().getEpisodeFile(id);
-
     callbackThread.post(CallbackType.EPISODE);
-
     state = State.STOPPED_ERROR;
 
     initPlayer();
-    if (source != null && source.exists()) {
-      Log.d(TAG, "Launching playback of " + source.getAbsolutePath());
-      try {
-        player.setDataSource(this, Uri.fromFile(source));
-        state = State.PLAYING;
-      } catch (IOException e) {
-        Log.e(TAG, "set source produced an exception, playback stopped: ", e);
+
+    synchronized (Preferences.getInstance()) {
+      Storage storage = Preferences.getInstance().getStorage();
+      File source = storage == null ? null : new File(storage.getPodcastDir(), Long.toString(id));
+      if (source != null && source.exists() && storage.isAvailableRead()) {
+        Log.d(TAG, "Launching playback of " + source.getAbsolutePath());
+        try {
+          player.setDataSource(this, Uri.fromFile(source));
+          state = State.PLAYING;
+        } catch (IOException e) {
+          Log.e(TAG, "set source produced an exception, playback stopped: ", e);
+        }
+      } else {
+        Log.e(TAG, "Failed to start playback, media is absent for episode " + id);
       }
-    } else {
-      Log.e(TAG, "Failed to start playback, media is absent for episode " + id);
     }
+
     if (state == State.PLAYING) {
       preparing = true;
       player.prepareAsync();

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -63,12 +62,6 @@ public class PodcastHelper {
     return (long) url.hashCode() - Integer.MIN_VALUE;
   }
 
-  @Nullable
-  public File getEpisodeFile(long id) {
-    File dir = context.getExternalFilesDir(Environment.DIRECTORY_PODCASTS);
-    return (dir == null ? null : new File(dir, Long.toString(id)));
-  }
-
   public static void deleteEpisodeDialog(final long episodeId, final Context context) {
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -84,12 +77,17 @@ public class PodcastHelper {
   }
 
   private void tryDeleteFiles(long id) {
-    File f = getEpisodeFile(id);
-    if (f != null && f.exists()) {
-      if (!f.delete()) {
-        Log.w(TAG, "Failed to delete " + f.toURI());
-      }
+    Storage storage = Preferences.getInstance().getStorage();
+    if (storage == null || !storage.isAvailableRW()) {
+      Log.w(TAG, "failed to delete episode media: no storage or it isn't writable");
+      return;
     }
+
+    File f = new File(storage.getPodcastDir(), Long.toString(id));
+    if (f.exists() && !f.delete()) {
+      Log.w(TAG, "Failed to delete " + f.toURI());
+    }
+
     ImageManager.getInstance().deleteImage(id);
   }
 

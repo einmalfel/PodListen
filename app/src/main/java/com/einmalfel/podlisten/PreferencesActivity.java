@@ -10,6 +10,8 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
 
+import java.util.List;
+
 public class PreferencesActivity extends AppCompatActivity {
   private static final String TAG = "PAC";
   private final Preferences preferences = Preferences.getInstance();
@@ -22,6 +24,16 @@ public class PreferencesActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
+
+      ListPreference storageLP = (ListPreference) prefsFragment.findPreference(
+          Preferences.Key.STORAGE_PATH.toString());
+      List<Storage> storageOptions = Storage.getAvailableStorages();
+      String[] optionStrings = new String[storageOptions.size()];
+      for (int i = 0; i < storageOptions.size(); i++) {
+        optionStrings[i] = storageOptions.get(i).toString();
+      }
+      storageLP.setEntries(optionStrings);
+      storageLP.setEntryValues(optionStrings);
 
       ListPreference maxDownloadsLP = (ListPreference) prefsFragment.findPreference(
           Preferences.Key.MAX_DOWNLOADS.toString());

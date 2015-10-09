@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -14,7 +13,6 @@ import android.view.WindowManager;
 import com.einmalfel.podlisten.support.UnitConverter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -58,7 +56,7 @@ public class ImageManager {
   }
 
   synchronized public void deleteImage(long id) {
-    File file = getImageFile(id);
+    File file = getImageFile(id, true);
     if (file != null && file.exists()) {
       if (!file.delete()) {
         Log.e(TAG, "Deletion of " + file.getAbsolutePath() + " failed");
@@ -67,10 +65,6 @@ public class ImageManager {
   }
 
   public void download(long id, URL url) throws IOException {
-    File file = getImageFile(id);
-    if (file == null) {
-      throw new FileNotFoundException("id " + id);
-    }
     Log.d(TAG, "Downloading " + url);
     HttpURLConnection urlConnection = null;
     Bitmap bitmap = null;
@@ -90,31 +84,46 @@ public class ImageManager {
         bitmap, bitmap.getWidth() * heightPx / bitmap.getHeight(), heightPx, true);
     // synchronize to be sure that isDownloaded won't return true while image file is being written
     synchronized (this) {
-      FileOutputStream stream = new FileOutputStream(file);
-      scaled.compress(Bitmap.CompressFormat.PNG, 100, stream);
+      synchronized (Preferences.getInstance()) {
+        File file = getImageFile(id, true);
+        if (file != null) {
+          FileOutputStream stream = new FileOutputStream(file);
+          scaled.compress(Bitmap.CompressFormat.PNG, 100, stream);
+          stream.close();
+          Log.d(TAG, url.toString() + " written to " + file.getAbsolutePath());
+        }
+      }
     }
-    Log.d(TAG, url.toString() + " written to " + file.getAbsolutePath());
   }
 
   public synchronized boolean isDownloaded(long id) {
-    File file = getImageFile(id);
-    return file != null && file.exists();
+    synchronized (Preferences.getInstance()) {
+      File file = getImageFile(id, false);
+      return file != null && file.exists();
+    }
   }
 
   @Nullable
-  private File getImageFile(long id) {
-    File dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    return (dir == null ? null : new File(dir, Long.toString(id) + ".png"));
+  private File getImageFile(long id, boolean write) {
+    Storage s = Preferences.getInstance().getStorage();
+    if (s == null) {
+      return null;
+    }
+    boolean isAvailable = write ? s.isAvailableRW() : s.isAvailableRead();
+    return isAvailable ? new File(s.getImagesDir(), id + ".png") : null;
   }
+
 
   @Nullable
   private Bitmap loadFromDisk(long id) {
-    if (!isDownloaded(id)) {
-      return null;
+    synchronized (Preferences.getInstance()) {
+      if (!isDownloaded(id)) {
+        return null;
+      }
+      Log.d(TAG, "Loading " + id + " from sdcard. Cache size before " + getCacheSize());
+      File file = getImageFile(id, false);
+      return file == null ? null : BitmapFactory.decodeFile(file.getAbsolutePath());
     }
-    Log.d(TAG, "Loading " + id + " from sdcard. Cache size before " + getCacheSize());
-    File file = getImageFile(id);
-    return file == null ? null : BitmapFactory.decodeFile(file.getAbsolutePath());
   }
 
   private int getCacheSize() {

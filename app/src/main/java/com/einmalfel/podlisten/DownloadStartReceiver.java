@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -25,26 +24,37 @@ public class DownloadStartReceiver extends BroadcastReceiver {
   private static final String TAG = "DSR";
   static final String NEW_EPISODE_ACTION = "com.einmalfel.podlisten.NEW_EPISODE";
   static final String DOWNLOAD_HEARTBEAT_ACTION = "com.einmalfel.podlisten.DOWNLOAD_HEARTBEAT";
+  static final String UPDATE_QUEUE_ACTION = "com.einmalfel.podlisten.UPDATE_QUEUE";
   static final String URL_EXTRA_NAME = "URL";
   static final String TITLE_EXTRA_NAME = "TITLE";
   static final String ID_EXTRA_NAME = "ID";
 
-  private void download(Context context, String url, String title, long id) {
-    DownloadManager.Request rq = new DownloadManager.Request(Uri.parse(url))
-        .setTitle(title)
-        .setAllowedOverMetered(false)
-        .setAllowedOverRoaming(false)
-        .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_PODCASTS, Long.toString(id))
-        .setDescription("Downloading podcast " + url)
-        .setVisibleInDownloadsUi(false)
-        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+  /** @return true if download request was dispatched to DownloadManager, false otherwise */
+  private boolean download(Context context, String url, String title, long id) {
+    // don't launch d/l while preferences are changing
+    synchronized (Preferences.getInstance()) {
+      Storage storage = Preferences.getInstance().getStorage();
+      if (storage == null || !storage.isAvailableRW()) {
+        Log.e(TAG, "Discarding download, as there is no storage, or it isn't writable");
+        return false;
+      }
+      DownloadManager.Request rq = new DownloadManager.Request(Uri.parse(url))
+          .setTitle(title)
+          .setAllowedOverMetered(false)
+          .setAllowedOverRoaming(false)
+          .setDestinationUri(Uri.fromFile(new File(storage.getPodcastDir(), Long.toString(id))))
+          .setDescription("Downloading podcast " + url)
+          .setVisibleInDownloadsUi(false)
+          .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
 
-    DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-    long downloadId = dM.enqueue(rq);
+      DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+      long downloadId = dM.enqueue(rq);
 
-    ContentValues cv = new ContentValues(1);
-    cv.put(Provider.K_EDID, downloadId);
-    context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), cv, null, null);
+      ContentValues cv = new ContentValues(1);
+      cv.put(Provider.K_EDID, downloadId);
+      context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), cv, null, null);
+      return true;
+    }
   }
 
 
@@ -176,8 +186,10 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     int titleInd = queue.getColumnIndexOrThrow(Provider.K_ENAME);
     int idInd = queue.getColumnIndexOrThrow(Provider.K_ID);
     while (queue.moveToNext() && runningDownloadsCount < maxParallelDownloads) {
-      download(context, queue.getString(urlInd), queue.getString(titleInd), queue.getLong(idInd));
-      runningDownloadsCount++;
+      if (download(
+          context, queue.getString(urlInd), queue.getString(titleInd), queue.getLong(idInd))) {
+        runningDownloadsCount++;
+      }
     }
     queue.close();
   }
@@ -187,6 +199,9 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     switch (intent.getAction()) {
       case DOWNLOAD_HEARTBEAT_ACTION:
         updateProgress(context);
+        break;
+      case UPDATE_QUEUE_ACTION:
+        updateDownloadQueue(context);
         break;
       case NEW_EPISODE_ACTION:
         if (getRunningCount(context) < Preferences.getInstance().getMaxDownloads().toInt()) {

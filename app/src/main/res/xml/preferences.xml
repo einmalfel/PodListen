@@ -5,6 +5,10 @@
             android:key="MAX_DOWNLOADS"
             android:summary="%s"
             android:title="@string/preferences_max_downloads_title"/>
+        <ListPreference
+            android:key="STORAGE_PATH"
+            android:summary="%s"
+            android:title="@string/preferences_storage_location_title"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/preferences_other_title">
