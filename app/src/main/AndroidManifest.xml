@@ -69,6 +69,23 @@
                 <data android:mimeType="text/atom+xml"/>
                 <data android:mimeType="text/rdf+xml"/>
             </intent-filter>
+            <intent-filter android:label="Import OPML">
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data
+                    android:host="*"
+                    android:mimeType="*/*"
+                    android:pathPattern=".*\\.opml"
+                    android:scheme="file"/>
+                <data
+                    android:host="*"
+                    android:mimeType="*/*"
+                    android:pathPattern=".*\\.opml"
+                    android:scheme="content"/>
+            </intent-filter>
         </activity>
 
         <activity
