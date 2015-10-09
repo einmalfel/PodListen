@@ -116,6 +116,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     }
     int status = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
     String fileName = c.getString(c.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_FILENAME));
+    int reason = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON));
     c.close();
 
     // update episode download state
@@ -145,7 +146,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
       }
       mmr.release();
     } else {
-      Log.w(TAG, episodeId + " download failed");
+      Log.w(TAG, episodeId + " download failed, reason " + reason);
       values.put(Provider.K_EDFIN, 0);
       values.put(Provider.K_EDATT, attempts + 1);
     }
