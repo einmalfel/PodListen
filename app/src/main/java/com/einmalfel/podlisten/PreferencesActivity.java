@@ -116,6 +116,9 @@ public class PreferencesActivity extends AppCompatActivity {
           } else {
             dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS);
           }
+          if (!dir.exists() && !dir.mkdirs()) {
+            Log.e(TAG, "Directory for OPML export doesn't exist " + dir);
+          }
           final File target = new File(dir, "PodListen_Subscriptions.opml");
           if (exportToOPML(target)) {
             AlertDialog.Builder b = new AlertDialog.Builder(this);
@@ -161,6 +164,10 @@ public class PreferencesActivity extends AppCompatActivity {
   private boolean exportToOPML(File file) {
     XmlSerializer serializer = Xml.newSerializer();
     try {
+      if (!file.exists() && !file.createNewFile()) {
+        Log.e(TAG, "failed to create file for OPML export " + file);
+        return false;
+      }
       serializer.setOutput(new FileWriter(file));
       serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
       serializer.startDocument("UTF-8", false);
