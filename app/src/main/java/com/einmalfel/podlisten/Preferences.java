@@ -151,6 +151,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         } else {
           try {
             Storage newStorage = new Storage(new File(storagePreferenceString));
+            newStorage.createSubdirs();
             if (storage != null && !storage.equals(newStorage)) {
               clearStorage();
             }

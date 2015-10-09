@@ -51,6 +51,14 @@ public class Storage {
     this.appFilesDir = path.getCanonicalFile();
   }
 
+  public void createSubdirs() throws IOException {
+    for (File dir : new File[] {getImagesDir(), getPodcastDir()}) {
+      if (!dir.exists() && !dir.mkdirs()) {
+        throw new IOException("Failed to create " + dir);
+      }
+    }
+  }
+
   @NonNull
   public File getPodcastDir() {
     return new File(appFilesDir, Environment.DIRECTORY_PODCASTS);
