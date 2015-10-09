@@ -9,6 +9,7 @@
     <PreferenceCategory
         android:title="@string/preferences_other_title">
         <Preference
+            android:key="SEND_REPORT"
             android:summary="@string/preferences_send_bug_report_summary"
             android:title="@string/preferences_send_bug_report_title">
             <intent

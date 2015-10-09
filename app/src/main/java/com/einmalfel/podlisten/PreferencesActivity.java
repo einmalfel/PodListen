@@ -1,10 +1,12 @@
 package com.einmalfel.podlisten;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
 
@@ -31,6 +33,14 @@ public class PreferencesActivity extends AppCompatActivity {
       }
       maxDownloadsLP.setEntries(maxDLEntries);
       maxDownloadsLP.setEntryValues(maxDLEntryValues);
+
+      // if there is no mail app installed, disable send bug-report option
+      Intent testEmailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "", null));
+      if (testEmailIntent.resolveActivity(getPackageManager()) == null) {
+        Preference sendBugReportPreference = prefsFragment.findPreference("SEND_REPORT");
+        sendBugReportPreference.setSummary(R.string.preferences_send_bug_report_summary_disabled);
+        sendBugReportPreference.setEnabled(false);
+      }
     }
   };
 
