@@ -10,7 +10,9 @@ import org.acra.annotation.ReportsCrashes;
     mailTo = "einmalfel@gmail.com",
     logcatArguments = {"-t", "1000", "-v", "time", "*:S",
                        "PLA:V", "DSR:V", "ELA:V", "SSA:V", "EVH:V", "IMG:V", "MAC:V", "NEF:V",
-                       "PLC:V", "PPS:V", "PLF:V", "EPM:V", "PLP:V", "SSF:V", "SWK:V", "WGH:V"},
+                       "PLC:V", "PPS:V", "PLF:V", "EPM:V", "PLP:V", "SSF:V", "SWK:V", "WGH:V",
+                       "SDF:V", "STB:V", "MBR:V", "PAC:V", "STR:V", "PRF:V",
+                       "AndroidRuntime:V", "ACRA:V"},
     customReportContent = {
         ReportField.USER_CRASH_DATE, ReportField.AVAILABLE_MEM_SIZE, ReportField.TOTAL_MEM_SIZE,
         ReportField.BUILD, ReportField.BUILD_CONFIG, ReportField.DISPLAY,
