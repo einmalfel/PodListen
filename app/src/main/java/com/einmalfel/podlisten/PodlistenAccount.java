@@ -42,8 +42,14 @@ public class PodlistenAccount {
     ContentResolver.requestSync(account, appId, settingsBundle);
   }
 
+  /** @param pollPeriod sync interval in seconds. Pass zero to disable periodic sync */
   void setupSync(int pollPeriod) {
-    ContentResolver.addPeriodicSync(account, appId, Bundle.EMPTY, pollPeriod);
-    ContentResolver.setSyncAutomatically(account, appId, true);
+    if (pollPeriod == 0) {
+      ContentResolver.removePeriodicSync(account, appId, Bundle.EMPTY);
+      ContentResolver.setSyncAutomatically(account, appId, false);
+    } else {
+      ContentResolver.addPeriodicSync(account, appId, Bundle.EMPTY, pollPeriod);
+      ContentResolver.setSyncAutomatically(account, appId, true);
+    }
   }
 }

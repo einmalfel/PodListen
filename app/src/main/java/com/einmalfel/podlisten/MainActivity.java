@@ -80,7 +80,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     }
   }
 
-  public static final int POLL_FREQUENCY = 60 * 60;
   private static final int DOWNLOAD_CHECK_PERIOD = 500;
   private static final String TAG = "MAC";
 
@@ -107,7 +106,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    PodlistenAccount.getInstance().setupSync(POLL_FREQUENCY);
     setContentView(R.layout.activity_main);
 
     fab = (FloatingActionButton) findViewById(R.id.fab);

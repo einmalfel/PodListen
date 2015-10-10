@@ -9,6 +9,10 @@
             android:key="STORAGE_PATH"
             android:summary="%s"
             android:title="@string/preferences_storage_location_title"/>
+        <ListPreference
+            android:key="REFRESH_INTERVAL"
+            android:summary="%s"
+            android:title="@string/preferences_refresh_interval_title"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/preferences_other_title">

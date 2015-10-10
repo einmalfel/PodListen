@@ -66,6 +66,10 @@ public class PreferencesActivity extends AppCompatActivity {
       storageLP.setEntries(optionStrings);
       storageLP.setEntryValues(optionStrings);
 
+      ListPreference refreshIntervalLP = (ListPreference) prefsFragment.findPreference(
+          Preferences.Key.REFRESH_INTERVAL.toString());
+      bindEnumToList(refreshIntervalLP, Preferences.RefreshIntervalOption.class);
+
       ListPreference maxDownloadsLP = (ListPreference) prefsFragment.findPreference(
           Preferences.Key.MAX_DOWNLOADS.toString());
       bindEnumToList(maxDownloadsLP, Preferences.MaxDownloadsOption.class);

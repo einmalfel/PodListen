@@ -25,13 +25,6 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
 
   private static final int SYNC_TIMEOUT = 30 * 60; // [s]
 
-  /**
-   * don't update feeds more often than once per 5 minutes if sync wasn't started manually.
-   * Thus, automatic sync immediately retried after soft error will process only failed feeds.
-   * First retry occurs after 30 seconds, following ones double backoff (see SyncManager.java).
-   */
-  private static final int MINIMUM_SYNC_INTERVAL_MS = 5 * 60 * 1000;
-
   private static final String[] queryColumns = new String[]{
       Provider.K_ID, Provider.K_PFURL, Provider.K_PSTATE, Provider.K_PTSTAMP, Provider.K_PRMODE};
 
@@ -77,7 +70,10 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       Provider.RefreshMode refreshMode = Provider.RefreshMode.values()[c.getInt(
           c.getColumnIndexOrThrow(Provider.K_PRMODE))];
 
-      if (!manualSync && (new Date().getTime() - feedTimestamp < MINIMUM_SYNC_INTERVAL_MS)) {
+      // If auto-sync is invoked more often then once in sync interval, it's sync retry and sync
+      // adapter should process only feeds that failed to refresh on previous run.
+      long syncPeriodMs = Preferences.getInstance().getRefreshInterval().periodSeconds * 1000;
+      if (!manualSync && (new Date().getTime() - feedTimestamp < syncPeriodMs)) {
         Log.i(TAG, "Skipping feed refresh (syncing to often): " + id);
         syncState.signalFeedSuccess(null, 0);
         continue;

@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
@@ -19,6 +20,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   enum Key {
     STORAGE_PATH,
     MAX_DOWNLOADS,
+    REFRESH_INTERVAL,
   }
 
   enum MaxDownloadsOption {
@@ -45,13 +47,42 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
   }
 
+  enum RefreshIntervalOption {
+    NEVER(R.string.refresh_period_never, 0),
+    HOUR(R.string.refresh_period_hour, 1),
+    HOUR2(R.string.refresh_period_2hours, 2),
+    HOUR3(R.string.refresh_period_3hours, 3),
+    HOUR6(R.string.refresh_period_6hours, 6),
+    HOUR12(R.string.refresh_period_12hours, 12),
+    DAY(R.string.refresh_period_day, 24),
+    DAY2(R.string.refresh_period_2days, 24 * 2),
+    WEEK(R.string.refresh_period_week, 24 * 7),
+    WEEK2(R.string.refresh_period_2weeks, 24 * 14),
+    MONTH(R.string.refresh_period_month, 30 * 24);
+
+    public final int periodSeconds;
+    private final int stringResource;
+
+    RefreshIntervalOption(@StringRes int stringResource, int periodHours) {
+      this.periodSeconds = periodHours * 60 * 60;
+      this.stringResource = stringResource;
+    }
+
+    @Override
+    public String toString() {
+      return PodListenApp.getContext().getString(stringResource);
+    }
+  }
+
   private static final String TAG = "PRF";
   private static final MaxDownloadsOption DEFAULT_MAX_DOWNLOADS = MaxDownloadsOption.TWO;
+  private static final RefreshIntervalOption DEFAULT_REFRESH_INTERVAL = RefreshIntervalOption.DAY;
   private static Preferences instance = null;
 
   // fields below could be changed from readPreference() only
   private MaxDownloadsOption maxDownloads;
   private Storage storage;
+  private RefreshIntervalOption refreshInterval;
 
   private final Context context = PodListenApp.getContext();
 
@@ -137,6 +168,20 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
           Log.e(TAG, "Failed to parse max downloads preference, value remains " + maxDownloads);
         }
         break;
+      case REFRESH_INTERVAL:
+        try {
+          int refreshInt = Integer.valueOf(sPrefs.getString(Key.REFRESH_INTERVAL.toString(), "-1"));
+          if (refreshInt == -1) {
+            Log.i(TAG, "Setting default refresh interval: " + DEFAULT_REFRESH_INTERVAL);
+            sPrefs.edit().putString(Key.REFRESH_INTERVAL.toString(),
+                                    Integer.toString(DEFAULT_REFRESH_INTERVAL.ordinal())).commit();
+          } else {
+            refreshInterval = RefreshIntervalOption.values()[refreshInt];
+            PodlistenAccount.getInstance().setupSync(refreshInterval.periodSeconds);
+          }
+        } catch (NumberFormatException exception) {
+          Log.e(TAG, "Failed to parse refresh interval, value remains " + refreshInterval);
+        }
       case STORAGE_PATH:
         String storagePreferenceString = sPrefs.getString(Key.STORAGE_PATH.toString(), "");
         if (storagePreferenceString.isEmpty()) {
@@ -167,6 +212,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         }
         break;
     }
+  }
+
+  @NonNull
+  public RefreshIntervalOption getRefreshInterval() {
+    return refreshInterval;
   }
 
   @NonNull
