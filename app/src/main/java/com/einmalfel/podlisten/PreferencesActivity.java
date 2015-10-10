@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -37,6 +38,20 @@ public class PreferencesActivity extends AppCompatActivity {
       addPreferencesFromResource(R.xml.preferences);
     }
 
+    private <T extends Enum<T>> void bindEnumToList(@NonNull ListPreference lP,
+                                                    @NonNull Class<T> enumType) {
+      int length = enumType.getEnumConstants().length;
+      String[] entries = new String[length];
+      String[] entryValues = new String[length];
+      for (T value : enumType.getEnumConstants()) {
+        int ordinal = value.ordinal();
+        entries[ordinal] = value.toString();
+        entryValues[ordinal] = Integer.toString(ordinal);
+      }
+      lP.setEntries(entries);
+      lP.setEntryValues(entryValues);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -53,14 +68,7 @@ public class PreferencesActivity extends AppCompatActivity {
 
       ListPreference maxDownloadsLP = (ListPreference) prefsFragment.findPreference(
           Preferences.Key.MAX_DOWNLOADS.toString());
-      String[] maxDLEntries = new String[Preferences.MaxDownloadsOption.values().length];
-      String[] maxDLEntryValues = new String[Preferences.MaxDownloadsOption.values().length];
-      for (Preferences.MaxDownloadsOption option : Preferences.MaxDownloadsOption.values()) {
-        maxDLEntries[option.ordinal()] = option.toString();
-        maxDLEntryValues[option.ordinal()] = Integer.toString(option.ordinal());
-      }
-      maxDownloadsLP.setEntries(maxDLEntries);
-      maxDownloadsLP.setEntryValues(maxDLEntryValues);
+      bindEnumToList(maxDownloadsLP, Preferences.MaxDownloadsOption.class);
 
       // if there is no mail app installed, disable send bug-report option
       Intent testEmailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "", null));
