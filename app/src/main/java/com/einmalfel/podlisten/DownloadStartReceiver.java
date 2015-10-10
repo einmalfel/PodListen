@@ -38,11 +38,19 @@ public class DownloadStartReceiver extends BroadcastReceiver {
         Log.e(TAG, "Discarding download, as there is no storage, or it isn't writable");
         return false;
       }
+
+      // if file was downloaded before (e.g. partially or with error), remove it
+      File target = new File(storage.getPodcastDir(), Long.toString(id));
+      if (target.exists() && !target.delete()) {
+        Log.e(TAG, "Failed to delete previous download " + target);
+        return false;
+      }
+
       DownloadManager.Request rq = new DownloadManager.Request(Uri.parse(url))
           .setTitle(title)
           .setAllowedOverMetered(false)
           .setAllowedOverRoaming(false)
-          .setDestinationUri(Uri.fromFile(new File(storage.getPodcastDir(), Long.toString(id))))
+          .setDestinationUri(Uri.fromFile(target))
           .setDescription("Downloading podcast " + url)
           .setVisibleInDownloadsUi(false)
           .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
