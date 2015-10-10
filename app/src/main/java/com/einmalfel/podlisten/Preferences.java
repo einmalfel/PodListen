@@ -131,6 +131,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
                                     Integer.toString(DEFAULT_MAX_DOWNLOADS.ordinal())).commit();
           } else {
             maxDownloads = MaxDownloadsOption.values()[maxDownloadsOrdinal];
+            context.sendBroadcast(new Intent(DownloadStartReceiver.UPDATE_QUEUE_ACTION));
           }
         } catch (NumberFormatException exception) {
           Log.e(TAG, "Failed to parse max downloads preference, value remains " + maxDownloads);
