@@ -187,7 +187,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
         new String[]{Provider.K_EAURL, Provider.K_ENAME, Provider.K_ID},
         Provider.K_EDID + " == ? AND " + Provider.K_EDATT + " < ? AND " + Provider.K_ESTATE + " != ? AND " + Provider.K_EDFIN + " != ?",
         new String[]{"0", "50000000000", Integer.toString(Provider.ESTATE_GONE), "100"},
-        Provider.K_EDATE + " ASC");
+        Provider.K_EDATT + " ASC, " + Provider.K_EDATE + " ASC");
     if (queue == null) {
       throw new AssertionError("Unexpectedly got null while querying provider");
     }
