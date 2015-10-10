@@ -8,17 +8,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
-
-import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import java.io.RandomAccessFile;
 
 public class DownloadStartReceiver extends BroadcastReceiver {
   private static final String TAG = "DSR";
@@ -70,28 +65,29 @@ public class DownloadStartReceiver extends BroadcastReceiver {
    * Sometimes body of redirect response is downloaded instead of media file (seen this on xperia
    * Z2 with moscow metro wifi). Such body could be empty or could contain some html code.
    * If downloaded file size is less then 1kB, consider it is an error. If file size is between
-   * 1kB and 5MB, check if it is an html page. Podcast episodes are often bigger then 5MB.
+   * 1kB and 5MB, check if it starts with < and ends with > (which means it's html/xml).
    */
-  private boolean isDownloadedFileOk(@NonNull String filename) {
-    File downloadedFile = new File(filename);
-    if (downloadedFile.length() < 1024) {
-      return false; // it's to small to be audio file
-    } else if (downloadedFile.length() < 5 * 1024 * 1024) {
-      try {
-        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        db.parse(downloadedFile);
-        return false; // file parsed, assuming it's redirect response body
-      } catch (ParserConfigurationException e) {
-        Log.wtf(TAG, "Failed to create document builder with default params. Assume file is ok", e);
-        return true;
-      } catch (SAXException e) {
-        return true; // failed to build DOM, it's not html
-      } catch (IOException e) {
-        Log.e(TAG, "Failed to read file for redirect testing. Assume file is bad", e);
-        return false;
+  private boolean isDownloadedFileOk(@Nullable File file) {
+    if (file == null) {
+      return false;
+    }
+    try {
+      long length = file.length();
+      if (length < 1024) {
+        return false; // it's to small to be audio file
+      } else if (length < 5 * 1024 * 1024) {
+        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+        char firstChar = randomAccessFile.readChar();
+        randomAccessFile.seek(length - 1);
+        char lastChar = randomAccessFile.readChar();
+        randomAccessFile.close();
+        return firstChar != '<' || lastChar != '>';
+      } else {
+        return true; // file is big enough, it's probably media, not html
       }
-    } else {
-      return true; // file is big enough, it's probably media, not html
+    } catch (IOException exception) {
+      Log.e(TAG, "Error while checking downloaded file", exception);
+      return false;
     }
   }
 
@@ -130,26 +126,27 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     // update episode download state
     ContentValues values = new ContentValues(4);
     values.put(Provider.K_EDID, 0);
-    if (status == DownloadManager.STATUS_SUCCESSFUL && isDownloadedFileOk(fileName)) {
+    File file = new File(fileName);
+    if (status == DownloadManager.STATUS_SUCCESSFUL && isDownloadedFileOk(file)) {
       Log.i(TAG, "Successfully downloaded " + episodeId);
       values.put(Provider.K_EDFIN, 100);
-      values.put(Provider.K_ESIZE, new File(fileName).length());
+      values.put(Provider.K_ESIZE, file.length());
       // try get length
       MediaMetadataRetriever mmr = new MediaMetadataRetriever();
       String durationString = null;
       // setDataSource may throw RuntimeException for damaged media file
       try {
-        mmr.setDataSource(fileName);
+        mmr.setDataSource(file.getPath());
         durationString = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
       } catch (RuntimeException exception) {
-        Log.e(TAG, "Failed to get duration of " + fileName, exception);
+        Log.e(TAG, "Failed to get duration of " + file, exception);
       }
       if (durationString != null) {
         try {
           Long duration = Long.parseLong(durationString);
           values.put(Provider.K_ELENGTH, duration);
         } catch (NumberFormatException ignored) {
-          Log.e(TAG, fileName + ": Wrong duration metadata: " + durationString);
+          Log.e(TAG, file + ": Wrong duration metadata: " + durationString);
         }
       }
       mmr.release();
