@@ -53,6 +53,8 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private MaxDownloadsOption maxDownloads;
   private Storage storage;
 
+  private final Context context = PodListenApp.getContext();
+
   public static Preferences getInstance() {
     if (instance == null) {
       synchronized (Preferences.class) {
@@ -82,7 +84,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
    * - request sync to re-download images
    */
   private void clearStorage() {
-    Context context = PodListenApp.getContext();
     Cursor cursor = context.getContentResolver().query(Provider.episodeUri,
                                                        new String[]{Provider.K_EDID},
                                                        Provider.K_EDID + " != ?",
