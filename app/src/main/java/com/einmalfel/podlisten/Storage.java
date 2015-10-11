@@ -72,6 +72,15 @@ public class Storage {
     return new File(appFilesDir, Environment.DIRECTORY_PICTURES);
   }
 
+  /**
+   * Checks whether given file belongs to this storage
+   * @throws IOException if File path couldn't be converted to canonical form
+   */
+  public boolean contains(File file) throws IOException{
+    File cFile = file.getCanonicalFile();
+    return appFilesDir.equals(cFile) || cFile.getPath().startsWith(appFilesDir + File.separator);
+  }
+
   public boolean isPrimaryStorage() {
     Storage prim = getPrimaryStorage();
     return equals(prim) || appFilesDir.getPath().startsWith(prim.appFilesDir + File.separator);
