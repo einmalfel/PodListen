@@ -31,50 +31,47 @@ public class DownloadStartReceiver extends BroadcastReceiver {
 
   /** @return true if download request was dispatched to DownloadManager, false otherwise */
   private boolean download(Context context, String url, String title, long id) {
-    // don't launch d/l while preferences are changing
-    synchronized (Preferences.getInstance()) {
-      Storage storage = Preferences.getInstance().getStorage();
-      if (storage == null || !storage.isAvailableRW()) {
-        Log.e(TAG, "Discarding download, as there is no storage, or it isn't writable");
-        return false;
-      }
-
-      // if file was downloaded before (e.g. partially or with error), remove it
-      File target = new File(storage.getPodcastDir(), Long.toString(id));
-      if (target.exists() && !target.delete()) {
-        Log.e(TAG, "Failed to delete previous download " + target);
-        return false;
-      }
-
-      DownloadManager.Request rq = new DownloadManager.Request(Uri.parse(url))
-          .setTitle(title)
-          .setAllowedOverMetered(false)
-          .setAllowedOverRoaming(false)
-          .setDestinationUri(Uri.fromFile(target))
-          .setDescription("Downloading podcast " + url)
-          .setVisibleInDownloadsUi(false)
-          .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
-
-      DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-      long downloadId;
-      try {
-        downloadId = dM.enqueue(rq);
-      } catch (SecurityException e) {
-        if (storage.isPrimaryStorage()) {
-          throw e;
-        }
-        Log.w(TAG, "DM produced security exception. Downloading to primary storage and copying", e);
-        rq.setDestinationUri(null)
-          .setDestinationInExternalFilesDir(
-              context, Environment.DIRECTORY_PODCASTS, Long.toString(id));
-        downloadId = dM.enqueue(rq);
-      }
-
-      ContentValues cv = new ContentValues(1);
-      cv.put(Provider.K_EDID, downloadId);
-      context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), cv, null, null);
-      return true;
+    Storage storage = Preferences.getInstance().getStorage();
+    if (storage == null || !storage.isAvailableRW()) {
+      Log.e(TAG, "Discarding download, as there is no storage, or it isn't writable");
+      return false;
     }
+
+    // if file was downloaded before (e.g. partially or with error), remove it
+    File target = new File(storage.getPodcastDir(), Long.toString(id));
+    if (target.exists() && !target.delete()) {
+      Log.e(TAG, "Failed to delete previous download " + target);
+      return false;
+    }
+
+    DownloadManager.Request rq = new DownloadManager.Request(Uri.parse(url))
+        .setTitle(title)
+        .setAllowedOverMetered(false)
+        .setAllowedOverRoaming(false)
+        .setDestinationUri(Uri.fromFile(target))
+        .setDescription("Downloading podcast " + url)
+        .setVisibleInDownloadsUi(false)
+        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
+
+    DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+    long downloadId;
+    try {
+      downloadId = dM.enqueue(rq);
+    } catch (SecurityException e) {
+      if (storage.isPrimaryStorage()) {
+        throw e;
+      }
+      Log.w(TAG, "DM produced security exception. Downloading to primary storage and copying", e);
+      rq.setDestinationUri(null)
+        .setDestinationInExternalFilesDir(
+            context, Environment.DIRECTORY_PODCASTS, Long.toString(id));
+      downloadId = dM.enqueue(rq);
+    }
+
+    ContentValues cv = new ContentValues(1);
+    cv.put(Provider.K_EDID, downloadId);
+    context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), cv, null, null);
+    return true;
   }
 
 
@@ -272,29 +269,34 @@ public class DownloadStartReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    switch (intent.getAction()) {
-      case DOWNLOAD_HEARTBEAT_ACTION:
-        updateProgress(context);
-        break;
-      case UPDATE_QUEUE_ACTION:
-        updateDownloadQueue(context);
-        break;
-      case NEW_EPISODE_ACTION:
-        if (getRunningCount(context) < Preferences.getInstance().getMaxDownloads().toInt()) {
-          download(context,
-                   intent.getStringExtra(URL_EXTRA_NAME),
-                   intent.getStringExtra(TITLE_EXTRA_NAME),
-                   intent.getLongExtra(ID_EXTRA_NAME, -1));
-        }
-        break;
-      case DownloadManager.ACTION_NOTIFICATION_CLICKED:
-        Intent i = new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(i);
-        break;
-      case DownloadManager.ACTION_DOWNLOAD_COMPLETE:
-        processDownloadResult(context, intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L));
-        updateDownloadQueue(context);
-        break;
+    // wait while preferences are changing
+    synchronized (Preferences.getInstance()) {
+      switch (intent.getAction()) {
+        case DOWNLOAD_HEARTBEAT_ACTION:
+          updateProgress(context);
+          break;
+        case UPDATE_QUEUE_ACTION:
+          updateDownloadQueue(context);
+          break;
+        case NEW_EPISODE_ACTION:
+          if (getRunningCount(context) < Preferences.getInstance().getMaxDownloads().toInt()) {
+            download(context,
+                     intent.getStringExtra(URL_EXTRA_NAME),
+                     intent.getStringExtra(TITLE_EXTRA_NAME),
+                     intent.getLongExtra(ID_EXTRA_NAME, -1));
+          }
+          break;
+        case DownloadManager.ACTION_NOTIFICATION_CLICKED:
+          Intent i = new Intent(context, MainActivity.class)
+              .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          context.startActivity(i);
+          break;
+        case DownloadManager.ACTION_DOWNLOAD_COMPLETE:
+          processDownloadResult(context,
+                                intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L));
+          updateDownloadQueue(context);
+          break;
+      }
     }
   }
 
