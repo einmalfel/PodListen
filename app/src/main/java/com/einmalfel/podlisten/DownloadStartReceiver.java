@@ -14,6 +14,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Date;
 
 public class DownloadStartReceiver extends BroadcastReceiver {
   private static final String TAG = "DSR";
@@ -126,6 +127,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     // update episode download state
     ContentValues values = new ContentValues(4);
     values.put(Provider.K_EDID, 0);
+    values.put(Provider.K_EDTSTAMP, new Date().getTime());
     File file = new File(fileName);
     if (status == DownloadManager.STATUS_SUCCESSFUL && isDownloadedFileOk(file)) {
       Log.i(TAG, "Successfully downloaded " + episodeId);
@@ -182,11 +184,14 @@ public class DownloadStartReceiver extends BroadcastReceiver {
       return;
     }
 
+    long refreshIntervalMs = Preferences.getInstance().getRefreshInterval().periodSeconds * 1000;
     Cursor queue = context.getContentResolver().query(
         Provider.episodeUri,
         new String[]{Provider.K_EAURL, Provider.K_ENAME, Provider.K_ID},
-        Provider.K_EDID + " == ? AND " + Provider.K_EDATT + " < ? AND " + Provider.K_ESTATE + " != ? AND " + Provider.K_EDFIN + " != ?",
-        new String[]{"0", "50000000000", Integer.toString(Provider.ESTATE_GONE), "100"},
+        Provider.K_EDID + " == ? AND " + Provider.K_ESTATE + " != ? AND "
+            + Provider.K_EDFIN + " != ? AND " + Provider.K_EDTSTAMP + " < ?",
+        new String[]{"0", Integer.toString(Provider.ESTATE_GONE), "100",
+                     Long.toString(new Date().getTime() - refreshIntervalMs)},
         Provider.K_EDATT + " ASC, " + Provider.K_EDATE + " ASC");
     if (queue == null) {
       throw new AssertionError("Unexpectedly got null while querying provider");

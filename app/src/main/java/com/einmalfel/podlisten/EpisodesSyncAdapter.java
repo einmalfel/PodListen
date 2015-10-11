@@ -5,6 +5,7 @@ import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -97,6 +98,8 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     if (!workersDone) {
       Log.e(TAG, "Some of workers hanged during sync");
+    } else {
+      getContext().sendBroadcast(new Intent(DownloadStartReceiver.UPDATE_QUEUE_ACTION));
     }
 
     syncState.stop();

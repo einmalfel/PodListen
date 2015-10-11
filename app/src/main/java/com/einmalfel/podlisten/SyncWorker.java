@@ -194,6 +194,7 @@ class SyncWorker implements Runnable {
     values.put(Provider.K_EPLAYED, 0);
     values.put(Provider.K_ELENGTH, 0);
     values.put(Provider.K_EDATT, 0);
+    values.put(Provider.K_EDTSTAMP, 0);
     values.put(Provider.K_EDFIN, 0);
     values.put(Provider.K_EDID, 0);
     Date date = episode.getPublicationDate();

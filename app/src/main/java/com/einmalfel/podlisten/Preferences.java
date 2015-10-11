@@ -131,9 +131,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
     cursor.close();
 
-    ContentValues cv = new ContentValues(3);
+    ContentValues cv = new ContentValues(4);
     cv.put(Provider.K_EDID, 0);
     cv.put(Provider.K_EDFIN, 0);
+    cv.put(Provider.K_EDTSTAMP, 0);
     cv.put(Provider.K_EERROR, (String)null);
     context.getContentResolver().update(Provider.episodeUri, cv, null, null);
 
