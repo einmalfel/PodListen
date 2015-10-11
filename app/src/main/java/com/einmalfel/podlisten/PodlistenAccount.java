@@ -42,6 +42,10 @@ public class PodlistenAccount {
     ContentResolver.requestSync(account, appId, settingsBundle);
   }
 
+  void cancelRefresh() {
+    ContentResolver.cancelSync(account, appId);
+  }
+
   /** @param pollPeriod sync interval in seconds. Pass zero to disable periodic sync */
   void setupSync(int pollPeriod) {
     if (pollPeriod == 0) {
