@@ -247,9 +247,9 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     Cursor queue = context.getContentResolver().query(
         Provider.episodeUri,
         new String[]{Provider.K_EAURL, Provider.K_ENAME, Provider.K_ID},
-        Provider.K_EDID + " == ? AND " + Provider.K_ESTATE + " != ? AND "
-            + Provider.K_EDFIN + " != ? AND " + Provider.K_EDTSTAMP + " < ?",
-        new String[]{"0", Integer.toString(Provider.ESTATE_GONE), "100",
+        Provider.K_EDID + " == 0 AND " + Provider.K_ESTATE + " != ? AND "
+            + Provider.K_EDFIN + " != 100 AND " + Provider.K_EDTSTAMP + " < ?",
+        new String[]{Integer.toString(Provider.ESTATE_GONE),
                      Long.toString(new Date().getTime() - refreshIntervalMs)},
         Provider.K_EDATT + " ASC, " + Provider.K_EDATE + " ASC");
     if (queue == null) {
@@ -305,8 +305,8 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     Cursor c = context.getContentResolver().query(
         Provider.episodeUri,
         new String[]{Provider.K_ID, Provider.K_EDID},
-        Provider.K_EDID + " != ?",
-        new String[]{"0"},
+        Provider.K_EDID + " != 0",
+        null,
         null);
     while (c.moveToNext()) {
       long downLoadId = c.getLong(c.getColumnIndexOrThrow(Provider.K_EDID));

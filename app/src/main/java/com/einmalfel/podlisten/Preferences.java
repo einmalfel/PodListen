@@ -116,11 +116,8 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
    * - re-enable sync and re-run it to re-download images
    */
   private void clearStorage() {
-    Cursor cursor = context.getContentResolver().query(Provider.episodeUri,
-                                                       new String[]{Provider.K_EDID},
-                                                       Provider.K_EDID + " != ?",
-                                                       new String[]{"0"},
-                                                       null);
+    Cursor cursor = context.getContentResolver().query(
+        Provider.episodeUri, new String[]{Provider.K_EDID}, Provider.K_EDID + " != 0", null, null);
 
     if (cursor == null) {
       throw new AssertionError("Got null cursor from podlisten provider");
