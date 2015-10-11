@@ -128,14 +128,22 @@ public class DownloadStartReceiver extends BroadcastReceiver {
    * destination and return destination file
    */
   @Nullable
-  private File getTargetFile(String filename) {
+  private File getTargetFile(@Nullable String filename) {
+    if (filename == null || filename.isEmpty()) {
+      Log.e(TAG, "Got empty filename " + filename);
+      return null;
+    }
+    File source = new File(filename);
+    if (!source.exists()) {
+      Log.e(TAG, "Temporary download file doesn't exist " + source);
+      return null;
+    }
     Storage storage = Preferences.getInstance().getStorage();
     if (storage == null) {
       Log.e(TAG, "No external storage available");
       return null;
     }
 
-    File source = new File(filename);
     try {
       if (!storage.contains(source)) {
         // TODO dispatch copy task to service and run it in background
