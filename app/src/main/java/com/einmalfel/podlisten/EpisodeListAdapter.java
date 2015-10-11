@@ -24,7 +24,7 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
   static final String[] REQUIRED_DB_COLUMNS = new String[]{
       Provider.K_EID, Provider.K_ENAME, Provider.K_EDESCR, Provider.K_EDFIN, Provider.K_ESIZE,
       Provider.K_ESTATE, Provider.K_PNAME, Provider.K_EPLAYED, Provider.K_ELENGTH, Provider.K_EDATE,
-      Provider.K_EPID, Provider.K_ESDESCR};
+      Provider.K_EPID, Provider.K_ESDESCR, Provider.K_EERROR};
   private final ItemClickListener listener;
   private final Set<Long> expandedElements = new HashSet<>(10);
   private long currentPlayingId = 0;
@@ -85,6 +85,7 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
         cursor.getLong(cursor.getColumnIndex(Provider.K_EDATE)),
         cursor.getLong(cursor.getColumnIndex(Provider.K_EDFIN)),
         cursor.getString(cursor.getColumnIndex(Provider.K_ESDESCR)),
+        cursor.getString(cursor.getColumnIndex(Provider.K_EERROR)),
         currentPlayingId == id ? currentState : PlayerService.State.STOPPED,
         expandedElements.contains(id));
   }

@@ -109,8 +109,9 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
 
   public void bindEpisode(String title, String description, long id, long pid, long size, int state,
                           String feedTitle, long played, long length, long date, long downloaded,
-                          String shortDescr, PlayerService.State playerState, boolean expanded) {
-    titleText.setText(title);
+                          String shortDescr, String errorMessage, PlayerService.State playerState,
+                          boolean expanded) {
+    titleText.setText(errorMessage == null ? title : title + "\n" + errorMessage);
     if (description == null || description.trim().isEmpty()) {
       dividerBottom.setVisibility(View.GONE);
       descriptionText.setVisibility(View.GONE);

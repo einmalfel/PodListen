@@ -131,6 +131,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
       Log.i(TAG, "Successfully downloaded " + episodeId);
       values.put(Provider.K_EDFIN, 100);
       values.put(Provider.K_ESIZE, file.length());
+      values.put(Provider.K_EERROR, (String) null);
       // try get length
       MediaMetadataRetriever mmr = new MediaMetadataRetriever();
       String durationString = null;
@@ -152,6 +153,8 @@ public class DownloadStartReceiver extends BroadcastReceiver {
       mmr.release();
     } else {
       Log.w(TAG, episodeId + " download failed, reason " + reason);
+      // TODO: replace error code with smth human-readable
+      values.put(Provider.K_EERROR, "Download failed. Error code: " + reason);
       values.put(Provider.K_EDFIN, 0);
       values.put(Provider.K_EDATT, attempts + 1);
     }
