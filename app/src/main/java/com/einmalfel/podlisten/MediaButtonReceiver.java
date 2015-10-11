@@ -19,7 +19,6 @@ public class MediaButtonReceiver extends BroadcastReceiver {
   private static MediaSessionCompat session = null;
 
   static synchronized void setService(PlayerService playerService) {
-    Log.e(TAG, "Set service " + playerService);
     if (session == null && playerService != null) {
       ComponentName eventReceiver = new ComponentName(playerService.getPackageName(),
                                                       MediaButtonReceiver.class.getName());

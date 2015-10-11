@@ -164,6 +164,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
           int maxDownloadsOrdinal = Integer.valueOf(sPrefs.getString(
               Key.MAX_DOWNLOADS.toString(), "-1"));
           if (maxDownloadsOrdinal == -1) {
+            Log.i(TAG, "Setting default max parallel downloads: " + DEFAULT_MAX_DOWNLOADS);
             sPrefs.edit().putString(Key.MAX_DOWNLOADS.toString(),
                                     Integer.toString(DEFAULT_MAX_DOWNLOADS.ordinal())).commit();
           } else {

@@ -43,7 +43,6 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    Log.e(TAG, "code " + resultCode + " data " + data);
     if (resultCode == Activity.RESULT_OK) {
       urlText.setText(data.getData().toString());
     }

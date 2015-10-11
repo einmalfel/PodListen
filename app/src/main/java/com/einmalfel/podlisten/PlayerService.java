@@ -207,7 +207,6 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
   @Override
   public void onPrepared(MediaPlayer mp) {
-    Log.e(TAG, "onprepared");
     synchronized (this) {
       preparing = false;
       length = mp.getDuration();

@@ -293,7 +293,9 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         }
       });
     } else {
-      Log.e(TAG, "Playing non-existent episode " + id);
+      if (id != 0) {
+        Log.e(TAG, "Playing non-existent episode " + id);
+      }
       runOnUiThread(new Runnable() {
         @Override
         public void run() {
@@ -366,7 +368,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
-    Log.e(TAG, intent.toString());
+    Log.i(TAG, "Processing intent " + intent.toString());
     if (Intent.ACTION_VIEW.equals(intent.getAction())) {
       openSubscribeDialog(intent.getData());
     } else if (intent.hasExtra(PAGE_LAUNCH_OPTION)) {

@@ -234,7 +234,6 @@ public class PreferencesActivity extends AppCompatActivity {
     Intent showFolderIntent = new Intent(Intent.ACTION_VIEW);
     for (String mimeType : directoryMimeTypes) {
       showFolderIntent.setDataAndType(Uri.fromFile(dir), mimeType);
-      Log.e(TAG, mimeType);
       if (test) {
         if (showFolderIntent.resolveActivity(getPackageManager()) != null) {
           return true;
