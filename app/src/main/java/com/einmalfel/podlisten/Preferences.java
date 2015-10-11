@@ -108,11 +108,12 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   /**
    * When there is some downloaded episodes on current storage and user asks to switch storage
    * - stop all running downloads
+   * - stop and disable sync
    * - stop playback if not streaming (TODO)
    * - reset download progress and download ID fields
    * - remove old files
    * - ask download manager to start downloads for all non-gone episodes
-   * - request sync to re-download images
+   * - re-enable sync and re-run it to re-download images
    */
   private void clearStorage() {
     Cursor cursor = context.getContentResolver().query(Provider.episodeUri,
@@ -120,6 +121,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
                                                        Provider.K_EDID + " != ?",
                                                        new String[]{"0"},
                                                        null);
+
     if (cursor == null) {
       throw new AssertionError("Got null cursor from podlisten provider");
     }
@@ -130,6 +132,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
       dM.remove(cursor.getLong(downloadIdIndex));
     }
     cursor.close();
+
+    PodlistenAccount account = PodlistenAccount.getInstance();
+    account.setupSync(0);
+    account.cancelRefresh();
 
     ContentValues cv = new ContentValues(4);
     cv.put(Provider.K_EDID, 0);
@@ -150,7 +156,8 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     context.sendBroadcast(new Intent(DownloadStartReceiver.UPDATE_QUEUE_ACTION));
-    PodlistenAccount.getInstance().refresh(0);
+    account.refresh(0);
+    account.setupSync(getRefreshInterval().periodSeconds);
   }
 
   private synchronized void readPreference(SharedPreferences sPrefs, Key key) {
