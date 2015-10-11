@@ -8,12 +8,16 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.util.Date;
 
 public class DownloadStartReceiver extends BroadcastReceiver {
@@ -52,7 +56,19 @@ public class DownloadStartReceiver extends BroadcastReceiver {
           .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
 
       DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-      long downloadId = dM.enqueue(rq);
+      long downloadId;
+      try {
+        downloadId = dM.enqueue(rq);
+      } catch (SecurityException e) {
+        if (storage.isPrimaryStorage()) {
+          throw e;
+        }
+        Log.w(TAG, "DM produced security exception. Downloading to primary storage and copying", e);
+        rq.setDestinationUri(null)
+          .setDestinationInExternalFilesDir(
+              context, Environment.DIRECTORY_PODCASTS, Long.toString(id));
+        downloadId = dM.enqueue(rq);
+      }
 
       ContentValues cv = new ContentValues(1);
       cv.put(Provider.K_EDID, downloadId);
@@ -92,6 +108,52 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     }
   }
 
+  public static void moveFile(File source, File destination) throws IOException {
+    FileChannel outChannel = null;
+    FileChannel inChannel = null;
+    try {
+      inChannel = new FileInputStream(source).getChannel();
+      outChannel = new FileOutputStream(destination).getChannel();
+      inChannel.transferTo(0, inChannel.size(), outChannel);
+      if (!source.delete()) {
+        throw new IOException("Failed to delete " + source);
+      }
+    } finally {
+      if (inChannel != null)
+        inChannel.close();
+      if (outChannel != null)
+        outChannel.close();
+    }
+  }
+
+  /**
+   * Check if file was temporarily downloaded to primary external storage, copy it to its
+   * destination and return destination file
+   */
+  @Nullable
+  private File getTargetFile(String filename) {
+    Storage storage = Preferences.getInstance().getStorage();
+    if (storage == null) {
+      Log.e(TAG, "No external storage available");
+      return null;
+    }
+
+    File source = new File(filename);
+    try {
+      if (!storage.contains(source)) {
+        // TODO dispatch copy task to service and run it in background
+        File destination = new File(storage.getPodcastDir(), source.getName());
+        moveFile(source, destination);
+        return destination;
+      } else {
+        return source;
+      }
+    } catch (IOException exception) {
+      Log.e(TAG, "Failed to convert file name to canonical form: " + source);
+      return null;
+    }
+  }
+
   private void processDownloadResult(Context context, long downloadId) {
     // get episode id and attempts count
     Cursor c = context.getContentResolver().query(
@@ -128,7 +190,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     ContentValues values = new ContentValues(4);
     values.put(Provider.K_EDID, 0);
     values.put(Provider.K_EDTSTAMP, new Date().getTime());
-    File file = new File(fileName);
+    File file = getTargetFile(fileName);
     if (status == DownloadManager.STATUS_SUCCESSFUL && isDownloadedFileOk(file)) {
       Log.i(TAG, "Successfully downloaded " + episodeId);
       values.put(Provider.K_EDFIN, 100);
