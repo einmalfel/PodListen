@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.zip.DataFormatException;
@@ -35,7 +36,14 @@ class SyncWorker implements Runnable {
   private static final int MAX_EPISODES_TO_PARSE = 1000;
   private static final Pattern AUDIO_PATTERN = Pattern.compile("^audio/\\w*");
   private static final int TIMEOUT_MS = 15000;
+  private static final Date PODCAST_EPOCH;
 
+  // there where no podcasts before year 2000. Earlier pubDate's will be replaced with current time
+  static {
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(2000, 0, 0);
+    PODCAST_EPOCH = calendar.getTime();
+  }
 
   private final long id;
   private final String link;
@@ -61,14 +69,14 @@ class SyncWorker implements Runnable {
 
       // Episodes need to be timestamped before subscriptions, otherwise cleanup algorithm may
       // delete fresh episodes in case of an exception between feed and episodes update
-      long timestamp = new Date().getTime();
+      Date timestamp = new Date();
 
       int newEpisodesInserted = 0;
       for (Item episode : feed.getItems()) {
         boolean markNew = newEpisodesInserted < refreshMode.getCount();
         Date pubDate = episode.getPublicationDate();
         if (pubDate != null) {
-          markNew &= timestamp - pubDate.getTime() < refreshMode.getMaxAge();
+          markNew &= timestamp.getTime() - pubDate.getTime() < refreshMode.getMaxAge();
         }
         if (tryInsertEpisode(episode, id, timestamp, provider, markNew) && markNew) {
           newEpisodesInserted++;
@@ -83,7 +91,7 @@ class SyncWorker implements Runnable {
             Provider.episodeUri,
             new String[]{Provider.K_ID},
             Provider.K_ETSTAMP + " < ? AND " + Provider.K_ESTATE + " == ? AND " + Provider.K_EPID + " == ?",
-            new String[]{Long.toString(timestamp),
+            new String[]{Long.toString(timestamp.getTime()),
                          Integer.toString(Provider.ESTATE_GONE),
                          Long.toString(id)},
             null);
@@ -132,9 +140,15 @@ class SyncWorker implements Runnable {
     }
   }
 
-  /**@return true if episode was inserted, false in case of error or if episode was already in DB*/
-  private boolean tryInsertEpisode(@NonNull Item episode, long subscriptionId, long timestamp,
-                                   @NonNull ContentProviderClient provider, boolean markNew) {
+  @NonNull
+  private Date correctDate(@Nullable Date date, @NonNull Date current) {
+    return date == null || date.after(current) || date.before(PODCAST_EPOCH) ? current : date;
+  }
+
+  /** @return true if episode was inserted, false in case of error or if episode was already in DB */
+  private boolean tryInsertEpisode(
+      @NonNull Item episode, long subscriptionId, @NonNull Date timestamp,
+      @NonNull ContentProviderClient provider, boolean markNew) {
     String title = episode.getTitle();
     if (title == null) {
       title = "NO TITLE";
@@ -197,13 +211,10 @@ class SyncWorker implements Runnable {
     values.put(Provider.K_EDTSTAMP, 0);
     values.put(Provider.K_EDFIN, 0);
     values.put(Provider.K_EDID, 0);
-    Date date = episode.getPublicationDate();
-    if (date != null) {
-      values.put(Provider.K_EDATE, date.getTime());
-    }
+    values.put(Provider.K_EDATE, correctDate(episode.getPublicationDate(), timestamp).getTime());
     values.put(Provider.K_EPID, subscriptionId);
     values.put(Provider.K_ID, id);
-    values.put(Provider.K_ETSTAMP, timestamp);
+    values.put(Provider.K_ETSTAMP, timestamp.getTime());
     values.put(Provider.K_ESTATE, markNew ? Provider.ESTATE_NEW : Provider.ESTATE_GONE);
     try {
       provider.insert(Provider.episodeUri, values);
@@ -238,7 +249,8 @@ class SyncWorker implements Runnable {
    * @throws RemoteException
    */
   @Nullable
-  private String updateFeed(long id, @NonNull Feed feed, long timestamp) throws RemoteException {
+  private String updateFeed(long id, @NonNull Feed feed, @NonNull Date timestamp)
+      throws RemoteException {
     ContentValues values = new ContentValues();
     String title = feed.getTitle();
     values.put(Provider.K_PFURL, link);
@@ -253,7 +265,7 @@ class SyncWorker implements Runnable {
       values.put(Provider.K_PSDESCR, getShortDescription(simplifiedDescription));
     }
     values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
-    values.put(Provider.K_PTSTAMP, timestamp);
+    values.put(Provider.K_PTSTAMP, timestamp.getTime());
     String image = feed.getImageLink();
     if (!ImageManager.getInstance().isDownloaded(id) && image != null) {
       try {
@@ -303,9 +315,9 @@ class SyncWorker implements Runnable {
   }
 
   private boolean updateEpisodeTimestamp(long id, @NonNull ContentProviderClient provider,
-                                         long timestamp) throws RemoteException {
+                                         @NonNull Date timestamp) throws RemoteException {
     ContentValues values = new ContentValues();
-    values.put(Provider.K_ETSTAMP, timestamp);
+    values.put(Provider.K_ETSTAMP, timestamp.getTime());
     return provider.update(Provider.getUri(Provider.T_EPISODE, id), values, null, null) > 0;
   }
 
