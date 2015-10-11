@@ -21,5 +21,14 @@
                 android:targetClass="com.einmalfel.podlisten.PreferencesActivity"
                 android:targetPackage="com.einmalfel.podlisten"/>
         </Preference>
+        <Preference
+            android:key="OPML_EXPORT"
+            android:summary="@string/preferences_opml_export_summary"
+            android:title="@string/preferences_opml_export_title">
+            <intent
+                android:action="com.einmalfel.podlisten.OPML_EXPORT"
+                android:targetClass="com.einmalfel.podlisten.PreferencesActivity"
+                android:targetPackage="com.einmalfel.podlisten"/>
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
