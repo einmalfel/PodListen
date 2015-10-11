@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -17,6 +18,7 @@ public class SyncState {
   private final SyncResult syncResult;
   private final NotificationManagerCompat nm;
   private final NotificationCompat.Builder nb;
+  private final Context context;
   private int maxFeeds = 0;
   private int errors = 0;
   private int parsed = 0;
@@ -25,6 +27,7 @@ public class SyncState {
 
   SyncState(@NonNull Context context, @NonNull SyncResult syncResult) {
     this.syncResult = syncResult;
+    this.context = context;
     nm = NotificationManagerCompat.from(context);
     nb = new NotificationCompat.Builder(context);
     Intent intent = new Intent(context, MainActivity.class);
@@ -57,12 +60,37 @@ public class SyncState {
   }
 
   synchronized void stop() {
-    StringBuilder stringBuilder = new StringBuilder(newEpisodes + " episode(s) added");
-    if (parsed > 0) {
-      stringBuilder.append(", ").append(parsed).append(" feed(s) refreshed");
-    }
-    if (errors > 0) {
-      stringBuilder.append(", ").append(errors).append(" feed(s) failed to refresh");
+    Cursor cursor = context.getContentResolver().query(
+        Provider.episodeUri,
+        null,
+        Provider.K_ESTATE + " == ?", new String[]{Integer.toString(Provider.ESTATE_NEW)},
+        null,
+        null);
+    StringBuilder stringBuilder = new StringBuilder();
+    if (cursor == null) {
+      stringBuilder.append("DB error");
+    } else {
+      int count = cursor.getCount();
+      cursor.close();
+      stringBuilder.append("New episodes: ");
+      if (count == newEpisodes) {
+        stringBuilder.append(newEpisodes);
+      } else {
+        stringBuilder.append(count);
+        if (newEpisodes > 0) {
+          stringBuilder.append("(+")
+                       .append(newEpisodes)
+                       .append(")");
+        }
+      }
+      if (parsed > 0) {
+        stringBuilder.append(", Feeds loaded: ")
+                     .append(parsed);
+      }
+      if (errors > 0) {
+        stringBuilder.append(", Failed to load: ")
+                     .append(errors);
+      }
     }
     nb.setOngoing(false)
       .setAutoCancel(true)
