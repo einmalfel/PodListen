@@ -27,7 +27,7 @@ import android.widget.RemoteViews;
 public class WidgetHelper implements PlayerService.PlayerStateListener {
   private final Intent activityIntent;
 
-  enum WidgetAction {PLAY_PAUSE, SEEK_FORWARD, SEEK_BACKWARD, NEXT_EPISODE}
+  enum WidgetAction {PLAY_PAUSE, SEEK_FORWARD, SEEK_BACKWARD, NEXT_EPISODE, STOP}
 
   private static final String TAG = "WGH";
   private static final Class rxClass = WidgetProvider.class;
@@ -66,6 +66,8 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     rvFull.setOnClickPendingIntent(R.id.next_button, intents[WidgetAction.NEXT_EPISODE.ordinal()]);
     rvFull.setOnClickPendingIntent(R.id.fb_button, intents[WidgetAction.SEEK_BACKWARD.ordinal()]);
     rvFull.setOnClickPendingIntent(R.id.ff_button, intents[WidgetAction.SEEK_FORWARD.ordinal()]);
+    rvFull.setOnClickPendingIntent(R.id.play_options, intents[WidgetAction.STOP.ordinal()]);
+    rvFull.setImageViewResource(R.id.play_options, R.mipmap.ic_stop_white_36dp);
     builder.setSmallIcon(R.drawable.main_icon).setPriority(NotificationCompat.PRIORITY_LOW)
         .setOngoing(true).setCategory(NotificationCompat.CATEGORY_SERVICE).setContent(rvFull);
     connection.bind();
@@ -104,6 +106,9 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
         break;
       case SEEK_BACKWARD:
         connection.service.jumpBackward();
+        break;
+      case STOP:
+        connection.service.stop();
         break;
     }
   }
@@ -144,6 +149,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     boolean seekable = state == PlayerService.State.PLAYING || state == PlayerService.State.PAUSED;
     setButtonEnabled(seekable, rv, R.id.ff_button);
     setButtonEnabled(seekable, rv, R.id.fb_button);
+    setButtonEnabled(state != PlayerService.State.STOPPED, rv, R.id.play_options);
     if (state == PlayerService.State.PLAYING) {
       rv.setImageViewResource(R.id.play_button, R.mipmap.ic_pause_white_36dp);
     } else {
