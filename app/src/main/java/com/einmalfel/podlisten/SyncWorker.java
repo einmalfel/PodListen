@@ -68,7 +68,7 @@ class SyncWorker implements Runnable {
         boolean markNew = newEpisodesInserted < refreshMode.getCount();
         Date pubDate = episode.getPublicationDate();
         if (pubDate != null) {
-          markNew &= new Date().getTime() - pubDate.getTime() < refreshMode.getMaxAge();
+          markNew &= timestamp - pubDate.getTime() < refreshMode.getMaxAge();
         }
         if (tryInsertEpisode(episode, id, timestamp, provider, markNew) && markNew) {
           newEpisodesInserted++;
