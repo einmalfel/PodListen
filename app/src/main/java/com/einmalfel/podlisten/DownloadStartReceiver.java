@@ -91,11 +91,28 @@ public class DownloadStartReceiver extends BroadcastReceiver {
         return false; // it's to small to be audio file
       } else if (length < 5 * 1024 * 1024) {
         RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-        char firstChar = randomAccessFile.readChar();
-        randomAccessFile.seek(length - 1);
-        char lastChar = randomAccessFile.readChar();
-        randomAccessFile.close();
-        return firstChar != '<' || lastChar != '>';
+
+        for (long offset = 0; offset < length; offset++) {
+          randomAccessFile.seek(offset);
+          char firstChar = randomAccessFile.readChar();
+          if (!Character.isWhitespace(firstChar)) {
+            if (firstChar == '<') {
+              break; // file begins with \s*<, now check if it ends with >\s*
+            } else {
+              return true;
+            }
+          }
+        }
+
+        for (long offset = length - 1; offset >= 0; offset--) {
+          randomAccessFile.seek(offset);
+          char lastChar = randomAccessFile.readChar();
+          if (!Character.isWhitespace(lastChar)) {
+            return lastChar != '>';
+          }
+        }
+
+        return false; // file consists of whitespaces. It's probably not media
       } else {
         return true; // file is big enough, it's probably media, not html
       }
