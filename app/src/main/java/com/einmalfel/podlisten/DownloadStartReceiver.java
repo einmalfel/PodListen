@@ -269,6 +269,10 @@ public class DownloadStartReceiver extends BroadcastReceiver {
     }
 
     long refreshIntervalMs = Preferences.getInstance().getRefreshInterval().periodSeconds * 1000;
+    long dayRefreshInterval = Preferences.RefreshIntervalOption.DAY.periodSeconds * 1000;
+    if (refreshIntervalMs == 0 || refreshIntervalMs > dayRefreshInterval) {
+      refreshIntervalMs = dayRefreshInterval;
+    }
     Cursor queue = context.getContentResolver().query(
         Provider.episodeUri,
         new String[]{Provider.K_EAURL, Provider.K_ENAME, Provider.K_ID},
