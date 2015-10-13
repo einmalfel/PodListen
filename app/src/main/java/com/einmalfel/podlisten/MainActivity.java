@@ -344,6 +344,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       if (playlistFragment != null) {
         playlistFragment.showEpisode(connection.service.getEpisodeId(),
                                      pager.getCurrentItem() == Pages.PLAYLIST.ordinal());
+        pager.setCurrentItem(Pages.PLAYLIST.ordinal());
       }
     } else if (v == optionsButton) {
       startActivity(new Intent(this, PreferencesActivity.class));
