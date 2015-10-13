@@ -39,7 +39,8 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private final ProgressBar progressBar;
   private final FrameLayout playAddFrame;
   private long id = 0;
-  private boolean expanded;
+  private boolean expanded = false;
+  private long downloaded = -1;
 
   long getId() {
     return id;
@@ -111,21 +112,23 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
                           String feedTitle, long played, long length, long date, long downloaded,
                           String shortDescr, String errorMessage, PlayerService.State playerState,
                           boolean expanded) {
-    titleText.setText(errorMessage == null ? title : title + "\n" + errorMessage);
-    if (description == null || description.trim().isEmpty()) {
-      dividerBottom.setVisibility(View.GONE);
-      descriptionText.setVisibility(View.GONE);
-    } else {
-      if (expanded) {
-        descriptionText.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
+    if (id != this.id || expanded != this.expanded) {
+      titleText.setText(errorMessage == null ? title : title + "\n" + errorMessage);
+      if (description == null || description.isEmpty()) {
+        dividerBottom.setVisibility(View.GONE);
+        descriptionText.setVisibility(View.GONE);
       } else {
-        descriptionText.setText(shortDescr, TextView.BufferType.NORMAL);
+        if (expanded) {
+          descriptionText.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
+        } else {
+          descriptionText.setText(shortDescr, TextView.BufferType.NORMAL);
+        }
+        descriptionText.setSingleLine(!expanded);
+        dividerBottom.setVisibility(View.VISIBLE);
+        descriptionText.setVisibility(View.VISIBLE);
       }
-      descriptionText.setSingleLine(!expanded);
-      dividerBottom.setVisibility(View.VISIBLE);
-      descriptionText.setVisibility(View.VISIBLE);
+      feedTitleText.setText(feedTitle);
     }
-    feedTitleText.setText(feedTitle);
 
     if (downloaded == 100 && state != Provider.ESTATE_NEW) {
       if (playerState == PlayerService.State.STOPPED) {
@@ -162,16 +165,18 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       }
     }
 
-    StringBuilder timeSize = new StringBuilder();
-    if (length > 0) {
-      timeSize.append(PodcastHelper.shortFormatDurationMs(length));
-      timeSize.append(" ");
+    if ((downloaded == 100 && this.downloaded != 100) || id != this.id) {
+      StringBuilder timeSize = new StringBuilder();
+      if (length > 0) {
+        timeSize.append(PodcastHelper.shortFormatDurationMs(length));
+        timeSize.append(" ");
+      }
+      if (size > 1024) {
+        timeSize.append(PodcastHelper.humanReadableByteCount(size, true));
+      }
+      timeSizeText.setText(timeSize);
+      dateText.setText(PodcastHelper.shortDateFormat(date));
     }
-    if (size > 1024) {
-      timeSize.append(PodcastHelper.humanReadableByteCount(size, true));
-    }
-    timeSizeText.setText(timeSize);
-    dateText.setText(PodcastHelper.shortDateFormat(date));
 
     // use feed image if there is no episode image
     Bitmap image = ImageManager.getInstance().getImage(id);
@@ -188,5 +193,6 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
 
     this.id = id;
     this.expanded = expanded;
+    this.downloaded = downloaded;
   }
 }
