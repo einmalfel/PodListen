@@ -285,33 +285,40 @@ class SyncWorker implements Runnable {
     return plain.substring(0, pL > Provider.SHORT_DESCR_LENGTH ? Provider.SHORT_DESCR_LENGTH : pL);
   }
 
-  private static final Pattern brPattern = Pattern.compile("<br.*?/>\\s*<br.*/>|<p/?>|</li>");
-  private static final Pattern erasePattern = Pattern.compile("<img.+?>|</p>|</?ul/?>");
-  private static final Pattern listPattern = Pattern.compile("<li>");
-  private static final Pattern spannedStartPattern = Pattern.compile("\\A<p dir=\"ltr\">");
-  private static final Pattern spannedEndPattern = Pattern.compile("</p>\\z");
+  // use <br[^>]*> instead of <br.*?> because <br.*?><bt.*?> will match <br/><sometag><br/>
+  private static final String BR_TAG = "</?br[^>]*>";
+  private static final Pattern listPattern = Pattern.compile("<li[^>]*>");
+  private static final Pattern brPattern = Pattern.compile("</?img[^>]*>|</?li[^>]*>|\\n");
+  private static final Pattern paragraphPattern = Pattern.compile("</?p[^>]*>");
+  private static final Pattern trimStartPattern = Pattern.compile("\\A(\\s|" + BR_TAG + ")*");
+  private static final Pattern trimEndPattern = Pattern.compile("(\\s|" + BR_TAG + ")*\\Z");
+  private static final Pattern brRepeatPattern = Pattern.compile("(\\s*" + BR_TAG + "\\s*)+");
 
   @NonNull
-  private static String simplifyHTML(@NonNull String text) {
-    text = erasePattern.matcher(text).replaceAll("");
+  static String simplifyHTML(@NonNull String text) {
+    // replace opening <li> tag with bullet symbol. Otherwise <li> will be thrown out by Html.toHtml
     text = listPattern.matcher(text).replaceAll("\u2022");
+
+    // replace \n and </li> with line breaks. Need all LF tokens to be <br> to reduce them later
     text = brPattern.matcher(text).replaceAll("<br/>");
 
-    // on next line we throw out tags not supported by spanned text
+    // throw out tags not supported by spanned text
     text = Html.toHtml(Html.fromHtml(text));
+
+    // toHtml may add some excess <p> tags
+    text = paragraphPattern.matcher(text).replaceAll("<br/>");
 
     // There is a problem: toHtml returns escaped html, thus making resulting string much longer.
     // The only solution I found is to make use of unbescape library.
-    text = XmlEscape.unescapeXml(text).trim();
+    text = XmlEscape.unescapeXml(text);
 
-    // toHtml frames result in <p dir="ltr">...</p> (direction could probably be locale-dependent).
-    // TextView will display it as additional whitespace at the end of text, so try to delete it.
-    if (spannedStartPattern.matcher(text).find() && spannedEndPattern.matcher(text).find()) {
-      text = spannedStartPattern.matcher(text).replaceAll("");
-      text = spannedEndPattern.matcher(text).replaceAll("");
-    }
+    // trim all whitespaces and <br>'s at the start and at the end
+    text = trimEndPattern.matcher(text).replaceAll("");
+    text = trimStartPattern.matcher(text).replaceAll("");
 
-    return text.trim();
+    // reduce repeated <br>'s
+    text = brRepeatPattern.matcher(text).replaceAll("<br/>");
+    return text;
   }
 
   private boolean updateEpisodeTimestamp(long id, @NonNull ContentProviderClient provider,
