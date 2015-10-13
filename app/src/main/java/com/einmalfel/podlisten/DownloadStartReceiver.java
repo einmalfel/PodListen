@@ -94,7 +94,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
 
         for (long offset = 0; offset < length; offset++) {
           randomAccessFile.seek(offset);
-          char firstChar = randomAccessFile.readChar();
+          char firstChar = (char) randomAccessFile.readByte();
           if (!Character.isWhitespace(firstChar)) {
             if (firstChar == '<') {
               break; // file begins with \s*<, now check if it ends with >\s*
@@ -106,7 +106,7 @@ public class DownloadStartReceiver extends BroadcastReceiver {
 
         for (long offset = length - 1; offset >= 0; offset--) {
           randomAccessFile.seek(offset);
-          char lastChar = randomAccessFile.readChar();
+          char lastChar = (char) randomAccessFile.readByte();
           if (!Character.isWhitespace(lastChar)) {
             return lastChar != '>';
           }
