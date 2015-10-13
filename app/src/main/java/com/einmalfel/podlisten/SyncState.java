@@ -14,7 +14,7 @@ import android.support.v4.app.NotificationManagerCompat;
  * This class keeps records on sync errors and manages sync notification
  */
 public class SyncState {
-  private static final int NOTIFICATION_ID = 0;
+  private static final int NOTIFICATION_ID = 1;
   private final SyncResult syncResult;
   private final NotificationManagerCompat nm;
   private final NotificationCompat.Builder nb;

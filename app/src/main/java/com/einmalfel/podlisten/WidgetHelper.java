@@ -31,6 +31,8 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
 
   private static final String TAG = "WGH";
   private static final Class rxClass = WidgetProvider.class;
+  private static final int INTENT_ID_LAUNCH_ACTIVITY = 100;
+  private static final int INTENT_ID_BASE = 101; //ids 100-104 will be used for notification buttons
 
   private static WidgetHelper instance;
 
@@ -58,7 +60,8 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
       Intent intent = new Intent(context, rxClass);
       intent.setAction(action.name());
       int WidgetAction_id = action.ordinal();
-      intents[WidgetAction_id] = PendingIntent.getBroadcast(context, WidgetAction_id, intent, 0);
+      intents[WidgetAction_id] = PendingIntent.getBroadcast(
+          context, INTENT_ID_BASE + WidgetAction_id, intent, 0);
     }
     activityIntent = new Intent(context, MainActivity.class);
     activityIntent.putExtra(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.PLAYLIST.ordinal());
@@ -181,7 +184,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
       activityIntent.putExtra(MainActivity.EPISODE_ID_OPTION, id);
     }
     PendingIntent pendingIntent = PendingIntent.getActivity(
-        context, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        context, INTENT_ID_LAUNCH_ACTIVITY, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     rv.setOnClickPendingIntent(R.id.player, pendingIntent);
   }
 
