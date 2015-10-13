@@ -223,7 +223,7 @@ class SyncWorker implements Runnable {
       return false;
     }
 
-    // notify DownloadStartReceiver about new episode
+    // notify DownloadReceiver about new episode
     if (markNew) {
       Log.d(TAG, "New episode! " + title);
       String image = episode.getImageLink();
@@ -234,10 +234,10 @@ class SyncWorker implements Runnable {
           Log.w(TAG, image + ": Episode image download failed: ", exception);
         }
       }
-      Intent bi = new Intent(DownloadStartReceiver.NEW_EPISODE_ACTION);
-      bi.putExtra(DownloadStartReceiver.URL_EXTRA_NAME, audioLink);
-      bi.putExtra(DownloadStartReceiver.TITLE_EXTRA_NAME, title);
-      bi.putExtra(DownloadStartReceiver.ID_EXTRA_NAME, id);
+      Intent bi = new Intent(DownloadReceiver.NEW_EPISODE_ACTION);
+      bi.putExtra(DownloadReceiver.URL_EXTRA_NAME, audioLink);
+      bi.putExtra(DownloadReceiver.TITLE_EXTRA_NAME, title);
+      bi.putExtra(DownloadReceiver.ID_EXTRA_NAME, id);
       PodListenApp.getContext().sendBroadcast(bi);
     }
 

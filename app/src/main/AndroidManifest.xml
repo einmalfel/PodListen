@@ -124,7 +124,7 @@
         </provider>
 
         <receiver
-            android:name=".DownloadStartReceiver"
+            android:name=".DownloadReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

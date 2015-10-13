@@ -99,7 +99,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     if (!workersDone) {
       Log.e(TAG, "Some of workers hanged during sync");
     } else {
-      getContext().sendBroadcast(new Intent(DownloadStartReceiver.UPDATE_QUEUE_ACTION));
+      getContext().sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
     }
 
     syncState.stop();
