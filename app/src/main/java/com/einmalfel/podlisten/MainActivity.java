@@ -382,5 +382,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       }
       pager.setCurrentItem(page);
     }
+    // intents in this activity are associated with one-time action (e.g. show subscribe dialog)
+    setIntent(null);
   }
 }
