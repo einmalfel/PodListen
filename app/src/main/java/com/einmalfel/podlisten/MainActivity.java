@@ -342,7 +342,8 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       connection.service.jumpBackward();
     } else if (v == episodeImage) {
       if (playlistFragment != null) {
-        playlistFragment.showEpisode(connection.service.getEpisodeId());
+        playlistFragment.showEpisode(connection.service.getEpisodeId(),
+                                     pager.getCurrentItem() == Pages.PLAYLIST.ordinal());
       }
     } else if (v == optionsButton) {
       startActivity(new Intent(this, PreferencesActivity.class));
@@ -374,10 +375,11 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     } else if (intent.hasExtra(PAGE_LAUNCH_OPTION)) {
       int page = intent.getIntExtra(PAGE_LAUNCH_OPTION, Pages.PLAYLIST.ordinal());
       Log.d(TAG, "Setting page " + page);
-      pager.setCurrentItem(page);
       if (intent.hasExtra(EPISODE_ID_OPTION) && playlistFragment != null) {
-        playlistFragment.showEpisode(intent.getLongExtra(EPISODE_ID_OPTION, 0));
+        playlistFragment.showEpisode(intent.getLongExtra(EPISODE_ID_OPTION, 0),
+                                     pager.getCurrentItem() == Pages.PLAYLIST.ordinal());
       }
+      pager.setCurrentItem(page);
     }
   }
 }

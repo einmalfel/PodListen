@@ -118,11 +118,15 @@ public class PlaylistFragment extends DebuggableFragment implements
     adapter.setCurrentIdState(id, conn.service.getState());
   }
 
-  void showEpisode(long id) {
+  void showEpisode(long id, boolean smoothScroll) {
     for (int pos = 0; pos < adapter.getItemCount(); pos++) {
       if (adapter.getItemId(pos) == id) {
         Log.d(TAG, "scrolling to " + pos + " id " + id);
-        rv.smoothScrollToPosition(pos);
+        if (smoothScroll) {
+          rv.smoothScrollToPosition(pos);
+        } else {
+          rv.scrollToPosition(pos);
+        }
         adapter.setExpanded(id, true, pos);
         return;
       }
