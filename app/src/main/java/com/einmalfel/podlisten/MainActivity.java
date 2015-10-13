@@ -153,6 +153,12 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     });
 
     connection = new PlayerLocalConnection(this);
+
+    // if activity was recreated, clear its original intent (like action.VIEW), otherwise it will be
+    // processed in onResume()
+    if (savedInstanceState != null) {
+      setIntent(null);
+    }
   }
 
 
@@ -235,6 +241,11 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       }
     }, 0, DOWNLOAD_CHECK_PERIOD);
     fab.show();
+
+    Intent launchIntent = getIntent();
+    if (launchIntent != null) {
+      onNewIntent(launchIntent);
+    }
   }
 
   @Override
