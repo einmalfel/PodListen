@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class SubscribeDialog extends AppCompatDialogFragment implements View.OnClickListener {
   static final String URL_ARG = "com.einmalfel.podlisten.url_arg";
@@ -54,7 +55,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     // Dialog may become invisible after this click. Attach snackbars to activity root view.
     final View acRoot = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
 
-    String link = urlText.getText().toString();
+    String link = completeUrlString(urlText.getText());
     try {
       // First, try to process it as local OPML file
       InputStream inputStream = getActivity().getContentResolver().openInputStream(Uri.parse(link));
@@ -137,12 +138,13 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
 
     urlText = (EditText) getDialog().findViewById(R.id.url_text);
     urlText.addTextChangedListener(new TextWatcher() {
+
       @Override
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
       @Override
       public void onTextChanged(CharSequence s, int start, int before, int count) {
-        subscribeButton.setEnabled(URLUtil.isValidUrl(s.toString()));
+        subscribeButton.setEnabled(URLUtil.isValidUrl(completeUrlString(s)));
       }
 
       @Override
@@ -188,5 +190,11 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     spinnerDrawable.setColorFilter(ContextCompat.getColor(getContext(), R.color.accent_primary),
                                    PorterDuff.Mode.SRC_ATOP);
     spinner.setBackground(spinnerDrawable);
+  }
+
+  private static final Pattern URL_SCHEME = Pattern.compile(".*://.*");
+
+  private static String completeUrlString(CharSequence sequence) {
+    return (URL_SCHEME.matcher(sequence).matches() ? sequence : "http://" + sequence).toString();
   }
 }
