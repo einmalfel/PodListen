@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -20,7 +21,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerService extends DebuggableService implements MediaPlayer.OnSeekCompleteListener,
-    MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener {
+    MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener,
+    AudioManager.OnAudioFocusChangeListener {
 
   enum State {STOPPED, STOPPED_ERROR, PLAYING, PAUSED, UPDATE_ME}
 
@@ -136,6 +138,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   private static final int NOTIFICATION_ID = 2;
   private static final String TAG = "PPS";
   private static final int JUMP_INTERVAL = 30000;
+  private static final float NO_FOCUS_VOLUME = 0.2f;
 
   private final CallbackThread callbackThread = new CallbackThread(this);
   private MediaPlayer player;
@@ -145,6 +148,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   private int length;
   private boolean preparing = false;
   private State state = State.STOPPED;
+  private int focusMode;
 
   class LocalBinder extends Binder {
     PlayerService getService() {
@@ -164,6 +168,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     Log.d(TAG, "Creating service");
     initPlayer();
     callbackThread.start();
+    focusMode = AudioManager.AUDIOFOCUS_LOSS;
   }
 
   @Override
@@ -218,6 +223,31 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       }
       mp.start();
     }
+  }
+
+  @Override
+  public synchronized void onAudioFocusChange(int focusChange) {
+    switch (focusChange) {
+      case AudioManager.AUDIOFOCUS_GAIN:
+        if (focusMode == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+          player.setVolume(1f, 1f);
+        } else if (focusMode == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT && state == State.PLAYING) {
+          resume();
+        }
+        break;
+      case AudioManager.AUDIOFOCUS_LOSS:
+        stop();
+        break;
+      case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+        pause();
+        break;
+      case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+        player.setVolume(NO_FOCUS_VOLUME, NO_FOCUS_VOLUME);
+        break;
+      default:
+        Log.w(TAG, "Unhandled audio focus change: " + focusChange);
+    }
+    focusMode = focusChange;
   }
 
   public synchronized void addListener(PlayerStateListener listener) {
@@ -335,6 +365,14 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
    * @return false if something wrong with media (not downloaded yet, sdcard ejected, wrong format)
    */
   public synchronized boolean playEpisode(long id) {
+    AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
+    int res = am.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+    if (res == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+      focusMode = AudioManager.AUDIOFOCUS_GAIN;
+    } else {
+      return false;
+    }
+
     currentId = id;
     progress = 0;
     callbackThread.post(CallbackType.EPISODE);
