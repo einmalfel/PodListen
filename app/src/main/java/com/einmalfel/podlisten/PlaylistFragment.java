@@ -85,14 +85,19 @@ public class PlaylistFragment extends DebuggableFragment implements
     }
   }
 
+  public void reloadList() {
+    activity.getSupportLoaderManager().restartLoader(
+        MainActivity.Pages.PLAYLIST.ordinal(), null, this);
+  }
+
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(activity,
-        Provider.episodeJoinPodcastUri,
-        EpisodeListAdapter.REQUIRED_DB_COLUMNS,
-        Provider.K_ESTATE + " = ?",
-        new String[]{Integer.toString(Provider.ESTATE_IN_PLAYLIST)},
-        Provider.K_EDATE);
+                            Provider.episodeJoinPodcastUri,
+                            EpisodeListAdapter.REQUIRED_DB_COLUMNS,
+                            Provider.K_ESTATE + " = ?",
+                            new String[]{Integer.toString(Provider.ESTATE_IN_PLAYLIST)},
+                            Preferences.getInstance().getSortingMode().toSql());
   }
 
   @Override

@@ -385,9 +385,12 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       PodcastHelper.getInstance().markEpisodeGone(currentId);
     }
     boolean result;
-    Cursor c = getContentResolver().query(Provider.episodeUri, new String[]{Provider.K_ID},
-        Provider.K_ESTATE + " == ? AND " + Provider.K_EDFIN + " == 100", new String[]{Integer
-            .toString(Provider.ESTATE_IN_PLAYLIST)}, Provider.K_EDATE);
+    Cursor c = getContentResolver().query(
+        Provider.episodeUri,
+        new String[]{Provider.K_ID},
+        Provider.K_ESTATE + " == ? AND " + Provider.K_EDFIN + " == 100",
+        new String[]{Integer.toString(Provider.ESTATE_IN_PLAYLIST)},
+        Preferences.getInstance().getSortingMode().toSql());
     if (c.moveToFirst()) {
       result = playEpisode(c.getLong(c.getColumnIndex(Provider.K_ID)));
     } else {

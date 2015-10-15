@@ -21,6 +21,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     STORAGE_PATH,
     MAX_DOWNLOADS,
     REFRESH_INTERVAL,
+    SORTING_MODE,
   }
 
   enum MaxDownloadsOption {
@@ -43,6 +44,53 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return PodListenApp.getContext().getString(R.string.preferences_max_downloads_unlimited);
       } else {
         return Integer.toString(toInt());
+      }
+    }
+  }
+
+  enum SortingMode {
+    OLDEST_FIRST, NEWEST_FIRST, BY_FEED, SHORTEST_FIRST, LONGEST_FIRST;
+
+    @NonNull
+    public String toSql() {
+      switch (this) {
+        case OLDEST_FIRST:
+          return Provider.K_EDATE + " ASC";
+        case NEWEST_FIRST:
+          return Provider.K_EDATE + " DESC";
+        case BY_FEED:
+          return Provider.K_EPID + " ASC";
+        case SHORTEST_FIRST:
+          return Provider.K_ELENGTH + " ASC";
+        case LONGEST_FIRST:
+          return Provider.K_ELENGTH + " DESC";
+        default:
+          throw new AssertionError("Unknown sorting mode");
+      }
+    }
+
+    @NonNull
+    public SortingMode nextCyclic() {
+      int newArrayId = ordinal() == values().length - 1 ? 0 : ordinal() + 1;
+      return values()[newArrayId];
+    }
+
+    /** @return at string intended to be shown in snackbar when user switches modes */
+    @Override
+    public String toString() {
+      switch (this) {
+        case OLDEST_FIRST:
+          return PodListenApp.getContext().getString(R.string.sorting_mode_oldest_first);
+        case NEWEST_FIRST:
+          return PodListenApp.getContext().getString(R.string.sorting_mode_newest_first);
+        case BY_FEED:
+          return PodListenApp.getContext().getString(R.string.sorting_mode_by_feed);
+        case SHORTEST_FIRST:
+          return PodListenApp.getContext().getString(R.string.sorting_mode_shortest_first);
+        case LONGEST_FIRST:
+          return PodListenApp.getContext().getString(R.string.sorting_mode_longest_first);
+        default:
+          throw new AssertionError("Unknown sorting mode");
       }
     }
   }
@@ -77,13 +125,16 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private static final String TAG = "PRF";
   private static final MaxDownloadsOption DEFAULT_MAX_DOWNLOADS = MaxDownloadsOption.TWO;
   private static final RefreshIntervalOption DEFAULT_REFRESH_INTERVAL = RefreshIntervalOption.DAY;
+  private static final SortingMode DEFAULT_SORTING_MODE = SortingMode.OLDEST_FIRST;
   private static Preferences instance = null;
 
   // fields below could be changed from readPreference() only
   private MaxDownloadsOption maxDownloads;
   private Storage storage;
   private RefreshIntervalOption refreshInterval;
+  private SortingMode sortingMode;
 
+  private final SharedPreferences sPrefs;
   private final Context context = PodListenApp.getContext();
 
   public static Preferences getInstance() {
@@ -98,10 +149,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   }
 
   public Preferences() {
-    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(PodListenApp.getContext());
-    sp.registerOnSharedPreferenceChangeListener(this);
+    sPrefs = PreferenceManager.getDefaultSharedPreferences(PodListenApp.getContext());
+    sPrefs.registerOnSharedPreferenceChangeListener(this);
     for (Key key : Key.values()) {
-      readPreference(sp, key);
+      readPreference(key);
     }
   }
 
@@ -157,8 +208,17 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     account.setupSync(getRefreshInterval().periodSeconds);
   }
 
-  private synchronized void readPreference(SharedPreferences sPrefs, Key key) {
+  private synchronized void readPreference(Key key) {
     switch (key) {
+      case SORTING_MODE:
+        int mode = sPrefs.getInt(Key.SORTING_MODE.toString(), SortingMode.values().length);
+        if (mode >= SortingMode.values().length) {
+          Log.i(TAG, "Applying default sorting mode instead of " + mode);
+          sortingMode = DEFAULT_SORTING_MODE;
+        } else {
+          sortingMode = SortingMode.values()[mode];
+        }
+        break;
       case MAX_DOWNLOADS:
         try {
           int maxDownloadsOrdinal = Integer.valueOf(sPrefs.getString(
@@ -236,9 +296,20 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     return storage;
   }
 
+  @NonNull
+  public SortingMode getSortingMode() {
+    return sortingMode;
+  }
+
+  public void setSortingMode(SortingMode sortingMode) {
+    sPrefs.edit()
+          .putInt(Key.SORTING_MODE.toString(), sortingMode.ordinal())
+          .commit();
+  }
+
   @Override
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     Log.i(TAG, "Preference changed " + key + ", values: " + sharedPreferences.getAll().toString());
-    readPreference(sharedPreferences, Key.valueOf(key));
+    readPreference(Key.valueOf(key));
   }
 }
