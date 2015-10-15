@@ -70,7 +70,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     rvFull.setOnClickPendingIntent(R.id.fb_button, intents[WidgetAction.SEEK_BACKWARD.ordinal()]);
     rvFull.setOnClickPendingIntent(R.id.ff_button, intents[WidgetAction.SEEK_FORWARD.ordinal()]);
     rvFull.setOnClickPendingIntent(R.id.play_options, intents[WidgetAction.STOP.ordinal()]);
-    rvFull.setImageViewResource(R.id.play_options, R.mipmap.ic_stop_white_36dp);
+    rvFull.setImageViewResource(R.id.play_options, R.mipmap.ic_close_white_36dp);
     builder.setSmallIcon(R.drawable.main_icon).setPriority(NotificationCompat.PRIORITY_LOW)
         .setOngoing(true).setCategory(NotificationCompat.CATEGORY_SERVICE).setContent(rvFull);
     connection.bind();
