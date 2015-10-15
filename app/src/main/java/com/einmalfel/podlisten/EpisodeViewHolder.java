@@ -127,7 +127,11 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
         dividerBottom.setVisibility(View.VISIBLE);
         descriptionText.setVisibility(View.VISIBLE);
       }
-      feedTitleText.setText(feedTitle);
+      if (feedTitle == null) {
+        feedTitleText.setText(R.string.deleted_subscription);
+      } else {
+        feedTitleText.setText(feedTitle);
+      }
     }
 
     if (downloaded == 100 && state != Provider.ESTATE_NEW) {

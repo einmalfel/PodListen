@@ -241,8 +241,9 @@ public class Provider extends ContentProvider {
     }
     SQLiteDatabase db = helper.getReadableDatabase();
     if (code == TABLES.length - 1) {
+      // Using left join here to include episodes from deleted subscriptions
       String raw = "SELECT " + (projection == null ? "*" : joinStrings(projection, ", ")) +
-          " FROM " + T_EPISODE + " INNER JOIN " + T_PODCAST +
+          " FROM " + T_EPISODE + " LEFT JOIN " + T_PODCAST +
           " ON " + T_EPISODE + '.' + K_EPID + " == " + K_PID;
       if (selection != null) {
         raw += " WHERE " + selection;
