@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -126,6 +127,20 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     progressBarTitle = (TextView) findViewById(R.id.play_title);
     episodeImage = (ImageView) findViewById(R.id.play_episode_image);
     episodeImage.setOnClickListener(this);
+
+    progressBar.setOnTouchListener(new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+          float newPositionMs = progressBar.getMax() * event.getX() / progressBar.getWidth();
+          Log.d(TAG, "progress bar tapped, seeking to " + newPositionMs);
+          if (MainActivity.this.connection.service != null) {
+            MainActivity.this.connection.service.seek((int) newPositionMs);
+          }
+        }
+        return true;
+      }
+    });
 
     tabsAdapter = new TabsAdapter(getSupportFragmentManager());
     pager.setAdapter(tabsAdapter);
