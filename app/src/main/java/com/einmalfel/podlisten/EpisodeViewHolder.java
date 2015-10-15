@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -124,6 +125,8 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
           descriptionText.setText(shortDescr, TextView.BufferType.NORMAL);
         }
         descriptionText.setSingleLine(!expanded);
+        // without next line TextView still ellipsize first line when single line mode is turned off
+        descriptionText.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
         dividerBottom.setVisibility(View.VISIBLE);
         descriptionText.setVisibility(View.VISIBLE);
       }
