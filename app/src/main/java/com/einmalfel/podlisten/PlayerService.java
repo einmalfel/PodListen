@@ -163,6 +163,18 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   }
 
   @Override
+  public int onStartCommand(Intent intent, int flags, int startId) {
+    if (intent == null && Preferences.getInstance().getPlayerForeground()) {
+      // Service process was crashed/killed while running foreground. Service is restarting now.
+      // System has recovered our notification to last value passed to startForeground, but it
+      // contains partial remote views and thus doesn't work, so instantiate WidgetHelper to fix it.
+      state = State.STOPPED_ERROR;
+      WidgetHelper.getInstance();
+    }
+    return super.onStartCommand(intent, flags, startId);
+  }
+
+  @Override
   public void onCreate() {
     super.onCreate();
     Log.d(TAG, "Creating service");
@@ -320,6 +332,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     callbackThread.post(CallbackType.PROGRESS);
     callbackThread.post(CallbackType.EPISODE);
     stopForeground(true);
+    Preferences.getInstance().setPlayerForeground(false);
     return true;
   }
 
@@ -470,6 +483,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   public void updateNotification(@NonNull Notification notification) {
     if (state != State.STOPPED) {
       startForeground(NOTIFICATION_ID, notification);
+      if (!Preferences.getInstance().getPlayerForeground()) {
+        Preferences.getInstance().setPlayerForeground(true);
+      }
     }
   }
 }

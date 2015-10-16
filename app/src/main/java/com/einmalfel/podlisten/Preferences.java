@@ -22,6 +22,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     MAX_DOWNLOADS,
     REFRESH_INTERVAL,
     SORTING_MODE,
+    PLAYER_FOREGROUND,
   }
 
   enum MaxDownloadsOption {
@@ -133,6 +134,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private Storage storage;
   private RefreshIntervalOption refreshInterval;
   private SortingMode sortingMode;
+  private boolean playerForeground; // preserve last player service state across app kill/restarts
 
   private final SharedPreferences sPrefs;
   private final Context context = PodListenApp.getContext();
@@ -210,6 +212,9 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
   private synchronized void readPreference(Key key) {
     switch (key) {
+      case PLAYER_FOREGROUND:
+        playerForeground = sPrefs.getBoolean(Key.PLAYER_FOREGROUND.toString(), false);
+        break;
       case SORTING_MODE:
         int mode = sPrefs.getInt(Key.SORTING_MODE.toString(), SortingMode.values().length);
         if (mode >= SortingMode.values().length) {
@@ -305,6 +310,14 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     sPrefs.edit()
           .putInt(Key.SORTING_MODE.toString(), sortingMode.ordinal())
           .commit();
+  }
+
+  public void setPlayerForeground(boolean playerServicePlaying) {
+    sPrefs.edit().putBoolean(Key.PLAYER_FOREGROUND.toString(), playerServicePlaying).commit();
+  }
+
+  public boolean getPlayerForeground() {
+    return playerForeground;
   }
 
   @Override
