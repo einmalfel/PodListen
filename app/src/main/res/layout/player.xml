@@ -2,26 +2,28 @@
     android:id="@+id/player"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/player_background">
 
     <ImageView
         android:id="@+id/play_episode_image"
         android:layout_width="100dp"
         android:layout_height="80dp"
-        android:adjustViewBounds="false"/>
+        android:adjustViewBounds="false"
+        android:background="@drawable/player_image_background"/>
 
     <FrameLayout
         android:id="@+id/progress_frame"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:layout_toRightOf="@id/play_episode_image"
-        android:paddingTop="3dp">
+        android:layout_toRightOf="@id/play_episode_image">
 
         <ProgressBar
             android:id="@+id/play_progress"
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginLeft="2dp"
             android:progressDrawable="@drawable/playback_progress"/>
 
         <TextView
