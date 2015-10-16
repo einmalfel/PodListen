@@ -21,7 +21,8 @@
             android:id="@+id/play_progress"
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:progressDrawable="@drawable/playback_progress"/>
 
         <TextView
             android:id="@+id/play_title"

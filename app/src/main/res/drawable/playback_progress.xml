@@ -1,0 +1,28 @@
+<!--based on progress_horizontal from Android SDK-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="6dip"/>
+            <gradient
+                android:angle="270"
+                android:centerColor="@color/background_contrast"
+                android:centerY="0.25"
+                android:endColor="@color/background_soft"
+                android:startColor="@color/background_primary"/>
+        </shape>
+    </item>
+
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape>
+                <corners android:radius="6dip"/>
+                <gradient
+                    android:angle="270"
+                    android:centerColor="@color/accent_secondary"
+                    android:centerY="0.25"
+                    android:endColor="@color/background_soft"
+                    android:startColor="@color/accent_secondary_dim"/>
+            </shape>
+        </clip>
+    </item>
+</layer-list>
