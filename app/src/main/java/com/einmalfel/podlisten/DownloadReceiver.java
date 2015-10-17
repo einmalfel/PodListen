@@ -279,6 +279,9 @@ public class DownloadReceiver extends BroadcastReceiver {
 
   private void updateDownloadQueue(Context context) {
     Preferences prefs = Preferences.getInstance();
+    if (!charging && prefs.getAutoDownloadACOnly()) {
+      return;
+    }
     if (prefs.getAutoDownloadMode() == Preferences.AutoDownloadMode.NEVER) {
       return;
     }
@@ -362,9 +365,13 @@ public class DownloadReceiver extends BroadcastReceiver {
       switch (intent.getAction()) {
         case Intent.ACTION_POWER_CONNECTED:
           charging = true;
+          updateDownloadQueue(context);
           break;
         case Intent.ACTION_POWER_DISCONNECTED:
           charging = false;
+          if (preferences.getAutoDownloadACOnly()) {
+            stopDownloads(null);
+          }
           break;
         case DOWNLOAD_EPISODE_ACTION:
           download(context,
@@ -380,6 +387,7 @@ public class DownloadReceiver extends BroadcastReceiver {
           break;
         case NEW_EPISODE_ACTION:
           if (getRunningCount(context) < preferences.getMaxDownloads().toInt() &&
+              (charging || !preferences.getAutoDownloadACOnly()) &&
               preferences.getAutoDownloadMode() == Preferences.AutoDownloadMode.ALL_NEW) {
             download(context,
                      intent.getStringExtra(URL_EXTRA_NAME),

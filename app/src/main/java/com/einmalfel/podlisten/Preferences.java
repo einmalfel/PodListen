@@ -22,6 +22,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     SORTING_MODE,
     PLAYER_FOREGROUND,
     AUTO_DOWNLOAD,
+    AUTO_DOWNLOAD_AC,
   }
 
   enum AutoDownloadMode {
@@ -152,6 +153,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private RefreshIntervalOption refreshInterval;
   private SortingMode sortingMode;
   private AutoDownloadMode autoDownloadMode;
+  private boolean autoDownloadACOnly;
   private boolean playerForeground; // preserve last player service state across app kill/restarts
 
   private final SharedPreferences sPrefs;
@@ -231,6 +233,14 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
   private synchronized void readPreference(Key key) {
     switch (key) {
+      case AUTO_DOWNLOAD_AC:
+        autoDownloadACOnly = sPrefs.getBoolean(Key.AUTO_DOWNLOAD_AC.toString(), false);
+        if (!autoDownloadACOnly) {
+          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+        } else if (!DownloadReceiver.isDeviceCharging()) {
+          DownloadReceiver.stopDownloads(null);
+        }
+        break;
       case PLAYER_FOREGROUND:
         playerForeground = sPrefs.getBoolean(Key.PLAYER_FOREGROUND.toString(), false);
         break;
@@ -328,6 +338,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
   public boolean getPlayerForeground() {
     return playerForeground;
+  }
+
+  public boolean getAutoDownloadACOnly() {
+    return autoDownloadACOnly;
   }
 
   @NonNull
