@@ -150,6 +150,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       }
       progressBar.setMax((int) length);
       progressBar.setProgress((int) played);
+      progressBar.setIndeterminate(false);
     } else {
       setTextColor(ContextCompat.getColor(context, R.color.text));
       if (downloaded == 100) {
@@ -159,6 +160,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       }
       progressBar.setMax(100);
       progressBar.setProgress((int) downloaded);
+      progressBar.setIndeterminate(downloadId != 0 && downloaded == 0);
     }
 
     if (downloaded != 100 && state != Provider.ESTATE_NEW) {

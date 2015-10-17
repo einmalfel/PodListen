@@ -38,7 +38,8 @@
                 android:layout_height="40sp"
                 android:layout_gravity="center"
                 android:background="@android:color/transparent"
-                android:progressDrawable="@drawable/episode_progress_bar"/>
+                android:progressDrawable="@drawable/episode_progress_bar"
+                android:indeterminateDrawable="@drawable/episode_progress_bar_indeterminate"/>
 
             <ImageView
                 android:id="@+id/play_add_image"
