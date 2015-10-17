@@ -25,6 +25,7 @@ public class DownloadReceiver extends BroadcastReceiver {
   static final String NEW_EPISODE_ACTION = "com.einmalfel.podlisten.NEW_EPISODE";
   static final String DOWNLOAD_HEARTBEAT_ACTION = "com.einmalfel.podlisten.DOWNLOAD_HEARTBEAT";
   static final String UPDATE_QUEUE_ACTION = "com.einmalfel.podlisten.UPDATE_QUEUE";
+  static final String DOWNLOAD_EPISODE_ACTION = "com.einmalfel.podlisten.DOWNLOAD_EPISODE";
   static final String URL_EXTRA_NAME = "URL";
   static final String TITLE_EXTRA_NAME = "TITLE";
   static final String ID_EXTRA_NAME = "ID";
@@ -301,6 +302,12 @@ public class DownloadReceiver extends BroadcastReceiver {
     // wait while preferences are changing
     synchronized (Preferences.getInstance()) {
       switch (intent.getAction()) {
+        case DOWNLOAD_EPISODE_ACTION:
+          download(context,
+                   intent.getStringExtra(URL_EXTRA_NAME),
+                   intent.getStringExtra(TITLE_EXTRA_NAME),
+                   intent.getLongExtra(ID_EXTRA_NAME, -1));
+          break;
         case DOWNLOAD_HEARTBEAT_ACTION:
           updateProgress(context);
           break;

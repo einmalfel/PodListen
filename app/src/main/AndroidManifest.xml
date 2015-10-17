@@ -133,6 +133,7 @@
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED"/>
                 <action android:name="com.einmalfel.podlisten.DOWNLOAD_HEARTBEAT"/>
                 <action android:name="com.einmalfel.podlisten.UPDATE_QUEUE"/>
+                <action android:name="com.einmalfel.podlisten.DOWNLOAD_EPISODE"/>
             </intent-filter>
         </receiver>
         <receiver
