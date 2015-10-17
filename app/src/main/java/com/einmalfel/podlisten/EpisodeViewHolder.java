@@ -162,8 +162,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     }
 
     if (downloaded != 100 && state != Provider.ESTATE_NEW) {
-      if (Preferences.getInstance().getAutoDownloadMode() == Preferences.AutoDownloadMode.NEVER &&
-          downloadId == 0) {
+      if (downloadId == 0) {
         playAddFrame.setEnabled(true);
         buttonImage.setImageDrawable(loadButtonDrawable);
       } else {

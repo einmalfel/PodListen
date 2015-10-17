@@ -75,31 +75,28 @@ public class PlaylistFragment extends DebuggableFragment implements
   public void onButtonTap(long id) {
     // episode button in playlist is enabled in two cases:
     // - episode is downloaded
-    // - episode isn't downloaded, isn't being download (downloadId == 0) and auto-D/L mode is NEVER
-
-    if (Preferences.getInstance().getAutoDownloadMode() == Preferences.AutoDownloadMode.NEVER) {
-      Cursor cursor = activity.getContentResolver().query(
-          Provider.getUri(Provider.T_EPISODE, id),
-          new String[]{Provider.K_EAURL, Provider.K_ENAME, Provider.K_EDID, Provider.K_EDFIN},
-          null, null, null);
-      if (cursor != null && cursor.moveToFirst()) {
-        long dId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDID));
-        int downloaded = cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_EDFIN));
-        String aURL = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EAURL));
-        String title = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ENAME));
-        cursor.close();
-        if (dId == 0 && downloaded != 100) {
-          Intent bi = new Intent(DownloadReceiver.DOWNLOAD_EPISODE_ACTION);
-          bi.putExtra(DownloadReceiver.URL_EXTRA_NAME, aURL);
-          bi.putExtra(DownloadReceiver.TITLE_EXTRA_NAME, title);
-          bi.putExtra(DownloadReceiver.ID_EXTRA_NAME, id);
-          PodListenApp.getContext().sendBroadcast(bi);
-          return;
-        }
-      } else {
-        Log.e(TAG, "Episode " + id + " is absent in DB");
+    // - episode isn't downloaded, isn't being download (downloadId == 0)
+    Cursor cursor = activity.getContentResolver().query(
+        Provider.getUri(Provider.T_EPISODE, id),
+        new String[]{Provider.K_EAURL, Provider.K_ENAME, Provider.K_EDID, Provider.K_EDFIN},
+        null, null, null);
+    if (cursor != null && cursor.moveToFirst()) {
+      long dId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDID));
+      int downloaded = cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_EDFIN));
+      String aURL = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EAURL));
+      String title = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ENAME));
+      cursor.close();
+      if (dId == 0 && downloaded != 100) {
+        Intent bi = new Intent(DownloadReceiver.DOWNLOAD_EPISODE_ACTION);
+        bi.putExtra(DownloadReceiver.URL_EXTRA_NAME, aURL);
+        bi.putExtra(DownloadReceiver.TITLE_EXTRA_NAME, title);
+        bi.putExtra(DownloadReceiver.ID_EXTRA_NAME, id);
+        PodListenApp.getContext().sendBroadcast(bi);
         return;
       }
+    } else {
+      Log.e(TAG, "Episode " + id + " is absent in DB");
+      return;
     }
 
     if (conn.service != null) {
