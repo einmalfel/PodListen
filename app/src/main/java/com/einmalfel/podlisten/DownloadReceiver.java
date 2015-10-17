@@ -285,7 +285,11 @@ public class DownloadReceiver extends BroadcastReceiver {
     return runningCount;
   }
 
-  private void updateDownloadQueue(Context context) {
+  /**
+   * @param context to run db queries and to get DownloadManager instance
+   * @param force   if false, failed downloads won't be restarted more often than 1/refresh period
+   */
+  private void updateDownloadQueue(Context context, boolean force) {
     Preferences prefs = Preferences.getInstance();
     if (!charging && prefs.getAutoDownloadACOnly()) {
       return;
@@ -299,23 +303,26 @@ public class DownloadReceiver extends BroadcastReceiver {
       return;
     }
 
-    long refreshIntervalMs = prefs.getRefreshInterval().periodSeconds * 1000;
-    long dayRefreshInterval = Preferences.RefreshIntervalOption.DAY.periodSeconds * 1000;
-    if (refreshIntervalMs == 0 || refreshIntervalMs > dayRefreshInterval) {
-      refreshIntervalMs = dayRefreshInterval;
-    }
-    String stateCondition;
+    String condition = Provider.K_EDID + " == 0 AND " + Provider.K_EDFIN + " != 100 AND ";
     if (prefs.getAutoDownloadMode() == Preferences.AutoDownloadMode.PLAYLIST) {
-      stateCondition = Provider.K_ESTATE + " == " + Integer.toString(Provider.ESTATE_IN_PLAYLIST);
+      condition += Provider.K_ESTATE + " == " + Integer.toString(Provider.ESTATE_IN_PLAYLIST);
     } else {
-      stateCondition = Provider.K_ESTATE + " != " + Integer.toString(Provider.ESTATE_GONE);
+      condition += Provider.K_ESTATE + " != " + Integer.toString(Provider.ESTATE_GONE);
+    }
+    if (!force) {
+      long refreshIntervalMs = prefs.getRefreshInterval().periodSeconds * 1000;
+      long dayRefreshInterval = Preferences.RefreshIntervalOption.DAY.periodSeconds * 1000;
+      if (refreshIntervalMs == 0 || refreshIntervalMs > dayRefreshInterval) {
+        refreshIntervalMs = dayRefreshInterval;
+      }
+      condition += " AND " + Provider.K_ETSTAMP + " < " + Long.toString(
+          new Date().getTime() - refreshIntervalMs);
     }
     Cursor queue = context.getContentResolver().query(
         Provider.episodeUri,
         new String[]{Provider.K_EAURL, Provider.K_ENAME, Provider.K_ID},
-        Provider.K_EDID + " == 0 AND " + stateCondition + " AND "
-            + Provider.K_EDFIN + " != 100 AND " + Provider.K_EDTSTAMP + " < ?",
-        new String[]{Long.toString(new Date().getTime() - refreshIntervalMs)},
+        condition,
+        null,
         Provider.K_EDATT + " ASC, " + Provider.K_EDATE + " ASC");
     if (queue == null) {
       throw new AssertionError("Unexpectedly got null while querying provider");
@@ -373,7 +380,7 @@ public class DownloadReceiver extends BroadcastReceiver {
       switch (intent.getAction()) {
         case Intent.ACTION_POWER_CONNECTED:
           charging = true;
-          updateDownloadQueue(context);
+          updateDownloadQueue(context, true);
           break;
         case Intent.ACTION_POWER_DISCONNECTED:
           charging = false;
@@ -391,7 +398,7 @@ public class DownloadReceiver extends BroadcastReceiver {
           updateProgress(context);
           break;
         case UPDATE_QUEUE_ACTION:
-          updateDownloadQueue(context);
+          updateDownloadQueue(context, true);
           break;
         case NEW_EPISODE_ACTION:
           if (getRunningCount(context) < preferences.getMaxDownloads().toInt() &&
@@ -411,7 +418,7 @@ public class DownloadReceiver extends BroadcastReceiver {
         case DownloadManager.ACTION_DOWNLOAD_COMPLETE:
           processDownloadResult(context,
                                 intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L));
-          updateDownloadQueue(context);
+          updateDownloadQueue(context, false);
           break;
       }
     }
