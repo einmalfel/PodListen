@@ -321,6 +321,39 @@ public class DownloadReceiver extends BroadcastReceiver {
     queue.close();
   }
 
+  static void stopDownloads(@Nullable String selection) {
+    Context context = PodListenApp.getContext();
+    String finalSelection = Provider.K_EDID + " != 0";
+    if (selection != null && !selection.isEmpty()) {
+      finalSelection += " AND " + selection;
+    }
+    Cursor cursor = context.getContentResolver().query(
+        Provider.episodeUri, new String[]{Provider.K_EDID}, finalSelection, null, null);
+    if (cursor != null) {
+      if (cursor.getCount() != 0) {
+        long[] ids = new long[cursor.getCount()];
+        int columnId = cursor.getColumnIndexOrThrow(Provider.K_EDID);
+        int i = 0;
+        while (cursor.moveToNext()) {
+          ids[i++] = cursor.getLong(columnId);
+        }
+
+        DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        int removeResult = dM.remove(ids);
+        if (removeResult != ids.length) {
+          Log.e(TAG, "Failed to delete " + (ids.length - removeResult) + " downloads");
+        }
+        ContentValues cv = new ContentValues(1);
+        cv.put(Provider.K_EDID, 0);
+        cv.put(Provider.K_EDFIN, 0);
+        context.getContentResolver().update(Provider.episodeUri, cv, finalSelection, null);
+      }
+      cursor.close();
+    } else {
+      Log.e(TAG, "Query failed unexpectedly", new AssertionError());
+    }
+  }
+
   @Override
   public void onReceive(Context context, Intent intent) {
     Preferences preferences = Preferences.getInstance();
