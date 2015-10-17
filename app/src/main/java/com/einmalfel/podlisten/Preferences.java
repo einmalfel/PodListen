@@ -23,6 +23,24 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     REFRESH_INTERVAL,
     SORTING_MODE,
     PLAYER_FOREGROUND,
+    AUTO_DOWNLOAD,
+  }
+
+  enum AutoDownloadMode {
+    ALL_NEW(R.string.auto_download_all_new),
+    PLAYLIST(R.string.auto_download_playlist),
+    NEVER(R.string.auto_download_never);
+
+    private final int stringId;
+
+    AutoDownloadMode(@StringRes int stringId) {
+      this.stringId = stringId;
+    }
+
+    @Override
+    public String toString() {
+      return PodListenApp.getContext().getString(stringId);
+    }
   }
 
   enum MaxDownloadsOption {
@@ -127,6 +145,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private static final MaxDownloadsOption DEFAULT_MAX_DOWNLOADS = MaxDownloadsOption.TWO;
   private static final RefreshIntervalOption DEFAULT_REFRESH_INTERVAL = RefreshIntervalOption.DAY;
   private static final SortingMode DEFAULT_SORTING_MODE = SortingMode.OLDEST_FIRST;
+  private static final AutoDownloadMode DEFAULT_DOWNLOAD_MODE = AutoDownloadMode.PLAYLIST;
   private static Preferences instance = null;
 
   // fields below could be changed from readPreference() only
@@ -134,6 +153,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private Storage storage;
   private RefreshIntervalOption refreshInterval;
   private SortingMode sortingMode;
+  private AutoDownloadMode autoDownloadMode;
   private boolean playerForeground; // preserve last player service state across app kill/restarts
 
   private final SharedPreferences sPrefs;
@@ -228,6 +248,19 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
       case PLAYER_FOREGROUND:
         playerForeground = sPrefs.getBoolean(Key.PLAYER_FOREGROUND.toString(), false);
         break;
+      case AUTO_DOWNLOAD:
+        AutoDownloadMode newM = readEnum(Key.AUTO_DOWNLOAD, DEFAULT_DOWNLOAD_MODE);
+        if (newM != autoDownloadMode) {
+          if (newM == AutoDownloadMode.PLAYLIST && autoDownloadMode == AutoDownloadMode.ALL_NEW) {
+            stopDownloads(
+                Provider.K_ESTATE + " != " + Integer.toString(Provider.ESTATE_IN_PLAYLIST));
+          } else if (newM == AutoDownloadMode.NEVER) {
+            stopDownloads(null);
+          }
+          autoDownloadMode = newM;
+          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+        }
+        break;
       case SORTING_MODE:
         sortingMode = readEnum(Key.SORTING_MODE, DEFAULT_SORTING_MODE);
         break;
@@ -309,6 +342,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
   public boolean getPlayerForeground() {
     return playerForeground;
+  }
+
+  @NonNull
+  public AutoDownloadMode getAutoDownloadMode() {
+    return autoDownloadMode;
   }
 
   @Override

@@ -10,6 +10,10 @@
             android:summary="%s"
             android:title="@string/preferences_storage_location_title"/>
         <ListPreference
+            android:key="AUTO_DOWNLOAD"
+            android:summary="%s"
+            android:title="@string/preferences_auto_download_title"/>
+        <ListPreference
             android:key="REFRESH_INTERVAL"
             android:summary="%s"
             android:title="@string/preferences_refresh_interval_title"/>

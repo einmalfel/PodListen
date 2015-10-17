@@ -28,6 +28,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private static Drawable loadingButtonDrawable;
   private static Drawable pauseButtonDrawable;
   private static Drawable addButtonDrawable;
+  private static Drawable loadButtonDrawable;
 
   private final TextView descriptionText;
   private final TextView titleText;
@@ -96,8 +97,10 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       playButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_play_arrow_white_36dp);
       pauseButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_pause_white_36dp);
       addButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_playlist_add_white_36dp);
-      loadingButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_play_arrow_white_36dp);
+      loadingButtonDrawable = ContextCompat.getDrawable(context,
+                                                        R.mipmap.ic_file_download_white_36dp);
       loadingButtonDrawable.mutate().setColorFilter(MainActivity.disabledFilter);
+      loadButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_file_download_white_36dp);
     }
   }
 
@@ -112,7 +115,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   public void bindEpisode(String title, String description, long id, long pid, long size, int state,
                           String feedTitle, long played, long length, long date, long downloaded,
                           String shortDescr, String errorMessage, PlayerService.State playerState,
-                          boolean expanded) {
+                          long downloadId, boolean expanded) {
     if (id != this.id || expanded != this.expanded) {
       titleText.setText(errorMessage == null ? title : title + "\n" + errorMessage);
       if (description == null || description.isEmpty()) {
@@ -159,8 +162,14 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     }
 
     if (downloaded != 100 && state != Provider.ESTATE_NEW) {
-      playAddFrame.setEnabled(false);
-      buttonImage.setImageDrawable(loadingButtonDrawable);
+      if (Preferences.getInstance().getAutoDownloadMode() == Preferences.AutoDownloadMode.NEVER &&
+          downloadId == 0) {
+        playAddFrame.setEnabled(true);
+        buttonImage.setImageDrawable(loadButtonDrawable);
+      } else {
+        playAddFrame.setEnabled(false);
+        buttonImage.setImageDrawable(loadingButtonDrawable);
+      }
     } else {
       playAddFrame.setEnabled(true);
       if (state == Provider.ESTATE_NEW) {

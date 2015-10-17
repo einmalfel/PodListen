@@ -263,24 +263,33 @@ public class DownloadReceiver extends BroadcastReceiver {
   }
 
   private void updateDownloadQueue(Context context) {
+    Preferences prefs = Preferences.getInstance();
+    if (prefs.getAutoDownloadMode() == Preferences.AutoDownloadMode.NEVER) {
+      return;
+    }
     int runningDownloadsCount = getRunningCount(context);
-    int maxParallelDownloads = Preferences.getInstance().getMaxDownloads().toInt();
+    int maxParallelDownloads = prefs.getMaxDownloads().toInt();
     if (runningDownloadsCount >= maxParallelDownloads) {
       return;
     }
 
-    long refreshIntervalMs = Preferences.getInstance().getRefreshInterval().periodSeconds * 1000;
+    long refreshIntervalMs = prefs.getRefreshInterval().periodSeconds * 1000;
     long dayRefreshInterval = Preferences.RefreshIntervalOption.DAY.periodSeconds * 1000;
     if (refreshIntervalMs == 0 || refreshIntervalMs > dayRefreshInterval) {
       refreshIntervalMs = dayRefreshInterval;
     }
+    String stateCondition;
+    if (prefs.getAutoDownloadMode() == Preferences.AutoDownloadMode.PLAYLIST) {
+      stateCondition = Provider.K_ESTATE + " == " + Integer.toString(Provider.ESTATE_IN_PLAYLIST);
+    } else {
+      stateCondition = Provider.K_ESTATE + " != " + Integer.toString(Provider.ESTATE_GONE);
+    }
     Cursor queue = context.getContentResolver().query(
         Provider.episodeUri,
         new String[]{Provider.K_EAURL, Provider.K_ENAME, Provider.K_ID},
-        Provider.K_EDID + " == 0 AND " + Provider.K_ESTATE + " != ? AND "
+        Provider.K_EDID + " == 0 AND " + stateCondition + " AND "
             + Provider.K_EDFIN + " != 100 AND " + Provider.K_EDTSTAMP + " < ?",
-        new String[]{Integer.toString(Provider.ESTATE_GONE),
-                     Long.toString(new Date().getTime() - refreshIntervalMs)},
+        new String[]{Long.toString(new Date().getTime() - refreshIntervalMs)},
         Provider.K_EDATT + " ASC, " + Provider.K_EDATE + " ASC");
     if (queue == null) {
       throw new AssertionError("Unexpectedly got null while querying provider");
@@ -299,8 +308,9 @@ public class DownloadReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
+    Preferences preferences = Preferences.getInstance();
     // wait while preferences are changing
-    synchronized (Preferences.getInstance()) {
+    synchronized (preferences) {
       switch (intent.getAction()) {
         case DOWNLOAD_EPISODE_ACTION:
           download(context,
@@ -315,7 +325,8 @@ public class DownloadReceiver extends BroadcastReceiver {
           updateDownloadQueue(context);
           break;
         case NEW_EPISODE_ACTION:
-          if (getRunningCount(context) < Preferences.getInstance().getMaxDownloads().toInt()) {
+          if (getRunningCount(context) < preferences.getMaxDownloads().toInt() &&
+              preferences.getAutoDownloadMode() == Preferences.AutoDownloadMode.ALL_NEW) {
             download(context,
                      intent.getStringExtra(URL_EXTRA_NAME),
                      intent.getStringExtra(TITLE_EXTRA_NAME),
