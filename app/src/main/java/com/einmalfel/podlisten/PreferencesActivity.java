@@ -78,6 +78,10 @@ public class PreferencesActivity extends AppCompatActivity {
           Preferences.Key.AUTO_DOWNLOAD.toString());
       bindEnumToList(autoDownloadLP, Preferences.AutoDownloadMode.class);
 
+      ListPreference downloadNetworkLP = (ListPreference) prefsFragment.findPreference(
+          Preferences.Key.DOWNLOAD_NETWORK.toString());
+      bindEnumToList(downloadNetworkLP, Preferences.DownloadNetwork.class);
+
       // if there is no mail app installed, disable send bug-report option
       Intent testEmailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "", null));
       if (testEmailIntent.resolveActivity(getPackageManager()) == null) {

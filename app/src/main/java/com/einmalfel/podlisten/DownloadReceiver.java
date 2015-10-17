@@ -66,10 +66,12 @@ public class DownloadReceiver extends BroadcastReceiver {
       return false;
     }
 
+    Preferences.DownloadNetwork downloadNetwork = Preferences.getInstance().getDownloadNetwork();
     DownloadManager.Request rq = new DownloadManager.Request(Uri.parse(url))
         .setTitle(title)
-        .setAllowedOverMetered(false)
-        .setAllowedOverRoaming(false)
+        .setAllowedOverMetered(downloadNetwork == Preferences.DownloadNetwork.ANY ||
+                                   downloadNetwork == Preferences.DownloadNetwork.NON_ROAMING)
+        .setAllowedOverRoaming(downloadNetwork == Preferences.DownloadNetwork.ANY)
         .setDestinationUri(Uri.fromFile(target))
         .setDescription("Downloading podcast " + url)
         .setVisibleInDownloadsUi(false)

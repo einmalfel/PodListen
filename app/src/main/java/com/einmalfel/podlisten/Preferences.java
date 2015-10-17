@@ -23,6 +23,24 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     PLAYER_FOREGROUND,
     AUTO_DOWNLOAD,
     AUTO_DOWNLOAD_AC,
+    DOWNLOAD_NETWORK,
+  }
+
+  enum DownloadNetwork {
+    WIFI(R.string.download_network_wifi),
+    NON_ROAMING(R.string.download_network_non_roaming),
+    ANY(R.string.download_network_any);
+
+    private final int stringId;
+
+    DownloadNetwork(@StringRes int stringId) {
+      this.stringId = stringId;
+    }
+
+    @Override
+    public String toString() {
+      return PodListenApp.getContext().getString(stringId);
+    }
   }
 
   enum AutoDownloadMode {
@@ -145,6 +163,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private static final RefreshIntervalOption DEFAULT_REFRESH_INTERVAL = RefreshIntervalOption.DAY;
   private static final SortingMode DEFAULT_SORTING_MODE = SortingMode.OLDEST_FIRST;
   private static final AutoDownloadMode DEFAULT_DOWNLOAD_MODE = AutoDownloadMode.PLAYLIST;
+  private static final DownloadNetwork DEFAULT_DOWNLOAD_NETWORK = DownloadNetwork.WIFI;
   private static Preferences instance = null;
 
   // fields below could be changed from readPreference() only
@@ -153,6 +172,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private RefreshIntervalOption refreshInterval;
   private SortingMode sortingMode;
   private AutoDownloadMode autoDownloadMode;
+  private DownloadNetwork downloadNetwork;
   private boolean autoDownloadACOnly;
   private boolean playerForeground; // preserve last player service state across app kill/restarts
 
@@ -233,6 +253,14 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
   private synchronized void readPreference(Key key) {
     switch (key) {
+      case DOWNLOAD_NETWORK:
+        DownloadNetwork newDLNetwork = readEnum(Key.DOWNLOAD_NETWORK, DEFAULT_DOWNLOAD_NETWORK);
+        if (downloadNetwork != newDLNetwork) {
+          downloadNetwork = newDLNetwork;
+          DownloadReceiver.stopDownloads(null);
+          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+        }
+        break;
       case AUTO_DOWNLOAD_AC:
         autoDownloadACOnly = sPrefs.getBoolean(Key.AUTO_DOWNLOAD_AC.toString(), false);
         if (!autoDownloadACOnly) {
@@ -347,6 +375,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   @NonNull
   public AutoDownloadMode getAutoDownloadMode() {
     return autoDownloadMode;
+  }
+
+  @NonNull
+  public DownloadNetwork getDownloadNetwork() {
+    return downloadNetwork;
   }
 
   @Override

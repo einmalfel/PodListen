@@ -13,6 +13,10 @@
             android:key="AUTO_DOWNLOAD"
             android:summary="%s"
             android:title="@string/preferences_auto_download_title"/>
+        <ListPreference
+            android:key="DOWNLOAD_NETWORK"
+            android:summary="%s"
+            android:title="@string/preferences_download_network_title"/>
         <CheckBoxPreference
             android:key="AUTO_DOWNLOAD_AC"
             android:summary="@string/preferences_auto_download_ac_summary"
