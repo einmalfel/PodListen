@@ -85,7 +85,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private static final int DOWNLOAD_CHECK_PERIOD = 500;
   private static final String TAG = "MAC";
 
-  WidgetHelper widgetHelper;
   PlayerLocalConnection connection;
   private int newEpisodesNumber = 0;
   private SubscribeDialog subscribeDialog;
@@ -336,11 +335,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
 
   @Override
   public synchronized void onClick(View v) {
-    if (widgetHelper == null && (v == playButton || v == nextButton)) {
-      // before playback launches, widget helper should be up and bound
-      widgetHelper = WidgetHelper.getInstance();
-    }
-
     if (connection.service == null) {
       // skip tap if not bound to player yet. This is quite unlikely
       Log.e(TAG, "Skipping player action. Service is not ready yet");

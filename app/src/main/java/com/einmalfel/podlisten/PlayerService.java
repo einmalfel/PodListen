@@ -401,6 +401,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         try {
           player.setDataSource(this, Uri.fromFile(source));
           state = State.PLAYING;
+          WidgetHelper.getInstance(); // ensure widget helper is up to handle player notification
         } catch (IOException e) {
           Log.e(TAG, "set source produced an exception, playback stopped: ", e);
         }
