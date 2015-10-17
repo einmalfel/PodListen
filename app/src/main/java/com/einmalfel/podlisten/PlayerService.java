@@ -481,11 +481,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   }
 
   public void updateNotification(@NonNull Notification notification) {
-    if (state != State.STOPPED) {
-      startForeground(NOTIFICATION_ID, notification);
-      if (!Preferences.getInstance().getPlayerForeground()) {
-        Preferences.getInstance().setPlayerForeground(true);
-      }
+    startForeground(NOTIFICATION_ID, notification);
+    if (!Preferences.getInstance().getPlayerForeground()) {
+      Preferences.getInstance().setPlayerForeground(true);
     }
   }
 }

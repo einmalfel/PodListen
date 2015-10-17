@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -25,12 +24,9 @@ import android.widget.RemoteViews;
  * - MainActivity launched
  */
 public class WidgetHelper implements PlayerService.PlayerStateListener {
-  private final Intent activityIntent;
-
   enum WidgetAction {PLAY_PAUSE, SEEK_FORWARD, SEEK_BACKWARD, NEXT_EPISODE, STOP}
 
   private static final String TAG = "WGH";
-  private static final Class rxClass = WidgetProvider.class;
   private static final int INTENT_ID_LAUNCH_ACTIVITY = 100;
   private static final int INTENT_ID_BASE = 101; //ids 100-104 will be used for notification buttons
 
@@ -38,10 +34,13 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
 
   private final PlayerLocalConnection connection = new PlayerLocalConnection(this);
   private final Context context = PodListenApp.getContext();
-  private final ComponentName receiverComponent = new ComponentName(context, rxClass);
+  private final ComponentName receiverComponent = new ComponentName(context, WidgetProvider.class);
   private final AppWidgetManager awm = AppWidgetManager.getInstance(context);
   private final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
   private final RemoteViews rvFull = new RemoteViews(context.getPackageName(), R.layout.player);
+  private final Intent activityIntent = new Intent(context, MainActivity.class);
+
+  private boolean notificationNeverUpdated = true;
 
   static WidgetHelper getInstance() {
     if (instance == null) {
@@ -54,25 +53,24 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     return instance;
   }
 
+  @NonNull
+  private static PendingIntent getIntent(@NonNull Context context,
+                                         @NonNull WidgetAction widgetAction) {
+    Intent intent = new Intent(context, WidgetProvider.class);
+    intent.setAction(widgetAction.name());
+    return PendingIntent.getBroadcast(context, INTENT_ID_BASE + widgetAction.ordinal(), intent, 0);
+  }
+
   private WidgetHelper() {
-    PendingIntent[] intents = new PendingIntent[WidgetAction.values().length];
-    for (WidgetAction action : WidgetAction.values()) {
-      Intent intent = new Intent(context, rxClass);
-      intent.setAction(action.name());
-      int WidgetAction_id = action.ordinal();
-      intents[WidgetAction_id] = PendingIntent.getBroadcast(
-          context, INTENT_ID_BASE + WidgetAction_id, intent, 0);
-    }
-    activityIntent = new Intent(context, MainActivity.class);
     activityIntent.putExtra(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.PLAYLIST.ordinal());
-    rvFull.setOnClickPendingIntent(R.id.play_button, intents[WidgetAction.PLAY_PAUSE.ordinal()]);
-    rvFull.setOnClickPendingIntent(R.id.next_button, intents[WidgetAction.NEXT_EPISODE.ordinal()]);
-    rvFull.setOnClickPendingIntent(R.id.fb_button, intents[WidgetAction.SEEK_BACKWARD.ordinal()]);
-    rvFull.setOnClickPendingIntent(R.id.ff_button, intents[WidgetAction.SEEK_FORWARD.ordinal()]);
-    rvFull.setOnClickPendingIntent(R.id.play_options, intents[WidgetAction.STOP.ordinal()]);
+    rvFull.setOnClickPendingIntent(R.id.play_button, getIntent(context, WidgetAction.PLAY_PAUSE));
+    rvFull.setOnClickPendingIntent(R.id.next_button, getIntent(context, WidgetAction.NEXT_EPISODE));
+    rvFull.setOnClickPendingIntent(R.id.fb_button, getIntent(context, WidgetAction.SEEK_BACKWARD));
+    rvFull.setOnClickPendingIntent(R.id.ff_button, getIntent(context, WidgetAction.SEEK_FORWARD));
+    rvFull.setOnClickPendingIntent(R.id.play_options, getIntent(context, WidgetAction.STOP));
     rvFull.setImageViewResource(R.id.play_options, R.mipmap.ic_close_white_36dp);
     builder.setSmallIcon(R.drawable.main_icon).setPriority(NotificationCompat.PRIORITY_LOW)
-        .setOngoing(true).setCategory(NotificationCompat.CATEGORY_SERVICE).setContent(rvFull);
+           .setOngoing(true).setCategory(NotificationCompat.CATEGORY_SERVICE);
     connection.bind();
   }
 
@@ -125,22 +123,22 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   }
 
   private void updateNotification(RemoteViews rv) {
-    if (connection.service != null) {
+    if (connection.service != null &&
+        connection.service.getState() != PlayerService.State.STOPPED) {
+      if (notificationNeverUpdated) {
+        connection.service.updateNotification(builder.setContent(rvFull).build());
+        notificationNeverUpdated = false;
+      }
       connection.service.updateNotification(builder.setContent(rv).build());
     }
-  }
-
-  public void progressUpdateRV(int position, int max, RemoteViews rv) {
-    rv.setProgressBar(R.id.play_progress, max, position, false);
   }
 
   @Override
   public void progressUpdate(int position, int max) {
     RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
-    progressUpdateRV(position, max, rvPartial);
-    progressUpdateRV(position, max, rvFull);
+    rvPartial.setProgressBar(R.id.play_progress, max, position, false);
     updateWidgetsPartial(rvPartial);
-    updateNotification(rvFull);
+    updateNotification(rvPartial);
   }
 
   private void setButtonEnabled(boolean enabled, @NonNull RemoteViews rv, @IdRes int id) {
@@ -148,44 +146,20 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     rv.setInt(id, "setColorFilter", enabled ? 0 : Color.GRAY);
   }
 
-  private void stateUpdateRV(PlayerService.State state, RemoteViews rv) {
-    boolean seekable = state == PlayerService.State.PLAYING || state == PlayerService.State.PAUSED;
-    setButtonEnabled(seekable, rv, R.id.ff_button);
-    setButtonEnabled(seekable, rv, R.id.fb_button);
-    setButtonEnabled(state != PlayerService.State.STOPPED, rv, R.id.play_options);
-    if (state == PlayerService.State.PLAYING) {
-      rv.setImageViewResource(R.id.play_button, R.mipmap.ic_pause_white_36dp);
-    } else {
-      rv.setImageViewResource(R.id.play_button, R.mipmap.ic_play_arrow_white_36dp);
-    }
-  }
-
   @Override
   public void stateUpdate(PlayerService.State state) {
     RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
-    stateUpdateRV(state, rvPartial);
-    stateUpdateRV(state, rvFull);
+    boolean seekable = state == PlayerService.State.PLAYING || state == PlayerService.State.PAUSED;
+    setButtonEnabled(seekable, rvPartial, R.id.ff_button);
+    setButtonEnabled(seekable, rvPartial, R.id.fb_button);
+    setButtonEnabled(state != PlayerService.State.STOPPED, rvPartial, R.id.play_options);
+    if (state == PlayerService.State.PLAYING) {
+      rvPartial.setImageViewResource(R.id.play_button, R.mipmap.ic_pause_white_36dp);
+    } else {
+      rvPartial.setImageViewResource(R.id.play_button, R.mipmap.ic_play_arrow_white_36dp);
+    }
     updateWidgetsPartial(rvPartial);
-    updateNotification(rvFull);
-  }
-
-  private void episodeUpdateRV(@Nullable Bitmap image, @NonNull String title, long id,
-                               @NonNull RemoteViews rv) {
-    if (image == null) {
-      rv.setImageViewResource(R.id.play_episode_image, R.drawable.main_icon);
-    } else {
-      rv.setImageViewBitmap(R.id.play_episode_image, image);
-    }
-    rv.setTextViewText(R.id.play_title, title);
-
-    if (id == 0) {
-      activityIntent.removeExtra(MainActivity.EPISODE_ID_OPTION);
-    } else {
-      activityIntent.putExtra(MainActivity.EPISODE_ID_OPTION, id);
-    }
-    PendingIntent pendingIntent = PendingIntent.getActivity(
-        context, INTENT_ID_LAUNCH_ACTIVITY, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-    rv.setOnClickPendingIntent(R.id.player, pendingIntent);
+    updateNotification(rvPartial);
   }
 
   @Override
@@ -206,9 +180,22 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     }
     c.close();
     RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
-    episodeUpdateRV(image, title, id, rvFull);
-    episodeUpdateRV(image, title, id, rvPartial);
+    if (image == null) {
+      rvPartial.setImageViewResource(R.id.play_episode_image, R.drawable.main_icon);
+    } else {
+      rvPartial.setImageViewBitmap(R.id.play_episode_image, image);
+    }
+    rvPartial.setTextViewText(R.id.play_title, title);
+
+    if (id == 0) {
+      activityIntent.removeExtra(MainActivity.EPISODE_ID_OPTION);
+    } else {
+      activityIntent.putExtra(MainActivity.EPISODE_ID_OPTION, id);
+    }
+    PendingIntent pendingIntent = PendingIntent.getActivity(
+        context, INTENT_ID_LAUNCH_ACTIVITY, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    rvPartial.setOnClickPendingIntent(R.id.player, pendingIntent);
     updateWidgetsPartial(rvPartial);
-    updateNotification(rvFull);
+    updateNotification(rvPartial);
   }
 }
