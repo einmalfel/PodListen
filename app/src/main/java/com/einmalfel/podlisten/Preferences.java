@@ -178,6 +178,38 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
   }
 
+  private void stopDownloads(@Nullable String selection) {
+    String finalSelection = Provider.K_EDID + " != 0";
+    if (selection != null && !selection.isEmpty()) {
+      finalSelection += " AND " + selection;
+    }
+    Cursor cursor = context.getContentResolver().query(
+        Provider.episodeUri, new String[]{Provider.K_EDID}, finalSelection, null, null);
+    if (cursor != null) {
+      if (cursor.getCount() != 0) {
+        long[] ids = new long[cursor.getCount()];
+        int columnId = cursor.getColumnIndexOrThrow(Provider.K_EDID);
+        int i = 0;
+        while (cursor.moveToNext()) {
+          ids[i++] = cursor.getLong(columnId);
+        }
+
+        DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        int removeResult = dM.remove(ids);
+        if (removeResult != ids.length) {
+          Log.e(TAG, "Failed to delete " + (ids.length - removeResult) + " downloads");
+        }
+        ContentValues cv = new ContentValues(1);
+        cv.put(Provider.K_EDID, 0);
+        cv.put(Provider.K_EDFIN, 0);
+        context.getContentResolver().update(Provider.episodeUri, cv, finalSelection, null);
+      }
+      cursor.close();
+    } else {
+      Log.e(TAG, "Query failed unexpectedly", new AssertionError());
+    }
+  }
+
   /**
    * When there is some downloaded episodes on current storage and user asks to switch storage
    * - stop all running downloads
@@ -189,19 +221,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
    * - re-enable sync and re-run it to re-download images
    */
   private void clearStorage() {
-    Cursor cursor = context.getContentResolver().query(
-        Provider.episodeUri, new String[]{Provider.K_EDID}, Provider.K_EDID + " != 0", null, null);
-
-    if (cursor == null) {
-      throw new AssertionError("Got null cursor from podlisten provider");
-    }
-    DownloadManager dM = (DownloadManager) context.getSystemService(
-        Context.DOWNLOAD_SERVICE);
-    int downloadIdIndex = cursor.getColumnIndexOrThrow(Provider.K_EDID);
-    while (cursor.moveToNext()) {
-      dM.remove(cursor.getLong(downloadIdIndex));
-    }
-    cursor.close();
+    stopDownloads(null);
 
     PodlistenAccount account = PodlistenAccount.getInstance();
     account.setupSync(0);
@@ -332,7 +352,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
   public void setSortingMode(SortingMode sortingMode) {
     sPrefs.edit()
-          .putInt(Key.SORTING_MODE.toString(), sortingMode.ordinal())
+          .putString(Key.SORTING_MODE.toString(), Integer.toString(sortingMode.ordinal()))
           .commit();
   }
 
