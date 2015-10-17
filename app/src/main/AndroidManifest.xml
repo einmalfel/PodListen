@@ -134,6 +134,8 @@
                 <action android:name="com.einmalfel.podlisten.DOWNLOAD_HEARTBEAT"/>
                 <action android:name="com.einmalfel.podlisten.UPDATE_QUEUE"/>
                 <action android:name="com.einmalfel.podlisten.DOWNLOAD_EPISODE"/>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
             </intent-filter>
         </receiver>
         <receiver

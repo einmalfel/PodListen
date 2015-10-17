@@ -5,9 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -29,6 +31,19 @@ public class DownloadReceiver extends BroadcastReceiver {
   static final String URL_EXTRA_NAME = "URL";
   static final String TITLE_EXTRA_NAME = "TITLE";
   static final String ID_EXTRA_NAME = "ID";
+
+  private boolean charging = isDeviceCharging();
+
+  static boolean isDeviceCharging() {
+    IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+    Intent batteryStatus = PodListenApp.getContext().registerReceiver(null, intentFilter);
+    if (batteryStatus == null) {
+      return false; // If we failed to get state, it's safer to assume that device is not charging
+    } else {
+      int s = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+      return s == BatteryManager.BATTERY_STATUS_CHARGING || s == BatteryManager.BATTERY_STATUS_FULL;
+    }
+  }
 
   /** @return true if download request was dispatched to DownloadManager, false otherwise */
   private boolean download(Context context, String url, String title, long id) {
@@ -312,6 +327,12 @@ public class DownloadReceiver extends BroadcastReceiver {
     // wait while preferences are changing
     synchronized (preferences) {
       switch (intent.getAction()) {
+        case Intent.ACTION_POWER_CONNECTED:
+          charging = true;
+          break;
+        case Intent.ACTION_POWER_DISCONNECTED:
+          charging = false;
+          break;
         case DOWNLOAD_EPISODE_ACTION:
           download(context,
                    intent.getStringExtra(URL_EXTRA_NAME),
