@@ -210,50 +210,41 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     account.setupSync(getRefreshInterval().periodSeconds);
   }
 
+  @NonNull
+  private <T extends Enum<T>> T readEnum(@NonNull Key key, @NonNull T defaultValue) {
+    try {
+      String pref = sPrefs.getString(key.toString(), "-1");
+      int id = Integer.valueOf(pref);
+      return defaultValue.getDeclaringClass().getEnumConstants()[id];
+    } catch (ClassCastException | ArrayIndexOutOfBoundsException | NumberFormatException e) {
+      Log.e(TAG, "Illegal enum value, reverting to default: " + defaultValue.toString(), e);
+      sPrefs.edit().putString(key.toString(), Integer.toString(defaultValue.ordinal())).commit();
+      return defaultValue;
+    }
+  }
+
   private synchronized void readPreference(Key key) {
     switch (key) {
       case PLAYER_FOREGROUND:
         playerForeground = sPrefs.getBoolean(Key.PLAYER_FOREGROUND.toString(), false);
         break;
       case SORTING_MODE:
-        int mode = sPrefs.getInt(Key.SORTING_MODE.toString(), SortingMode.values().length);
-        if (mode >= SortingMode.values().length) {
-          Log.i(TAG, "Applying default sorting mode instead of " + mode);
-          sortingMode = DEFAULT_SORTING_MODE;
-        } else {
-          sortingMode = SortingMode.values()[mode];
-        }
+        sortingMode = readEnum(Key.SORTING_MODE, DEFAULT_SORTING_MODE);
         break;
       case MAX_DOWNLOADS:
-        try {
-          int maxDownloadsOrdinal = Integer.valueOf(sPrefs.getString(
-              Key.MAX_DOWNLOADS.toString(), "-1"));
-          if (maxDownloadsOrdinal == -1) {
-            Log.i(TAG, "Setting default max parallel downloads: " + DEFAULT_MAX_DOWNLOADS);
-            sPrefs.edit().putString(Key.MAX_DOWNLOADS.toString(),
-                                    Integer.toString(DEFAULT_MAX_DOWNLOADS.ordinal())).commit();
-          } else {
-            maxDownloads = MaxDownloadsOption.values()[maxDownloadsOrdinal];
-            context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
-          }
-        } catch (NumberFormatException exception) {
-          Log.e(TAG, "Failed to parse max downloads preference, value remains " + maxDownloads);
+        MaxDownloadsOption newMaxDL = readEnum(Key.MAX_DOWNLOADS, DEFAULT_MAX_DOWNLOADS);
+        if (newMaxDL != maxDownloads) {
+          maxDownloads = newMaxDL;
+          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
         }
         break;
       case REFRESH_INTERVAL:
-        try {
-          int refreshInt = Integer.valueOf(sPrefs.getString(Key.REFRESH_INTERVAL.toString(), "-1"));
-          if (refreshInt == -1) {
-            Log.i(TAG, "Setting default refresh interval: " + DEFAULT_REFRESH_INTERVAL);
-            sPrefs.edit().putString(Key.REFRESH_INTERVAL.toString(),
-                                    Integer.toString(DEFAULT_REFRESH_INTERVAL.ordinal())).commit();
-          } else {
-            refreshInterval = RefreshIntervalOption.values()[refreshInt];
-            PodlistenAccount.getInstance().setupSync(refreshInterval.periodSeconds);
-          }
-        } catch (NumberFormatException exception) {
-          Log.e(TAG, "Failed to parse refresh interval, value remains " + refreshInterval);
+        RefreshIntervalOption newRI = readEnum(Key.REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
+        if (newRI != refreshInterval) {
+          refreshInterval = newRI;
+          PodlistenAccount.getInstance().setupSync(refreshInterval.periodSeconds);
         }
+        break;
       case STORAGE_PATH:
         String storagePreferenceString = sPrefs.getString(Key.STORAGE_PATH.toString(), "");
         if (storagePreferenceString.isEmpty()) {
