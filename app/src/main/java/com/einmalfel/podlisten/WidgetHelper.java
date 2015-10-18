@@ -109,6 +109,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
         connection.service.jumpBackward();
         break;
       case STOP:
+        notificationNeverUpdated = true;
         connection.service.stop();
         break;
     }
