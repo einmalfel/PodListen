@@ -141,7 +141,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     }
 
     if (downloaded == 100 && state != Provider.ESTATE_NEW) {
-      if (playerState == PlayerService.State.STOPPED) {
+      if (playerState.isStopped()) {
         progressBar.getProgressDrawable().setColorFilter(playedFilter);
         setTextColor(ContextCompat.getColor(context, R.color.text));
       } else {

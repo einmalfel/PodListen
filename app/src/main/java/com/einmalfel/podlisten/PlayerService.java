@@ -24,7 +24,13 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener,
     AudioManager.OnAudioFocusChangeListener {
 
-  enum State {STOPPED, STOPPED_ERROR, PLAYING, PAUSED, UPDATE_ME}
+  enum State {
+    STOPPED, STOPPED_ERROR, PLAYING, PAUSED, UPDATE_ME;
+
+    public boolean isStopped() {
+      return this == STOPPED || this == STOPPED_ERROR;
+    }
+  }
 
   private enum CallbackType {PROGRESS, STATE, EPISODE}
 
@@ -279,7 +285,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   }
 
   public synchronized int getProgress() {
-    if (state != State.STOPPED && state != State.STOPPED_ERROR && !preparing) {
+    if (!state.isStopped() && !preparing) {
       progress = player.getCurrentPosition();
     }
     return progress;

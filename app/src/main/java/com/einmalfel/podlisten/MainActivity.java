@@ -279,12 +279,11 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        boolean isRan = state == PlayerService.State.PLAYING || state == PlayerService.State.PAUSED;
-        fbButton.setEnabled(isRan);
-        ffButton.setEnabled(isRan);
-        fbButton.setColorFilter(isRan ? null : disabledFilter);
-        ffButton.setColorFilter(isRan ? null : disabledFilter);
-        progressBarTitle.setVisibility(isRan ? View.VISIBLE : View.INVISIBLE);
+        fbButton.setEnabled(!state.isStopped());
+        ffButton.setEnabled(!state.isStopped());
+        fbButton.setColorFilter(!state.isStopped() ? null : disabledFilter);
+        ffButton.setColorFilter(!state.isStopped() ? null : disabledFilter);
+        progressBarTitle.setVisibility(!state.isStopped() ? View.VISIBLE : View.INVISIBLE);
         if (state == PlayerService.State.PLAYING) {
           playButton.setImageResource(R.mipmap.ic_pause_white_36dp);
         } else {
