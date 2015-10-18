@@ -39,7 +39,7 @@ public class PreferencesActivity extends AppCompatActivity {
     }
     getSupportFragmentManager()
         .beginTransaction()
-        .add(android.R.id.content, prefsFragment)
+        .replace(android.R.id.content, prefsFragment)
         .commit();
 
     setTitle(getString(R.string.preferences_title));
