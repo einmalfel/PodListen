@@ -24,6 +24,26 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     AUTO_DOWNLOAD,
     AUTO_DOWNLOAD_AC,
     DOWNLOAD_NETWORK,
+    COMPLETE_ACTION,
+  }
+
+  enum CompleteAction {
+    DO_NOTHING(R.string.playback_complete_do_nothing),
+    PLAY_NEXT(R.string.playback_complete_play_next),
+    DELETE_PLAY_NEXT(R.string.playback_complete_delete_play_next),
+    PLAY_FIRST(R.string.playback_complete_play_first),
+    DELETE_PLAY_FIRST(R.string.playback_complete_delete_play_first);
+
+    private final int stringId;
+
+    CompleteAction(@StringRes int stringId) {
+      this.stringId = stringId;
+    }
+
+    @Override
+    public String toString() {
+      return PodListenApp.getContext().getString(stringId);
+    }
   }
 
   enum DownloadNetwork {
@@ -164,6 +184,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private static final SortingMode DEFAULT_SORTING_MODE = SortingMode.OLDEST_FIRST;
   private static final AutoDownloadMode DEFAULT_DOWNLOAD_MODE = AutoDownloadMode.ALL_NEW;
   private static final DownloadNetwork DEFAULT_DOWNLOAD_NETWORK = DownloadNetwork.WIFI;
+  private static final CompleteAction DEFAULT_COMPLETE_ACTION = CompleteAction.PLAY_NEXT;
   private static Preferences instance = null;
 
   // fields below could be changed from readPreference() only
@@ -173,6 +194,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private SortingMode sortingMode;
   private AutoDownloadMode autoDownloadMode;
   private DownloadNetwork downloadNetwork;
+  private CompleteAction completeAction;
   private boolean autoDownloadACOnly;
   private boolean playerForeground; // preserve last player service state across app kill/restarts
 
@@ -253,6 +275,9 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
   private synchronized void readPreference(Key key) {
     switch (key) {
+      case COMPLETE_ACTION:
+        completeAction = readEnum(Key.COMPLETE_ACTION, DEFAULT_COMPLETE_ACTION);
+        break;
       case DOWNLOAD_NETWORK:
         DownloadNetwork newDLNetwork = readEnum(Key.DOWNLOAD_NETWORK, DEFAULT_DOWNLOAD_NETWORK);
         if (downloadNetwork != newDLNetwork) {
@@ -380,6 +405,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   @NonNull
   public DownloadNetwork getDownloadNetwork() {
     return downloadNetwork;
+  }
+
+  @NonNull
+  public CompleteAction getCompleteAction() {
+    return completeAction;
   }
 
   @Override

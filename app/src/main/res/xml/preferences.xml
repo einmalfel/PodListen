@@ -27,6 +27,13 @@
             android:title="@string/preferences_refresh_interval_title"/>
     </PreferenceCategory>
     <PreferenceCategory
+        android:title="@string/preferences_playback_title">
+        <ListPreference
+            android:key="COMPLETE_ACTION"
+            android:summary="%s"
+            android:title="@string/preferences_on_playback_completed_title"/>
+    </PreferenceCategory>
+    <PreferenceCategory
         android:title="@string/preferences_other_title">
         <Preference
             android:key="SEND_REPORT"

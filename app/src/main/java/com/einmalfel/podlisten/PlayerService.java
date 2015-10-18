@@ -205,7 +205,11 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
   @Override
   public void onCompletion(MediaPlayer mp) {
-    playNext();
+    if (Preferences.getInstance().getCompleteAction() == Preferences.CompleteAction.DO_NOTHING) {
+      pause();
+    } else {
+      playNext();
+    }
   }
 
   @Override
@@ -306,8 +310,13 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         Log.d(TAG, "Attempting to seek with negative position. Seeking to zero");
       }
       if (length != 0 && timeMs > length) {
-        Log.d(TAG, "Attempting to seek past file end, playing next episode");
-        return playNext();
+        if (Preferences.getInstance().getCompleteAction() == Preferences.CompleteAction.DO_NOTHING){
+          seek(length);
+          return true;
+        } else {
+          Log.d(TAG, "Attempting to seek past file end, playing next episode");
+          return playNext();
+        }
       } else {
         Log.d(TAG, "Seeking to " + timeMs);
         player.seekTo(timeMs);
@@ -443,19 +452,22 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
    * otherwise true
    */
   public synchronized boolean playNext() {
-    if (currentId > 0) {
-      PodcastHelper.getInstance().markEpisodeGone(currentId);
-    }
+    Preferences.CompleteAction completeAction = Preferences.getInstance().getCompleteAction();
     boolean result;
+    long completedId = currentId;
+    currentId = 0;
+
     Cursor c = getContentResolver().query(
         Provider.episodeUri,
         new String[]{Provider.K_ID},
         Provider.K_ESTATE + " == ? AND " + Provider.K_EDFIN + " == 100",
         new String[]{Integer.toString(Provider.ESTATE_IN_PLAYLIST)},
         Preferences.getInstance().getSortingMode().toSql());
-    if (c.moveToFirst()) {
-      result = playEpisode(c.getLong(c.getColumnIndex(Provider.K_ID)));
-    } else {
+    if (c == null) {
+      throw new AssertionError("Unexpectedly got null from query()");
+    }
+    int idColumn = c.getColumnIndexOrThrow(Provider.K_ID);
+    if (c.getCount() <= 1) { // the only episode in playlist is completed one
       Log.i(TAG, "No more playable episodes");
       releasePlayer();
       state = State.STOPPED_EMPTY;
@@ -465,7 +477,37 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       callbackThread.post(CallbackType.PROGRESS);
       callbackThread.post(CallbackType.EPISODE);
       result = false;
+    } else {
+      if (completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT ||
+          completeAction == Preferences.CompleteAction.PLAY_NEXT) {
+        long prevId = 0;
+        while (c.moveToNext()) {
+          if (prevId == completedId) {
+            currentId = c.getLong(idColumn);
+            break;
+          }
+          prevId = c.getLong(idColumn);
+        }
+      }
+
+      if (currentId == 0) {
+        c.moveToFirst();
+        do {
+          currentId = c.getLong(idColumn);
+          if (currentId != completedId) {
+            break;
+          }
+        } while (c.moveToNext());
+      }
+
+      result = playEpisode(currentId);
     }
+
+    if (completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST ||
+        completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT) {
+      PodcastHelper.getInstance().markEpisodeGone(completedId);
+    }
+
     c.close();
     return result;
   }
