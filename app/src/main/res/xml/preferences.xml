@@ -32,6 +32,10 @@
             android:key="COMPLETE_ACTION"
             android:summary="%s"
             android:title="@string/preferences_on_playback_completed_title"/>
+        <ListPreference
+            android:key="JUMP_INTERVAL"
+            android:summary="%s"
+            android:title="@string/preferences_jump_interval_title"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/preferences_other_title">

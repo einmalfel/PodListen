@@ -143,7 +143,6 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
   private static final int NOTIFICATION_ID = 2;
   private static final String TAG = "PPS";
-  private static final int JUMP_INTERVAL = 30000;
   private static final float NO_FOCUS_VOLUME = 0.2f;
 
   private final CallbackThread callbackThread = new CallbackThread(this);
@@ -296,11 +295,11 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   }
 
   public synchronized boolean jumpForward() {
-    return seek(getProgress() + JUMP_INTERVAL);
+    return seek(getProgress() + Preferences.getInstance().getJumpInterval().inMilliseconds());
   }
 
   public synchronized boolean jumpBackward() {
-    return seek(getProgress() - JUMP_INTERVAL);
+    return seek(getProgress() - Preferences.getInstance().getJumpInterval().inMilliseconds());
   }
 
   public synchronized boolean seek(int timeMs) {

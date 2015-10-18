@@ -65,6 +65,10 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
         Preferences.Key.COMPLETE_ACTION.toString());
     bindEnumToList(onCompleteLP, Preferences.CompleteAction.class);
 
+    ListPreference jumpIntervalLP = (ListPreference) findPreference(
+        Preferences.Key.JUMP_INTERVAL.toString());
+    bindEnumToList(jumpIntervalLP, Preferences.JumpInterval.class);
+
     // if there is no mail app installed, disable send bug-report option
     Intent testEmailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "", null));
     if (testEmailIntent.resolveActivity(getActivity().getPackageManager()) == null) {

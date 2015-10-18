@@ -25,6 +25,43 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     AUTO_DOWNLOAD_AC,
     DOWNLOAD_NETWORK,
     COMPLETE_ACTION,
+    JUMP_INTERVAL,
+  }
+
+  enum JumpInterval {
+    TEN_SECONDS(R.string.jump_interval_10sec),
+    TWENTY_SECONDS(R.string.jump_interval_20sec),
+    THIRTY_SECONDS(R.string.jump_interval_30sec),
+    ONE_MINUTE(R.string.jump_interval_1min),
+    FIVE_MINUTES(R.string.jump_interval_5min);
+
+    private final int stringId;
+
+    JumpInterval(@StringRes int stringId) {
+      this.stringId = stringId;
+    }
+
+    @Override
+    public String toString() {
+      return PodListenApp.getContext().getString(stringId);
+    }
+
+    public int inMilliseconds() {
+      switch (this) {
+        case TEN_SECONDS:
+          return 10000;
+        case TWENTY_SECONDS:
+          return 20000;
+        case THIRTY_SECONDS:
+          return 30000;
+        case ONE_MINUTE:
+          return 60000;
+        case FIVE_MINUTES:
+          return 300000;
+        default:
+          throw new AssertionError("Unknown jump interval: " + this);
+      }
+    }
   }
 
   enum CompleteAction {
@@ -185,6 +222,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private static final AutoDownloadMode DEFAULT_DOWNLOAD_MODE = AutoDownloadMode.ALL_NEW;
   private static final DownloadNetwork DEFAULT_DOWNLOAD_NETWORK = DownloadNetwork.WIFI;
   private static final CompleteAction DEFAULT_COMPLETE_ACTION = CompleteAction.PLAY_NEXT;
+  private static final JumpInterval DEFAULT_JUMP_INTERVAL = JumpInterval.THIRTY_SECONDS;
   private static Preferences instance = null;
 
   // fields below could be changed from readPreference() only
@@ -195,6 +233,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private AutoDownloadMode autoDownloadMode;
   private DownloadNetwork downloadNetwork;
   private CompleteAction completeAction;
+  private JumpInterval jumpInterval;
   private boolean autoDownloadACOnly;
   private boolean playerForeground; // preserve last player service state across app kill/restarts
 
@@ -275,6 +314,8 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
   private synchronized void readPreference(Key key) {
     switch (key) {
+      case JUMP_INTERVAL:
+        jumpInterval = readEnum(Key.JUMP_INTERVAL, DEFAULT_JUMP_INTERVAL);
       case COMPLETE_ACTION:
         completeAction = readEnum(Key.COMPLETE_ACTION, DEFAULT_COMPLETE_ACTION);
         break;
@@ -410,6 +451,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   @NonNull
   public CompleteAction getCompleteAction() {
     return completeAction;
+  }
+
+  @NonNull
+  public JumpInterval getJumpInterval() {
+    return jumpInterval;
   }
 
   @Override
