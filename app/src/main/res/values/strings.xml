@@ -62,8 +62,8 @@
     <string name="preferences_max_downloads_title">Max parallel downloads</string>
     <string name="preferences_max_downloads_unlimited">Unlimited</string>
     <string name="preferences_storage_location_title">Episode cache (cleared on change)</string>
-    <string name="preferences_auto_download_title">Automatic download</string>
-    <string name="preferences_auto_download_ac_title">Download on AC power only</string>
+    <string name="preferences_auto_download_title">Episode auto-download</string>
+    <string name="preferences_auto_download_ac_title">Download on charge only</string>
     <string name="preferences_auto_download_ac_summary">Only run automatic downloads when charger is plugged</string>
     <string name="preferences_download_network_title">Download network type</string>
     <string name="preferences_opml_export_title">Export to OPML</string>
