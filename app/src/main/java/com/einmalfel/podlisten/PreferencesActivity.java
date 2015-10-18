@@ -27,13 +27,16 @@ import java.util.Locale;
 
 public class PreferencesActivity extends AppCompatActivity {
   private static final String TAG = "PAC";
+  private static PreferenceFragmentCompat prefsFragment = null;
   private final Preferences preferences = Preferences.getInstance();
-  private final PreferenceFragmentCompat prefsFragment = new PreferencesFragment();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    prefsFragment.setRetainInstance(true);
+    if (prefsFragment == null) {
+      prefsFragment = new PreferencesFragment();
+      prefsFragment.setRetainInstance(true);
+    }
     getSupportFragmentManager()
         .beginTransaction()
         .add(android.R.id.content, prefsFragment)
