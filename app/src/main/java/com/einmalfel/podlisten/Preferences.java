@@ -162,7 +162,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private static final MaxDownloadsOption DEFAULT_MAX_DOWNLOADS = MaxDownloadsOption.TWO;
   private static final RefreshIntervalOption DEFAULT_REFRESH_INTERVAL = RefreshIntervalOption.DAY;
   private static final SortingMode DEFAULT_SORTING_MODE = SortingMode.OLDEST_FIRST;
-  private static final AutoDownloadMode DEFAULT_DOWNLOAD_MODE = AutoDownloadMode.PLAYLIST;
+  private static final AutoDownloadMode DEFAULT_DOWNLOAD_MODE = AutoDownloadMode.ALL_NEW;
   private static final DownloadNetwork DEFAULT_DOWNLOAD_NETWORK = DownloadNetwork.WIFI;
   private static Preferences instance = null;
 
