@@ -25,10 +25,10 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     AudioManager.OnAudioFocusChangeListener {
 
   enum State {
-    STOPPED, STOPPED_ERROR, PLAYING, PAUSED, UPDATE_ME;
+    STOPPED, STOPPED_ERROR, STOPPED_EMPTY, PLAYING, PAUSED, UPDATE_ME;
 
     public boolean isStopped() {
-      return this == STOPPED || this == STOPPED_ERROR;
+      return this == STOPPED || this == STOPPED_EMPTY || this == STOPPED_ERROR;
     }
   }
 
@@ -319,6 +319,13 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     }
   }
 
+  private void releasePlayer() {
+    if (player != null) {
+      player.release();
+      player = null;
+    }
+  }
+
   /**
    * Stop playback, release resources, callback clients, hide notification
    *
@@ -327,10 +334,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   public synchronized boolean stop() {
     Log.d(TAG, "Stopping playback");
     MediaButtonReceiver.setService(null);
-    if (player != null) {
-      player.release();
-      player = null;
-    }
+    releasePlayer();
     state = State.STOPPED;
     currentId = 0;
     progress = 0;
@@ -453,7 +457,13 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       result = playEpisode(c.getLong(c.getColumnIndex(Provider.K_ID)));
     } else {
       Log.i(TAG, "No more playable episodes");
-      stop();
+      releasePlayer();
+      state = State.STOPPED_EMPTY;
+      currentId = 0;
+      progress = 0;
+      callbackThread.post(CallbackType.STATE);
+      callbackThread.post(CallbackType.PROGRESS);
+      callbackThread.post(CallbackType.EPISODE);
       result = false;
     }
     c.close();
@@ -491,6 +501,23 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     startForeground(NOTIFICATION_ID, notification);
     if (!Preferences.getInstance().getPlayerForeground()) {
       Preferences.getInstance().setPlayerForeground(true);
+    }
+  }
+
+  public void notifyPlaylistAdd(long id) {
+    if (state == State.STOPPED_EMPTY) {
+      Cursor c = getContentResolver().query(
+          Provider.getUri(Provider.T_EPISODE, id), new String[]{Provider.K_EDFIN}, null, null,
+          null);
+      if (c != null) {
+        if (c.moveToFirst() && c.getLong(c.getColumnIndexOrThrow(Provider.K_EDFIN)) == 100) {
+          state = State.STOPPED;
+          callbackThread.post(CallbackType.STATE);
+        }
+        c.close();
+      } else {
+        Log.e(TAG, "Unexpectedly got null from query()", new AssertionError());
+      }
     }
   }
 }

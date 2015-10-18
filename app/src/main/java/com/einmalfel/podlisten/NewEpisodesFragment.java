@@ -57,6 +57,7 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
     if (Preferences.getInstance().getAutoDownloadMode() == Preferences.AutoDownloadMode.PLAYLIST) {
       activity.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
     }
+    activity.connection.service.notifyPlaylistAdd(id);
   }
 
   @Override

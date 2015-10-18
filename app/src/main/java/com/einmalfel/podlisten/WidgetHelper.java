@@ -158,35 +158,47 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     } else {
       rvPartial.setImageViewResource(R.id.play_button, R.mipmap.ic_play_arrow_white_36dp);
     }
+    if (state == PlayerService.State.STOPPED_ERROR || state == PlayerService.State.STOPPED) {
+      rvPartial.setTextViewText(R.id.play_title, context.getString(R.string.player_stopped));
+    } else if (state == PlayerService.State.STOPPED_EMPTY) {
+      rvPartial.setTextViewText(R.id.play_title, context.getString(R.string.player_empty));
+    }
     updateWidgetsPartial(rvPartial);
     updateNotification(rvPartial);
   }
 
   @Override
   public void episodeUpdate(long id) {
-    Cursor c = context.getContentResolver().query(
-        Provider.getUri(Provider.T_EPISODE, id),
-        new String[]{Provider.K_ENAME, Provider.K_EPID},
-        null, null, null);
-    String title;
-    Bitmap image = ImageManager.getInstance().getImage(id);
-    if (c.moveToFirst()) {
-      title = c.getString(c.getColumnIndex(Provider.K_ENAME));
-      if (image == null) {
-        image = ImageManager.getInstance().getImage(c.getLong(c.getColumnIndex(Provider.K_EPID)));
+    String title = null;
+    Bitmap image = null;
+    if (id != 0) {
+      Cursor c = context.getContentResolver().query(
+          Provider.getUri(Provider.T_EPISODE, id),
+          new String[]{Provider.K_ENAME, Provider.K_EPID},
+          null, null, null);
+      if (c != null) {
+        if (c.moveToFirst()) {
+          image = ImageManager.getInstance().getImage(id);
+          title = c.getString(c.getColumnIndex(Provider.K_ENAME));
+          if (image == null) {
+            image = ImageManager.getInstance()
+                                .getImage(c.getLong(c.getColumnIndex(Provider.K_EPID)));
+          }
+        } else {
+          title = "Episode " + id + " doesn't exist";
+        }
+        c.close();
       }
-    } else {
-      title = "Episode " + id + " doesn't exist";
     }
-    c.close();
     RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
     if (image == null) {
       rvPartial.setImageViewResource(R.id.play_episode_image, R.drawable.main_icon);
     } else {
       rvPartial.setImageViewBitmap(R.id.play_episode_image, image);
     }
-    rvPartial.setTextViewText(R.id.play_title, title);
-
+    if (title != null) {
+      rvPartial.setTextViewText(R.id.play_title, title);
+    }
     if (id == 0) {
       activityIntent.removeExtra(MainActivity.EPISODE_ID_OPTION);
     } else {
