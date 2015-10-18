@@ -1,6 +1,7 @@
 package com.einmalfel.podlisten;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -27,7 +28,10 @@ public class PodListenApp extends DebuggableApp {
   }
 
   public static Context getContext() {
-    return instance.getApplicationContext();
+    if (instance == null) {
+      Log.wtf("APP", "Getting context before Application.onCreate()", new NullPointerException());
+    }
+    return instance;
   }
 
   @Override
