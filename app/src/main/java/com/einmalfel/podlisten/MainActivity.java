@@ -367,7 +367,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
             Log.w(TAG, "Playlist fragment doesn't exist yet, skipping reload");
           }
           Snackbar
-              .make(findViewById(android.R.id.content), newMode.toString(), Snackbar.LENGTH_SHORT)
+              .make(findViewById(R.id.tabbed_frame), newMode.toString(), Snackbar.LENGTH_SHORT)
               .show();
           break;
       }

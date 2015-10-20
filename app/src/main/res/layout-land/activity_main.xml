@@ -1,42 +1,24 @@
-<android.support.design.widget.CoordinatorLayout
-    android:id="@+id/activity_coordinator_layout"
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_soft">
+    android:background="@color/background_soft"
+    android:orientation="horizontal"
+    tools:context=".MainActivity">
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:custom="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        tools:context=".MainActivity">
-
-        <com.einmalfel.podlisten.support.RotationLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-            <include
-                layout="@layout/player"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                custom:layout_rotation="90"/>
-        </com.einmalfel.podlisten.support.RotationLayout>
+    <com.einmalfel.podlisten.support.RotationLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
 
         <include
-            layout="@layout/tabbed_frame"/>
-    </LinearLayout>
+            layout="@layout/player"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            custom:layout_rotation="90"/>
+    </com.einmalfel.podlisten.support.RotationLayout>
 
     <include
-        layout="@layout/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="55sp"
-        app:layout_behavior="com.einmalfel.podlisten.ScrollTrackingBehaviour"/>
-
-</android.support.design.widget.CoordinatorLayout>
+        layout="@layout/tabbed_frame"/>
+</LinearLayout>

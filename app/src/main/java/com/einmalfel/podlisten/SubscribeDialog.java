@@ -53,7 +53,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
   @Override
   public void onClick(View v) {
     // Dialog may become invisible after this click. Attach snackbars to activity root view.
-    final View acRoot = getActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+    final View acRoot = getActivity().getWindow().getDecorView().findViewById(R.id.tabbed_frame);
 
     String link = completeUrlString(urlText.getText());
     try {
