@@ -100,6 +100,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private TabLayout tabLayout;
   private TabsAdapter tabsAdapter;
   private FloatingActionButton fab;
+  private Snackbar snackbar;
   private Timer timer;
   private PlaylistFragment playlistFragment = null;
   private FabAction currentFabAction;
@@ -366,9 +367,18 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           } else {
             Log.w(TAG, "Playlist fragment doesn't exist yet, skipping reload");
           }
-          Snackbar
-              .make(findViewById(R.id.tabbed_frame), newMode.toString(), Snackbar.LENGTH_SHORT)
-              .show();
+          // on some devices (e.g. Galaxy TAB 4 7.0) single snackbar instance cannot be showed
+          // multiple times, so reinstantiate it
+          if (snackbar == null || !snackbar.isShownOrQueued()) {
+            if (snackbar != null ) {
+              snackbar.dismiss();
+            }
+            snackbar = Snackbar.make(
+                findViewById(R.id.tabbed_frame), newMode.toString(), Snackbar.LENGTH_SHORT);
+          } else {
+            snackbar.setText(newMode.toString());
+          }
+          snackbar.show();
           break;
       }
     } else if (v == playButton) {
