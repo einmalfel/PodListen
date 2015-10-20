@@ -11,7 +11,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
 import android.util.Xml;
 
@@ -27,20 +26,18 @@ import java.util.Locale;
 
 public class PreferencesActivity extends AppCompatActivity {
   private static final String TAG = "PAC";
-  private static PreferenceFragmentCompat prefsFragment = null;
   private final Preferences preferences = Preferences.getInstance();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    if (prefsFragment == null) {
-      prefsFragment = new PreferencesFragment();
-      prefsFragment.setRetainInstance(true);
-    }
-    getSupportFragmentManager()
-        .beginTransaction()
-        .replace(android.R.id.content, prefsFragment)
+
+    android.support.v4.app.FragmentManager fM = getSupportFragmentManager();
+    if (fM.findFragmentById(android.R.id.content) == null) {
+      fM.beginTransaction()
+        .add(android.R.id.content, new PreferencesFragment())
         .commit();
+    }
 
     setTitle(getString(R.string.preferences_title));
     ActionBar actionBar = getSupportActionBar();
