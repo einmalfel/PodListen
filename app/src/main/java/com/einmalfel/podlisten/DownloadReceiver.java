@@ -315,7 +315,7 @@ public class DownloadReceiver extends BroadcastReceiver {
       if (refreshIntervalMs == 0 || refreshIntervalMs > dayRefreshInterval) {
         refreshIntervalMs = dayRefreshInterval;
       }
-      condition += " AND " + Provider.K_ETSTAMP + " < " + Long.toString(
+      condition += " AND " + Provider.K_EDTSTAMP + " < " + Long.toString(
           new Date().getTime() - refreshIntervalMs);
     }
     Cursor queue = context.getContentResolver().query(
@@ -333,6 +333,7 @@ public class DownloadReceiver extends BroadcastReceiver {
     while (queue.moveToNext() && runningDownloadsCount < maxParallelDownloads) {
       if (download(
           context, queue.getString(urlInd), queue.getString(titleInd), queue.getLong(idInd))) {
+        Log.d(TAG, "Updating queue : adding " + queue.getString(titleInd));
         runningDownloadsCount++;
       }
     }
