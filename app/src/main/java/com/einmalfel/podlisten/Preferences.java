@@ -328,11 +328,14 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         }
         break;
       case AUTO_DOWNLOAD_AC:
-        autoDownloadACOnly = sPrefs.getBoolean(Key.AUTO_DOWNLOAD_AC.toString(), false);
-        if (!autoDownloadACOnly) {
-          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
-        } else if (!DownloadReceiver.isDeviceCharging()) {
-          DownloadReceiver.stopDownloads(null);
+        boolean newAutoDownloadAC = sPrefs.getBoolean(Key.AUTO_DOWNLOAD_AC.toString(), false);
+        if (newAutoDownloadAC != autoDownloadACOnly) {
+          autoDownloadACOnly = newAutoDownloadAC;
+          if (!autoDownloadACOnly) {
+            context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+          } else if (!DownloadReceiver.isDeviceCharging()) {
+            DownloadReceiver.stopDownloads(null);
+          }
         }
         break;
       case PLAYER_FOREGROUND:
