@@ -161,5 +161,12 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_provider_info"/>
         </receiver>
+
+        <activity
+            android:name="org.acra.CrashReportDialog"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance"
+            android:process=":error_report"/>
     </application>
 </manifest>

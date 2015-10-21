@@ -5,6 +5,7 @@ import android.util.Log;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
+import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 @ReportsCrashes(
@@ -18,7 +19,11 @@ import org.acra.annotation.ReportsCrashes;
         ReportField.USER_CRASH_DATE, ReportField.AVAILABLE_MEM_SIZE, ReportField.TOTAL_MEM_SIZE,
         ReportField.BUILD, ReportField.BUILD_CONFIG, ReportField.DISPLAY,
         ReportField.CRASH_CONFIGURATION, ReportField.SHARED_PREFERENCES, ReportField.LOGCAT,
-        ReportField.STACK_TRACE}
+        ReportField.STACK_TRACE},
+    mode = ReportingInteractionMode.DIALOG,
+    resDialogText = R.string.crash_dialog_text,
+    resDialogTitle = R.string.crash_dialog_title,
+    resDialogOkToast = R.string.crash_dialog_ok_toast
 )
 public class PodListenApp extends DebuggableApp {
   private static PodListenApp instance;
