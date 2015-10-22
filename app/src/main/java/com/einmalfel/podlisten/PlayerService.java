@@ -154,6 +154,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   private boolean preparing = false;
   private State state = State.STOPPED;
   private int focusMode;
+  private float audioVolume = 1f;
 
   class LocalBinder extends Binder {
     PlayerService getService() {
@@ -246,7 +247,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     switch (focusChange) {
       case AudioManager.AUDIOFOCUS_GAIN:
         if (focusMode == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-          player.setVolume(1f, 1f);
+          setVolume(1f);
         } else if (focusMode == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT && state == State.PLAYING) {
           resume();
         }
@@ -258,7 +259,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         pause();
         break;
       case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-        player.setVolume(NO_FOCUS_VOLUME, NO_FOCUS_VOLUME);
+        setVolume(NO_FOCUS_VOLUME);
         break;
       default:
         Log.w(TAG, "Unhandled audio focus change: " + focusChange);
@@ -295,6 +296,17 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
   public synchronized boolean jumpBackward() {
     return seek(getProgress() - Preferences.getInstance().getJumpInterval().inMilliseconds());
+  }
+
+  public synchronized void setVolume(float volume) {
+    audioVolume = volume;
+    if (player != null) {
+      player.setVolume(volume, volume);
+    }
+  }
+
+  public synchronized float getVolume() {
+    return audioVolume;
   }
 
   public synchronized boolean seek(int timeMs) {
@@ -528,6 +540,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       player.setOnCompletionListener(this);
       player.setOnErrorListener(this);
       player.setOnSeekCompleteListener(this);
+      player.setVolume(audioVolume, audioVolume);
     } else {
       player.reset();
     }
