@@ -202,7 +202,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     }
     if (image == null) {
       episodeImage.getLayoutParams().width = PodcastHelper.getInstance().minImageWidthPX;
-      episodeImage.setImageResource(R.drawable.main_icon);
+      episodeImage.setImageResource(R.drawable.logo);
     } else {
       episodeImage.getLayoutParams().width = PodcastHelper.getInstance().getListImageWidth(image);
       episodeImage.setImageBitmap(image);

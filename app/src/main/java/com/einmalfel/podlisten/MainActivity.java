@@ -304,7 +304,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          episodeImage.setImageResource(R.drawable.main_icon);
+          episodeImage.setImageResource(R.drawable.logo);
         }
       });
     } else {
@@ -326,7 +326,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
               image = ImageManager.getInstance().getImage(pId);
             }
             if (image == null) {
-              episodeImage.setImageResource(R.drawable.main_icon);
+              episodeImage.setImageResource(R.drawable.logo);
             } else {
               episodeImage.setImageBitmap(image);
             }

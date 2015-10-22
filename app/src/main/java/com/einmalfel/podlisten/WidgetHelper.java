@@ -69,7 +69,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     rvFull.setOnClickPendingIntent(R.id.ff_button, getIntent(context, WidgetAction.SEEK_FORWARD));
     rvFull.setOnClickPendingIntent(R.id.play_options, getIntent(context, WidgetAction.STOP));
     rvFull.setImageViewResource(R.id.play_options, R.mipmap.ic_close_white_36dp);
-    builder.setSmallIcon(R.drawable.main_icon).setPriority(NotificationCompat.PRIORITY_LOW)
+    builder.setSmallIcon(R.drawable.logo).setPriority(NotificationCompat.PRIORITY_LOW)
            .setOngoing(true).setCategory(NotificationCompat.CATEGORY_SERVICE);
     connection.bind();
   }
@@ -193,7 +193,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     }
     RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
     if (image == null) {
-      rvPartial.setImageViewResource(R.id.play_episode_image, R.drawable.main_icon);
+      rvPartial.setImageViewResource(R.id.play_episode_image, R.drawable.logo);
     } else {
       rvPartial.setImageViewBitmap(R.id.play_episode_image, image);
     }

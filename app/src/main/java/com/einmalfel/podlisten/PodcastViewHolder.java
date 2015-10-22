@@ -83,7 +83,7 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
     Bitmap image = ImageManager.getInstance().getImage(id);
     if (image == null) {
       imageView.getLayoutParams().width = PodcastHelper.getInstance().minImageWidthPX;
-      imageView.setImageResource(R.drawable.main_icon);
+      imageView.setImageResource(R.drawable.logo);
     } else {
       imageView.getLayoutParams().width = PodcastHelper.getInstance().getListImageWidth(image);
       imageView.setImageBitmap(image);
