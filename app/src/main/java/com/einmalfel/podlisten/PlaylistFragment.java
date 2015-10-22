@@ -126,6 +126,17 @@ public class PlaylistFragment extends DebuggableFragment implements
   @Override
   public void onLoadFinished(Loader loader, Cursor data) {
     adapter.swapCursor(data);
+    if (activity.pendingScrollId != 0) {
+      for (int pos = 0; pos < adapter.getItemCount(); pos++) {
+        if (adapter.getItemId(pos) == activity.pendingScrollId) {
+          Log.d(TAG, "scrolling to " + pos + " id " + activity.pendingScrollId);
+          rv.smoothScrollToPosition(pos);
+          adapter.setExpanded(activity.pendingScrollId, true, pos);
+          activity.pendingScrollId = 0;
+          return;
+        }
+      }
+    }
   }
 
   @Override
@@ -144,20 +155,5 @@ public class PlaylistFragment extends DebuggableFragment implements
   @Override
   public void episodeUpdate(long id) {
     adapter.setCurrentIdState(id, conn.service.getState());
-  }
-
-  void showEpisode(long id, boolean smoothScroll) {
-    for (int pos = 0; pos < adapter.getItemCount(); pos++) {
-      if (adapter.getItemId(pos) == id) {
-        Log.d(TAG, "scrolling to " + pos + " id " + id);
-        if (smoothScroll) {
-          rv.smoothScrollToPosition(pos);
-        } else {
-          rv.scrollToPosition(pos);
-        }
-        adapter.setExpanded(id, true, pos);
-        return;
-      }
-    }
   }
 }

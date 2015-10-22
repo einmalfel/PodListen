@@ -85,6 +85,12 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private static final int DOWNLOAD_CHECK_PERIOD = 500;
   private static final String TAG = "MAC";
 
+  /**
+   * Playlist will be scrolled to this ID when its cursor loading finishes. Need to store it here,
+   * cause PlaylistFragment may be not existent at the moment of intent arrival.
+   */
+  long pendingScrollId;
+
   PlayerLocalConnection connection;
   private int newEpisodesNumber = 0;
   private SubscribeDialog subscribeDialog;
@@ -390,11 +396,11 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     } else if (v == fbButton) {
       connection.service.jumpBackward();
     } else if (v == episodeImage) {
+      pendingScrollId = connection.service.getEpisodeId();
       if (playlistFragment != null) {
-        playlistFragment.showEpisode(connection.service.getEpisodeId(),
-                                     pager.getCurrentItem() == Pages.PLAYLIST.ordinal());
-        pager.setCurrentItem(Pages.PLAYLIST.ordinal());
+        playlistFragment.reloadList();
       }
+      pager.setCurrentItem(Pages.PLAYLIST.ordinal());
     } else if (v == optionsButton) {
       startActivity(new Intent(this, PreferencesActivity.class));
     }
@@ -425,9 +431,12 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     } else if (intent.hasExtra(PAGE_LAUNCH_OPTION)) {
       int page = intent.getIntExtra(PAGE_LAUNCH_OPTION, Pages.PLAYLIST.ordinal());
       Log.d(TAG, "Setting page " + page);
-      if (intent.hasExtra(EPISODE_ID_OPTION) && playlistFragment != null) {
-        playlistFragment.showEpisode(intent.getLongExtra(EPISODE_ID_OPTION, 0),
-                                     pager.getCurrentItem() == Pages.PLAYLIST.ordinal());
+      if (intent.hasExtra(EPISODE_ID_OPTION)) {
+        Log.e(TAG, "Setting id");
+        pendingScrollId = intent.getLongExtra(EPISODE_ID_OPTION, 0);
+        if (playlistFragment != null) {
+          playlistFragment.reloadList();
+        }
       }
       pager.setCurrentItem(page);
     }
