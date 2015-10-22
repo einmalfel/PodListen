@@ -142,7 +142,11 @@
             android:name=".MediaButtonReceiver"
             android:enabled="true"
             android:exported="true">
-            <intent-filter android:priority="999">
+            <!--Documentation says 1000 and above is system priority, but some devices take those
+            values into account for apps. Moreover, some apps actually set values more then 999 and
+            get broadcasts before others. That's why priority here is set to Integer.MAX_VALUE.
+            Podlisten only intercepts these broadcasts while player service is running in foreground.-->
+            <intent-filter android:priority="0x7FFFFFFF">
                 <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>
         </receiver>
