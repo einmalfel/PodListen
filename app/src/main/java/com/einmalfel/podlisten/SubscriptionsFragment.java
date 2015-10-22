@@ -49,6 +49,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements
     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int id) {
+        ImageManager.getInstance().deleteImage(pId);
         activity.getContentResolver().delete(Provider.getUri(Provider.T_PODCAST, pId), null, null);
       }
     });
