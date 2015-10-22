@@ -168,24 +168,19 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   }
 
   @Override
-  public int onStartCommand(Intent intent, int flags, int startId) {
-    if (intent == null && Preferences.getInstance().getPlayerForeground()) {
-      // Service process was crashed/killed while running foreground. Service is restarting now.
-      // System has recovered our notification to last value passed to startForeground, but it
-      // contains partial remote views and thus doesn't work, so instantiate WidgetHelper to fix it.
-      state = State.STOPPED_ERROR;
-      WidgetHelper.getInstance();
-    }
-    return super.onStartCommand(intent, flags, startId);
-  }
-
-  @Override
   public void onCreate() {
     super.onCreate();
     Log.d(TAG, "Creating service");
     initPlayer();
     callbackThread.start();
     focusMode = AudioManager.AUDIOFOCUS_LOSS;
+    if (Preferences.getInstance().getPlayerForeground()) {
+      // Service process was crashed/killed while running foreground. Service is restarting now.
+      // System has recovered our notification to last value passed to startForeground, but it
+      // contains partial remote views and thus doesn't work, so instantiate WidgetHelper to fix it.
+      state = State.STOPPED_ERROR;
+      WidgetHelper.getInstance();
+    }
   }
 
   @Override
