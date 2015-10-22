@@ -45,8 +45,7 @@
                 android:id="@+id/play_add_image"
                 android:layout_width="match_parent"
                 android:layout_height="36sp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/play_episode"/>
+                android:layout_gravity="center"/>
 
             <TextView
                 android:id="@+id/date"

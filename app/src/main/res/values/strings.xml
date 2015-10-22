@@ -23,9 +23,12 @@
     <string name="subscription_add_failed">"Failed to add subscription to DB: "</string>
     <string name="episode_image_description">Image of this episode if any</string>
     <string name="podcast_image_description">Image of this podcast if any</string>
-    <string name="add_episode_to_playlist">Add this episode to playlist</string>
-    <string name="play_episode">Play this episode</string>
     <string name="deleted_subscription">Deleted subscription</string>
+
+    <string name="episode_action_download">Download episode</string>
+    <string name="episode_action_add">Add this episode to playlist</string>
+    <string name="episode_action_play">Play this episode</string>
+    <string name="episode_action_pause">Pause</string>
 
     <string name="refresh_mode_week">Add last week episodes</string>
     <string name="refresh_mode_month">Add last month episodes</string>

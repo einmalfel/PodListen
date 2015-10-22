@@ -164,6 +164,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     }
 
     if (downloaded != 100 && state != Provider.ESTATE_NEW) {
+      buttonImage.setContentDescription(context.getString(R.string.episode_action_download));
       if (downloadId == 0) {
         playAddFrame.setEnabled(true);
         buttonImage.setImageDrawable(loadButtonDrawable);
@@ -175,10 +176,13 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       playAddFrame.setEnabled(true);
       if (state == Provider.ESTATE_NEW) {
         buttonImage.setImageDrawable(addButtonDrawable);
+        buttonImage.setContentDescription(context.getString(R.string.episode_action_add));
       } else if (playerState == PlayerService.State.PLAYING) {
         buttonImage.setImageDrawable(pauseButtonDrawable);
+        buttonImage.setContentDescription(context.getString(R.string.episode_action_pause));
       } else {
         buttonImage.setImageDrawable(playButtonDrawable);
+        buttonImage.setContentDescription(context.getString(R.string.episode_action_play));
       }
     }
 
