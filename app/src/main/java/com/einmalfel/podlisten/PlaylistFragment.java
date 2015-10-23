@@ -148,12 +148,7 @@ public class PlaylistFragment extends DebuggableFragment implements
   public void progressUpdate(int position, int max) {}
 
   @Override
-  public void stateUpdate(PlayerService.State state) {
-    adapter.setCurrentIdState(conn.service.getEpisodeId(), state);
-  }
-
-  @Override
-  public void episodeUpdate(long id) {
-    adapter.setCurrentIdState(id, conn.service.getState());
+  public void stateUpdate(PlayerService.State state, long episodeId) {
+    adapter.setCurrentIdState(episodeId, state);
   }
 }

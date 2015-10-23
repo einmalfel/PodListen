@@ -282,7 +282,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   }
 
   @Override
-  public void stateUpdate(final PlayerService.State state) {
+  public void stateUpdate(final PlayerService.State state, final long episodeId) {
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
@@ -296,55 +296,40 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           playButton.setImageResource(R.mipmap.ic_play_arrow_white_36dp);
         }
 
-        if (state == PlayerService.State.STOPPED_EMPTY) {
-          progressBarTitle.setText(R.string.player_empty);
-        } else if (connection.service != null && connection.service.getEpisodeId() == 0 &&
-            (state == PlayerService.State.STOPPED_ERROR || state == PlayerService.State.STOPPED)) {
-          progressBarTitle.setText(R.string.player_stopped);
+        String title = null;
+        Bitmap img = null;
+        if (episodeId == 0) {
+          title = getString(state == PlayerService.State.STOPPED_EMPTY ?
+                                R.string.player_empty : R.string.player_stopped);
+        } else {
+          Cursor c = getContentResolver().query(Provider.getUri(Provider.T_EPISODE, episodeId),
+                                                new String[]{Provider.K_ENAME, Provider.K_EPID},
+                                                null, null, null);
+          if (c != null) {
+            if (c.moveToFirst()) {
+              title = c.getString(c.getColumnIndex(Provider.K_ENAME));
+              img = ImageManager.getInstance().getImage(episodeId);
+              if (img == null) {
+                img = ImageManager.getInstance()
+                                  .getImage(c.getLong(c.getColumnIndex(Provider.K_EPID)));
+              }
+            } else {
+              title = "Episode " + episodeId + " doesn't exist";
+            }
+            c.close();
+          } else {
+            Log.wtf(TAG, "Unexpectedly got null cursor from content provider",
+                    new AssertionError());
+          }
         }
+        if (img == null) {
+          episodeImage.setImageResource(R.drawable.logo);
+        } else {
+          episodeImage.setImageBitmap(img);
+        }
+        progressBarTitle.setText(title);
       }
     });
-  }
-
-  @Override
-  public void episodeUpdate(final long id) {
-    if (id == 0) {
-      runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          episodeImage.setImageResource(R.drawable.logo);
-        }
-      });
-    } else {
-      Cursor cursor = getContentResolver().query(Provider.getUri(Provider.T_EPISODE, id), null,
-                                                 null, null, null);
-      if (cursor == null) {
-        Log.e(TAG, "Unexpectedly got null from query", new AssertionError());
-        return;
-      }
-      if (cursor.moveToFirst()) {
-        final String title = cursor.getString(cursor.getColumnIndex(Provider.K_ENAME));
-        final long pId = cursor.getLong(cursor.getColumnIndex(Provider.K_EPID));
-        runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            progressBarTitle.setText(title);
-            Bitmap image = ImageManager.getInstance().getImage(id);
-            if (image == null) {
-              image = ImageManager.getInstance().getImage(pId);
-            }
-            if (image == null) {
-              episodeImage.setImageResource(R.drawable.logo);
-            } else {
-              episodeImage.setImageBitmap(image);
-            }
-          }
-        });
-      } else {
-        Log.e(TAG, "Unexpectedly got empty cursor", new AssertionError());
-      }
-      cursor.close();
-    }
   }
 
   @Override

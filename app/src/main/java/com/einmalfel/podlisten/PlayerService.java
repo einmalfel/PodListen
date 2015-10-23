@@ -35,14 +35,12 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     }
   }
 
-  private enum CallbackType {PROGRESS, STATE, EPISODE}
+  private enum CallbackType {PROGRESS, STATE}
 
   interface PlayerStateListener {
     void progressUpdate(int position, int max);
 
-    void stateUpdate(State state);
-
-    void episodeUpdate(long id);
+    void stateUpdate(State state, long episodeId);
   }
 
   private class CallbackThread extends Thread {
@@ -76,22 +74,14 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         // Syncing on service, not on this, to prevent deadlocking
         synchronized (service) {
           switch (ct) {
-            case EPISODE:
-              if (lastEpisode != service.currentId) {
-                Log.d(TAG, "Playing new episode " + service.currentId);
-                for (PlayerStateListener listener : listeners) {
-                  listener.episodeUpdate(service.currentId);
-                }
-                lastEpisode = service.currentId;
-              }
-              break;
             case STATE:
-              if (lastState != service.getState()) {
-                Log.d(TAG, "New playback state " + service.getState());
+              if (lastState != service.getState() || lastEpisode != currentId) {
+                Log.d(TAG, "New playback state " + service.getState() + " id " + currentId);
                 for (PlayerStateListener listener : listeners) {
-                  listener.stateUpdate(service.state);
+                  listener.stateUpdate(service.state, currentId);
                 }
                 lastState = service.state;
+                lastEpisode = currentId;
               }
               break;
             case PROGRESS:
@@ -125,7 +115,6 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         lastProgress = -1;
         lastState = PlayerService.State.UPDATE_ME;
         lastEpisode = -1;
-        post(CallbackType.EPISODE);
         post(CallbackType.STATE);
         post(CallbackType.PROGRESS);
       }
@@ -225,15 +214,13 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     playableEpisodes = data;
     if (currentId == 0 && data.moveToFirst()) {
       currentId = data.getLong(data.getColumnIndexOrThrow(Provider.K_ID));
-      callbackThread.post(CallbackType.EPISODE);
     }
     if (state == State.STOPPED_EMPTY && data.getCount() != 0) {
       state = State.STOPPED;
-      callbackThread.post(CallbackType.STATE);
     } else if (state.isStopped() && data.getCount() == 0) {
       state = State.STOPPED_EMPTY;
-      callbackThread.post(CallbackType.STATE);
     }
+    callbackThread.post(CallbackType.STATE);
   }
 
   @Override
@@ -389,11 +376,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     MediaButtonReceiver.setService(null);
     releasePlayer();
     state = State.STOPPED;
-    currentId = 0;
     progress = 0;
     callbackThread.post(CallbackType.STATE);
     callbackThread.post(CallbackType.PROGRESS);
-    callbackThread.post(CallbackType.EPISODE);
     stopForeground(true);
     Preferences.getInstance().setPlayerForeground(false);
     return true;
@@ -451,7 +436,6 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
     currentId = id;
     progress = 0;
-    callbackThread.post(CallbackType.EPISODE);
     state = State.STOPPED_ERROR;
 
     initPlayer();
@@ -555,7 +539,6 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       progress = 0;
       callbackThread.post(CallbackType.STATE);
       callbackThread.post(CallbackType.PROGRESS);
-      callbackThread.post(CallbackType.EPISODE);
       return false;
     } else {
       return playEpisode(nextId);

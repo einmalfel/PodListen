@@ -148,64 +148,50 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   }
 
   @Override
-  public void stateUpdate(PlayerService.State state) {
+  public void stateUpdate(PlayerService.State state, long episodeId) {
     RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
-    boolean seekable = state == PlayerService.State.PLAYING || state == PlayerService.State.PAUSED;
-    setButtonEnabled(seekable, rvPartial, R.id.ff_button);
-    setButtonEnabled(seekable, rvPartial, R.id.fb_button);
+    setButtonEnabled(!state.isStopped(), rvPartial, R.id.ff_button);
+    setButtonEnabled(!state.isStopped(), rvPartial, R.id.fb_button);
     setButtonEnabled(state != PlayerService.State.STOPPED, rvPartial, R.id.play_options);
     if (state == PlayerService.State.PLAYING) {
       rvPartial.setImageViewResource(R.id.play_button, R.mipmap.ic_pause_white_36dp);
     } else {
       rvPartial.setImageViewResource(R.id.play_button, R.mipmap.ic_play_arrow_white_36dp);
     }
-    if (state == PlayerService.State.STOPPED_EMPTY) {
-      rvPartial.setTextViewText(R.id.play_title, context.getString(R.string.player_empty));
-    } else if (connection.service != null && connection.service.getEpisodeId() == 0 &&
-        (state == PlayerService.State.STOPPED_ERROR || state == PlayerService.State.STOPPED)) {
-      rvPartial.setTextViewText(R.id.play_title, context.getString(R.string.player_stopped));
-    }
-    updateWidgetsPartial(rvPartial);
-    updateNotification(rvPartial);
-  }
 
-  @Override
-  public void episodeUpdate(long id) {
     String title = null;
-    Bitmap image = null;
-    if (id != 0) {
+    Bitmap img = null;
+    if (episodeId == 0) {
+      activityIntent.removeExtra(MainActivity.EPISODE_ID_OPTION);
+      title = context.getString(state == PlayerService.State.STOPPED_EMPTY ?
+                                    R.string.player_empty : R.string.player_stopped);
+    } else {
+      activityIntent.putExtra(MainActivity.EPISODE_ID_OPTION, episodeId);
       Cursor c = context.getContentResolver().query(
-          Provider.getUri(Provider.T_EPISODE, id),
+          Provider.getUri(Provider.T_EPISODE, episodeId),
           new String[]{Provider.K_ENAME, Provider.K_EPID},
           null, null, null);
       if (c != null) {
         if (c.moveToFirst()) {
-          image = ImageManager.getInstance().getImage(id);
           title = c.getString(c.getColumnIndex(Provider.K_ENAME));
-          if (image == null) {
-            image = ImageManager.getInstance()
-                                .getImage(c.getLong(c.getColumnIndex(Provider.K_EPID)));
+          img = ImageManager.getInstance().getImage(episodeId);
+          if (img == null) {
+            img = ImageManager.getInstance().getImage(c.getLong(c.getColumnIndex(Provider.K_EPID)));
           }
         } else {
-          title = "Episode " + id + " doesn't exist";
+          title = "Episode " + episodeId + " doesn't exist";
         }
         c.close();
+      } else {
+        Log.wtf(TAG, "Unexpectedly got null cursor from content provider", new AssertionError());
       }
     }
-    RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
-    if (image == null) {
-      rvPartial.setImageViewResource(R.id.play_episode_image, R.drawable.logo);
+    if (img == null) {
+      rvPartial.setImageViewResource(R.id.episode_image, R.drawable.logo);
     } else {
-      rvPartial.setImageViewBitmap(R.id.play_episode_image, image);
+      rvPartial.setImageViewBitmap(R.id.play_episode_image, img);
     }
-    if (title != null) {
-      rvPartial.setTextViewText(R.id.play_title, title);
-    }
-    if (id == 0) {
-      activityIntent.removeExtra(MainActivity.EPISODE_ID_OPTION);
-    } else {
-      activityIntent.putExtra(MainActivity.EPISODE_ID_OPTION, id);
-    }
+    rvPartial.setTextViewText(R.id.play_title, title);
     PendingIntent pendingIntent = PendingIntent.getActivity(
         context, INTENT_ID_LAUNCH_ACTIVITY, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     rvPartial.setOnClickPendingIntent(R.id.player, pendingIntent);
