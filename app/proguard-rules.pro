@@ -1,3 +1,10 @@
+########################## Support Library
+# prevent crashing caused by stripping Preference view constructor
+# https://code.google.com/p/android/issues/detail?id=183261
+-keep public class android.support.v7.preference.Preference { *; }
+-keep public class * extends android.support.v7.preference.Preference { *; }
+
+########################## ACRA
 # Restore some Source file names and restore approximate line numbers in the stack traces,
 # otherwise the stack traces are pretty useless
 -keepattributes SourceFile,LineNumberTable
