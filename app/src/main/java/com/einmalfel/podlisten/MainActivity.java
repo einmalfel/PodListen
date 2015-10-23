@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -25,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Timer;
@@ -173,6 +175,11 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       @Override
       public void onPageScrollStateChanged(int state) {}
     });
+
+    // player should have rounded corner only in activity, not in widgets (rounded corner is
+    // rendered white for notification widget on Android 5.1. Tested in genymotion)
+    RelativeLayout playerLayout = (RelativeLayout) findViewById(R.id.player);
+    playerLayout.setBackground(ContextCompat.getDrawable(this, R.drawable.player_background));
 
     connection = new PlayerLocalConnection(this);
 
