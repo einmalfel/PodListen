@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 
 import java.io.File;
@@ -22,7 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerService extends DebuggableService implements MediaPlayer.OnSeekCompleteListener,
     MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener,
-    AudioManager.OnAudioFocusChangeListener {
+    AudioManager.OnAudioFocusChangeListener, Loader.OnLoadCompleteListener<Cursor> {
+
 
   enum State {
     STOPPED, STOPPED_ERROR, STOPPED_EMPTY, PLAYING, PAUSED, UPDATE_ME;
@@ -144,6 +147,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   private static final int NOTIFICATION_ID = 2;
   private static final String TAG = "PPS";
   private static final float NO_FOCUS_VOLUME = 0.2f;
+  private static final int LOADER_ID = 10;
 
   private final CallbackThread callbackThread = new CallbackThread(this);
   private MediaPlayer player;
@@ -155,6 +159,8 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   private State state = State.STOPPED;
   private int focusMode;
   private float audioVolume = 1f;
+  private CursorLoader playableEpisodesLoader;
+  private Cursor playableEpisodes;
 
   class LocalBinder extends Binder {
     PlayerService getService() {
@@ -173,7 +179,15 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     super.onCreate();
     Log.d(TAG, "Creating service");
     initPlayer();
-    currentId = getNext();
+    playableEpisodesLoader = new CursorLoader(
+        this,
+        Provider.episodeUri, new String[]{Provider.K_ID},
+        Provider.K_ESTATE + " == " + Integer.toString(Provider.ESTATE_IN_PLAYLIST) + " AND " +
+            Provider.K_EDFIN + " == 100",
+        null,
+        Preferences.getInstance().getSortingMode().toSql());
+    playableEpisodesLoader.registerListener(LOADER_ID, this);
+    playableEpisodesLoader.startLoading();
     callbackThread.start();
     focusMode = AudioManager.AUDIOFOCUS_LOSS;
     if (Preferences.getInstance().getPlayerForeground()) {
@@ -189,6 +203,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   public void onDestroy() {
     Log.d(TAG, "Destroying service");
     stop();
+    playableEpisodesLoader.unregisterListener(this);
+    playableEpisodesLoader.cancelLoad();
+    playableEpisodesLoader.stopLoading();
     callbackThread.interrupt();
     try {
       callbackThread.join();
@@ -197,6 +214,26 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       Thread.currentThread().interrupt();
     }
     super.onDestroy();
+  }
+
+  @Override
+  public synchronized void onLoadComplete(Loader<Cursor> loader, Cursor data) {
+    if (data == null) {
+      Log.wtf(TAG, "Unexpectedly got null from cursor loader", new AssertionError());
+      return;
+    }
+    playableEpisodes = data;
+    if (currentId == 0 && data.moveToFirst()) {
+      currentId = data.getLong(data.getColumnIndexOrThrow(Provider.K_ID));
+      callbackThread.post(CallbackType.EPISODE);
+    }
+    if (state == State.STOPPED_EMPTY && data.getCount() != 0) {
+      state = State.STOPPED;
+      callbackThread.post(CallbackType.STATE);
+    } else if (state.isStopped() && data.getCount() == 0) {
+      state = State.STOPPED_EMPTY;
+      callbackThread.post(CallbackType.STATE);
+    }
   }
 
   @Override
@@ -455,47 +492,35 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   }
 
   /** @return next ep. id according to complete action preference or 0 if there are no more eps */
-  private long getNext() {
-    Preferences.CompleteAction completeAction = Preferences.getInstance().getCompleteAction();
+  private static long getNext(@NonNull Cursor playableEpisodes, long currentId, boolean first) {
     long result = 0;
-    Cursor c = getContentResolver().query(
-        Provider.episodeUri,
-        new String[]{Provider.K_ID},
-        Provider.K_ESTATE + " == ? AND " + Provider.K_EDFIN + " == 100",
-        new String[]{Integer.toString(Provider.ESTATE_IN_PLAYLIST)},
-        Preferences.getInstance().getSortingMode().toSql());
 
-    if (c == null) {
-      throw new AssertionError("Unexpectedly got null from query()");
-    }
-
-    if (c.getCount() > 0) {
-      int idColumn = c.getColumnIndexOrThrow(Provider.K_ID);
-      if (currentId != 0 && (completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT ||
-          completeAction == Preferences.CompleteAction.PLAY_NEXT)) {
+    if (playableEpisodes.getCount() > 0) {
+      int idColumn = playableEpisodes.getColumnIndexOrThrow(Provider.K_ID);
+      if (currentId != 0 && !first) {
         long prevId = 0;
-        while (c.moveToNext()) {
+        playableEpisodes.moveToFirst();
+        do {
           if (prevId == currentId) {
-            result = c.getLong(idColumn);
+            result = playableEpisodes.getLong(idColumn);
             break;
           }
-          prevId = c.getLong(idColumn);
-        }
+          prevId = playableEpisodes.getLong(idColumn);
+        } while (playableEpisodes.moveToNext());
       }
 
       if (result == 0) {
-        c.moveToFirst();
+        playableEpisodes.moveToFirst();
         do {
-          long id = c.getLong(idColumn);
+          long id = playableEpisodes.getLong(idColumn);
           if (id != currentId) {
             result = id;
             break;
           }
-        } while (c.moveToNext());
+        } while (playableEpisodes.moveToNext());
       }
     }
 
-    c.close();
     return result;
   }
 
@@ -506,9 +531,16 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   public synchronized boolean playNext() {
     Preferences.CompleteAction completeAction = Preferences.getInstance().getCompleteAction();
 
+    if (playableEpisodes == null) {
+      Log.e(TAG, "Skip playNext, episodes cursor isn't loaded yet");
+      return false;
+    }
+
     // run getNext before deletion, cause we need to loop over playlist to find episode following
     // the current one
-    long nextId = getNext();
+    long nextId = getNext(
+        playableEpisodes, currentId, completeAction == Preferences.CompleteAction.PLAY_FIRST ||
+            completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST);
 
     if (completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST ||
         completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT) {
@@ -569,20 +601,4 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     }
   }
 
-  public void notifyPlaylistAdd(long id) {
-    if (state == State.STOPPED_EMPTY) {
-      Cursor c = getContentResolver().query(
-          Provider.getUri(Provider.T_EPISODE, id), new String[]{Provider.K_EDFIN}, null, null,
-          null);
-      if (c != null) {
-        if (c.moveToFirst() && c.getLong(c.getColumnIndexOrThrow(Provider.K_EDFIN)) == 100) {
-          state = State.STOPPED;
-          callbackThread.post(CallbackType.STATE);
-        }
-        c.close();
-      } else {
-        Log.e(TAG, "Unexpectedly got null from query()", new AssertionError());
-      }
-    }
-  }
 }
