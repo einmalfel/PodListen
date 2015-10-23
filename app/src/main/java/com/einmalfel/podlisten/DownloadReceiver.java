@@ -222,9 +222,11 @@ public class DownloadReceiver extends BroadcastReceiver {
     // get download status and filename
     DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
     c = dM.query(new DownloadManager.Query().setFilterById(downloadId));
-    if (!c.moveToFirst()) {
+    if (c == null || !c.moveToFirst()) {
       Log.e(TAG, "DownloadManager query failed");
-      c.close();
+      if (c != null) {
+        c.close();
+      }
       return;
     }
     int status = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
@@ -280,9 +282,14 @@ public class DownloadReceiver extends BroadcastReceiver {
     DownloadManager.Query query = new DownloadManager.Query().setFilterByStatus(
         DownloadManager.STATUS_PAUSED | DownloadManager.STATUS_PENDING | DownloadManager.STATUS_RUNNING);
     Cursor cursor = dM.query(query);
-    int runningCount = cursor.getCount();
-    cursor.close();
-    return runningCount;
+    if (cursor == null) {
+      Log.wtf(TAG, "Download manager query failed", new NullPointerException());
+      return Integer.MAX_VALUE; // to prevent starting of new downloads
+    } else {
+      int runningCount = cursor.getCount();
+      cursor.close();
+      return runningCount;
+    }
   }
 
   /**
@@ -438,18 +445,20 @@ public class DownloadReceiver extends BroadcastReceiver {
       long id = c.getLong(c.getColumnIndexOrThrow(Provider.K_ID));
       DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
       Cursor q = dM.query(new DownloadManager.Query().setFilterById(downLoadId));
-      if (q.moveToFirst()) {
+      if (q != null && q.moveToFirst()) {
         int state = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
         // WORKAROUND: sometimes ACTION_DOWNLOAD_COMPLETE is somehow not received (or there was an
         // exception in callback), so handle there episodes completed more than a minute ago
         if (state == DownloadManager.STATUS_SUCCESSFUL || state == DownloadManager.STATUS_FAILED) {
-          long t = q.getLong(q.getColumnIndexOrThrow(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP));
+          long t = q
+              .getLong(q.getColumnIndexOrThrow(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP));
           if (System.currentTimeMillis() - t > 60000) {
             Log.e(TAG, "Found lost completed download, processing " + downLoadId);
             processDownloadResult(context, downLoadId);
           }
         } else {
-          int got = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+          int got = q
+              .getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
           int total = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
           // ignore dubious data. E.g. sometimes it reports total size is -1B or 128B
           if (got > 0 && total > 1000 && total > got) {
@@ -466,7 +475,9 @@ public class DownloadReceiver extends BroadcastReceiver {
         v.put(Provider.K_EDID, 0);
         context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), v, null, null);
       }
-      q.close();
+      if (q != null) {
+        q.close();
+      }
     }
     c.close();
   }
