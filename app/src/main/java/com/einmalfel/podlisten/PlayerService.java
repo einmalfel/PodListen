@@ -173,6 +173,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     super.onCreate();
     Log.d(TAG, "Creating service");
     initPlayer();
+    currentId = getNext();
     callbackThread.start();
     focusMode = AudioManager.AUDIOFOCUS_LOSS;
     if (Preferences.getInstance().getPlayerForeground()) {
@@ -533,7 +534,11 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     switch (state) {
       case STOPPED:
       case STOPPED_ERROR:
-        playNext();
+        if (currentId != 0) {
+          playEpisode(currentId);
+        } else {
+          playNext();
+        }
         break;
       case PLAYING:
         pause();

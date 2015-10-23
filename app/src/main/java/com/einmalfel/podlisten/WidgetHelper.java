@@ -159,10 +159,11 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     } else {
       rvPartial.setImageViewResource(R.id.play_button, R.mipmap.ic_play_arrow_white_36dp);
     }
-    if (state == PlayerService.State.STOPPED_ERROR || state == PlayerService.State.STOPPED) {
-      rvPartial.setTextViewText(R.id.play_title, context.getString(R.string.player_stopped));
-    } else if (state == PlayerService.State.STOPPED_EMPTY) {
+    if (state == PlayerService.State.STOPPED_EMPTY) {
       rvPartial.setTextViewText(R.id.play_title, context.getString(R.string.player_empty));
+    } else if (connection.service != null && connection.service.getEpisodeId() == 0 &&
+        (state == PlayerService.State.STOPPED_ERROR || state == PlayerService.State.STOPPED)) {
+      rvPartial.setTextViewText(R.id.play_title, context.getString(R.string.player_stopped));
     }
     updateWidgetsPartial(rvPartial);
     updateNotification(rvPartial);
