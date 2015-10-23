@@ -453,27 +453,68 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     return state == State.PLAYING;
   }
 
-  /**
-   * @return false if no more playable episodes available or playback launch caused an error,
-   * otherwise true
-   */
-  public synchronized boolean playNext() {
+  /** @return next ep. id according to complete action preference or 0 if there are no more eps */
+  private long getNext() {
     Preferences.CompleteAction completeAction = Preferences.getInstance().getCompleteAction();
-    boolean result;
-    long completedId = currentId;
-    currentId = 0;
-
+    long result = 0;
     Cursor c = getContentResolver().query(
         Provider.episodeUri,
         new String[]{Provider.K_ID},
         Provider.K_ESTATE + " == ? AND " + Provider.K_EDFIN + " == 100",
         new String[]{Integer.toString(Provider.ESTATE_IN_PLAYLIST)},
         Preferences.getInstance().getSortingMode().toSql());
+
     if (c == null) {
       throw new AssertionError("Unexpectedly got null from query()");
     }
-    int idColumn = c.getColumnIndexOrThrow(Provider.K_ID);
-    if (c.getCount() <= 1) { // the only episode in playlist is completed one
+
+    if (c.getCount() > 0) {
+      int idColumn = c.getColumnIndexOrThrow(Provider.K_ID);
+      if (currentId != 0 && (completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT ||
+          completeAction == Preferences.CompleteAction.PLAY_NEXT)) {
+        long prevId = 0;
+        while (c.moveToNext()) {
+          if (prevId == currentId) {
+            result = c.getLong(idColumn);
+            break;
+          }
+          prevId = c.getLong(idColumn);
+        }
+      }
+
+      if (result == 0) {
+        c.moveToFirst();
+        do {
+          long id = c.getLong(idColumn);
+          if (id != currentId) {
+            result = id;
+            break;
+          }
+        } while (c.moveToNext());
+      }
+    }
+
+    c.close();
+    return result;
+  }
+
+  /**
+   * @return false if no more playable episodes available or playback launch caused an error,
+   * otherwise true
+   */
+  public synchronized boolean playNext() {
+    Preferences.CompleteAction completeAction = Preferences.getInstance().getCompleteAction();
+
+    // run getNext before deletion, cause we need to loop over playlist to find episode following
+    // the current one
+    long nextId = getNext();
+
+    if (completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST ||
+        completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT) {
+      PodcastHelper.getInstance().markEpisodeGone(currentId);
+    }
+
+    if (nextId == 0) {
       Log.i(TAG, "No more playable episodes");
       releasePlayer();
       state = State.STOPPED_EMPTY;
@@ -482,40 +523,10 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       callbackThread.post(CallbackType.STATE);
       callbackThread.post(CallbackType.PROGRESS);
       callbackThread.post(CallbackType.EPISODE);
-      result = false;
+      return false;
     } else {
-      if (completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT ||
-          completeAction == Preferences.CompleteAction.PLAY_NEXT) {
-        long prevId = 0;
-        while (c.moveToNext()) {
-          if (prevId == completedId) {
-            currentId = c.getLong(idColumn);
-            break;
-          }
-          prevId = c.getLong(idColumn);
-        }
-      }
-
-      if (currentId == 0) {
-        c.moveToFirst();
-        do {
-          currentId = c.getLong(idColumn);
-          if (currentId != completedId) {
-            break;
-          }
-        } while (c.moveToNext());
-      }
-
-      result = playEpisode(currentId);
+      return playEpisode(nextId);
     }
-
-    if (completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST ||
-        completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT) {
-      PodcastHelper.getInstance().markEpisodeGone(completedId);
-    }
-
-    c.close();
-    return result;
   }
 
   public synchronized void playPauseResume() {
