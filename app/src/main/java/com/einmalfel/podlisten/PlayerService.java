@@ -376,9 +376,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     MediaButtonReceiver.setService(null);
     releasePlayer();
     state = State.STOPPED;
-    progress = 0;
     callbackThread.post(CallbackType.STATE);
-    callbackThread.post(CallbackType.PROGRESS);
     stopForeground(true);
     Preferences.getInstance().setPlayerForeground(false);
     return true;
