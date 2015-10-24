@@ -34,7 +34,7 @@ public class SyncState {
     intent.putExtra(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.NEW_EPISODES.ordinal());
     PendingIntent pendingIntent = PendingIntent.getActivity(
         context, NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    nb.setSmallIcon(R.mipmap.ic_sync_green_24dp)
+    nb.setSmallIcon(R.mipmap.ic_sync_white_24dp)
       .setCategory(NotificationCompat.CATEGORY_PROGRESS)
       .setPriority(NotificationCompat.PRIORITY_LOW)
       .setContentIntent(pendingIntent);
