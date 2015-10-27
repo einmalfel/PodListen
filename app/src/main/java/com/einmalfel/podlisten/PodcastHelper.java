@@ -147,7 +147,7 @@ public class PodcastHelper {
 
   @NonNull
   public static String shortDateFormat(long date) {
-    if (new Date().getTime() - date > 9 * 24 * 60 * 60 * 1000) {
+    if (new Date().getTime() - date > 6 * 24 * 60 * 60 * 1000) {
       return formatYYYYMMDD.format(date);
     } else {
       return DateUtils.getRelativeTimeSpanString(date).toString();
