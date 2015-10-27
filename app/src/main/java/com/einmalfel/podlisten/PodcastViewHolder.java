@@ -52,17 +52,18 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
   void bind(int state, String title, String description, String url, String podcastPage, long id,
             String shortDescr, String error, long timestamp, boolean expanded) {
     titleView.setText(title);
-    titleView.setText(title == null ? "No title" : title);
+    titleView.setText(title == null ? context.getString(R.string.podcast_no_title) : title);
     urlView.setText(podcastPage == null ? url : podcastPage);
     if (state == Provider.PSTATE_LAST_REFRESH_FAILED) {
-      statusView.setText("Refresh failed: " + error);
+      statusView.setText(context.getString(R.string.podcast_refresh_failed, error));
       statusView.setTextColor(ContextCompat.getColor(context, R.color.accent_secondary));
     } else {
       statusView.setTextColor(ContextCompat.getColor(context, R.color.text));
       if (state == Provider.PSTATE_NEW) {
-        statusView.setText("Feed isn't loaded yet");
+        statusView.setText(R.string.podcast_not_loaded_yet);
       } else {
-        statusView.setText("Refreshed " + DateUtils.getRelativeTimeSpanString(timestamp));
+        statusView.setText(context.getString(R.string.podcast_refresh_time,
+                                             DateUtils.getRelativeTimeSpanString(timestamp)));
       }
     }
 

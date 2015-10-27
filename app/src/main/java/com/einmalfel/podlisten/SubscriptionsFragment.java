@@ -55,7 +55,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements
     });
     builder
         .setNegativeButton(R.string.cancel, null)
-        .setTitle(activity.getString(R.string.delete_subscription))
+        .setTitle(activity.getString(R.string.podcast_delete_question))
         .create()
         .show();
     return true;

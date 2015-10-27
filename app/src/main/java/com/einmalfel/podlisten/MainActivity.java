@@ -36,9 +36,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     View.OnClickListener {
   enum Pages {PLAYLIST, NEW_EPISODES, SUBSCRIPTIONS}
 
-  private static final String[] TAB_NAMES = {"Playlist", "New episodes",
-      "Subscriptions"};
-
   static final String PAGE_LAUNCH_OPTION = "Page";
   static final String EPISODE_ID_OPTION = "Episode";
   static final LightingColorFilter disabledFilter = new LightingColorFilter(Color.GRAY, 0);
@@ -93,6 +90,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
    */
   long pendingScrollId;
 
+  private String[] TAB_NAMES;
   PlayerLocalConnection connection;
   private int newEpisodesNumber = 0;
   private SubscribeDialog subscribeDialog;
@@ -117,6 +115,10 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    TAB_NAMES = new String[]{getString(R.string.tab_playlist),
+                             getString(R.string.tab_new_episodes),
+                             getString(R.string.tab_subscriptions)};
 
     fab = (FloatingActionButton) findViewById(R.id.fab);
     playButton = (ImageButton) findViewById(R.id.play_button);
@@ -321,7 +323,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
                                   .getImage(c.getLong(c.getColumnIndex(Provider.K_EPID)));
               }
             } else {
-              title = "Episode " + episodeId + " doesn't exist";
+              title = getString(R.string.player_episode_does_not_exist, episodeId);
             }
             c.close();
           } else {

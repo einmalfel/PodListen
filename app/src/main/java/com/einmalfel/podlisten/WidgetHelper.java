@@ -179,7 +179,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
             img = ImageManager.getInstance().getImage(c.getLong(c.getColumnIndex(Provider.K_EPID)));
           }
         } else {
-          title = "Episode " + episodeId + " doesn't exist";
+          title = context.getString(R.string.player_episode_does_not_exist, episodeId);
         }
         c.close();
       } else {

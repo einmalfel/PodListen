@@ -134,7 +134,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
         descriptionText.setVisibility(View.VISIBLE);
       }
       if (feedTitle == null) {
-        feedTitleText.setText(R.string.deleted_subscription);
+        feedTitleText.setText(R.string.episode_deleted_subscription);
       } else {
         feedTitleText.setText(feedTitle);
       }
@@ -189,7 +189,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     if ((downloaded == 100 && this.downloaded != 100) || id != this.id) {
       StringBuilder timeSize = new StringBuilder();
       if (length > 0) {
-        timeSize.append(PodcastHelper.shortFormatDurationMs(length));
+        timeSize.append(PodcastHelper.getInstance().shortFormatDurationMs(length));
         timeSize.append(" ");
       }
       if (size > 1024) {

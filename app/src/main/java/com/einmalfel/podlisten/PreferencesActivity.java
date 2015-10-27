@@ -67,7 +67,7 @@ public class PreferencesActivity extends AppCompatActivity {
           if (!dir.exists() && !dir.mkdirs()) {
             Log.e(TAG, "Directory for OPML export doesn't exist " + dir);
           }
-          final File target = new File(dir, "PodListen_Subscriptions.opml");
+          final File target = new File(dir, getString(R.string.opml_export_file_name));
           if (exportToOPML(target)) {
             AlertDialog.Builder b = new AlertDialog.Builder(this);
             b.setTitle(getString(R.string.opml_dialog_title))

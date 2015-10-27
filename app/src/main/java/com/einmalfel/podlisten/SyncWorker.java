@@ -151,7 +151,7 @@ class SyncWorker implements Runnable {
       @NonNull ContentProviderClient provider, boolean markNew) {
     String title = episode.getTitle();
     if (title == null) {
-      title = "NO TITLE";
+      title = PodListenApp.getContext().getString(R.string.episode_no_title);
     }
 
     // extract audio enclosure or return

@@ -52,7 +52,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     }
     if (c == null) {
       syncResult.databaseError = true;
-      syncState.error("DB error");
+      syncState.error(getContext().getString(R.string.sync_database_error));
       return;
     }
     if (c.getCount() == 0) {
@@ -89,7 +89,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     try {
       workersDone = executorService.awaitTermination(SYNC_TIMEOUT, TimeUnit.SECONDS);
     } catch (InterruptedException interrupt) {
-      syncState.error("Refresh interrupted by system");
+      syncState.error(getContext().getString(R.string.sync_interrupted_by_system));
       // sync cancelled. Discard queue, try to interrupt workers and wait for them again
       executorService.shutdownNow();
       try {

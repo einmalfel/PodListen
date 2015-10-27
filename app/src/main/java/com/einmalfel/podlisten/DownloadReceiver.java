@@ -73,7 +73,7 @@ public class DownloadReceiver extends BroadcastReceiver {
                                    downloadNetwork == Preferences.DownloadNetwork.NON_ROAMING)
         .setAllowedOverRoaming(downloadNetwork == Preferences.DownloadNetwork.ANY)
         .setDestinationUri(Uri.fromFile(target))
-        .setDescription("Downloading podcast " + url)
+        .setDescription(context.getString(R.string.episode_downloading, url))
         .setVisibleInDownloadsUi(false)
         .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
 

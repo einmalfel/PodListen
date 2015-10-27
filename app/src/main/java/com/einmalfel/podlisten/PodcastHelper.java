@@ -71,7 +71,7 @@ public class PodcastHelper {
     });
     builder
         .setNegativeButton(R.string.cancel, null)
-        .setTitle(context.getString(R.string.delete_episode))
+        .setTitle(context.getString(R.string.episode_delete_question))
         .create()
         .show();
   }
@@ -116,7 +116,8 @@ public class PodcastHelper {
       if (!quiet) {
         Toast.makeText(
             context,
-            "Episode deleted: " + c.getString(c.getColumnIndex(Provider.K_ENAME)),
+            context.getString(R.string.episode_deleted,
+                              c.getString(c.getColumnIndex(Provider.K_ENAME))),
             Toast.LENGTH_SHORT
         ).show();
       }
@@ -155,10 +156,11 @@ public class PodcastHelper {
   }
 
   @NonNull
-  public static String shortFormatDurationMs(long milliseconds) {
+  public String shortFormatDurationMs(long milliseconds) {
     long minutes = milliseconds / 60 / 1000;
     long hours = minutes / 60;
-    return (hours > 0 ? hours + "h" : "") + minutes % 60 + "m";
+    return (hours > 0 ? hours + context.getString(R.string.hour_abbreviation) : "") +
+        minutes % 60 + context.getString(R.string.minute_abbreviation);
   }
 
   /**
@@ -226,12 +228,15 @@ public class PodcastHelper {
     try {
       long result = addSubscription(url, refreshMode);
       if (result == 0 && container != null) {
-        Snackbar.make(container, "Already subscribed to " + url, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(container,
+                      context.getString(R.string.podcast_already_subscribed, url),
+                      Snackbar.LENGTH_LONG)
+                .show();
       }
       return result;
     } catch (PodcastHelper.SubscriptionNotInsertedException notInsertedException) {
       if (container != null) {
-        Snackbar.make(container, "DB error - failed to subscribe", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(container, R.string.podcast_subscribe_failed, Snackbar.LENGTH_LONG).show();
       }
       return 0;
     }

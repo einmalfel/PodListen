@@ -42,7 +42,7 @@ public class SyncState {
 
   synchronized void start(int maxFeeds) {
     this.maxFeeds = maxFeeds;
-    nb.setContentTitle("Refreshing PodListen..")
+    nb.setContentTitle(context.getString(R.string.sync_running))
       .setOngoing(true)
       .setAutoCancel(false)
       .setProgress(0, 0, true);
@@ -53,7 +53,7 @@ public class SyncState {
     nb.setOngoing(false)
       .setAutoCancel(true)
       .setProgress(0, 0, false)
-      .setContentTitle("Refresh failed")
+      .setContentTitle(context.getString(R.string.sync_failed))
       .setContentText(message);
     updateNotification();
     stopped = true;
@@ -68,34 +68,35 @@ public class SyncState {
         null);
     StringBuilder stringBuilder = new StringBuilder();
     if (cursor == null) {
-      stringBuilder.append("DB error");
+      stringBuilder.append(context.getString(R.string.sync_db_error));
     } else {
       int count = cursor.getCount();
       cursor.close();
-      stringBuilder.append("New episodes: ");
+
+      String newEpisodesCount;
       if (count == newEpisodes) {
-        stringBuilder.append(newEpisodes);
+        newEpisodesCount = Integer.toString(newEpisodes);
       } else {
-        stringBuilder.append(count);
+        newEpisodesCount = Integer.toString(count);
         if (newEpisodes > 0) {
-          stringBuilder.append("(+")
-                       .append(newEpisodes)
-                       .append(")");
+          newEpisodesCount += "(" + Integer.toString(newEpisodes) + ")";
         }
       }
+      stringBuilder.append(context.getString(R.string.sync_new_episodes, newEpisodesCount));
+
       if (parsed > 0) {
-        stringBuilder.append(", Feeds loaded: ")
-                     .append(parsed);
+        stringBuilder.append(", ")
+                     .append(context.getString(R.string.sync_feeds_synced, parsed));
       }
       if (errors > 0) {
-        stringBuilder.append(", Failed to load: ")
-                     .append(errors);
+        stringBuilder.append(", ")
+                     .append(context.getString(R.string.sync_feeds_failed, errors));
       }
     }
     nb.setOngoing(false)
       .setAutoCancel(true)
       .setProgress(0, 0, false)
-      .setContentTitle("Podlisten refreshed")
+      .setContentTitle(context.getString(R.string.sync_finished))
       .setContentText(stringBuilder);
     updateNotification();
     stopped = true;
@@ -111,19 +112,19 @@ public class SyncState {
   synchronized void signalParseError(String feedTitle) {
     syncResult.stats.numSkippedEntries++;
     errors++;
-    updateProgress("Parsing failed: " + feedTitle);
+    updateProgress(context.getString(R.string.sync_feed_parsing_failed, feedTitle));
   }
 
   synchronized void signalDBError(String feedTitle) {
     syncResult.databaseError = true;
     errors++;
-    updateProgress("DB error: " + feedTitle);
+    updateProgress(context.getString(R.string.sync_feed_db_error, feedTitle));
   }
 
   synchronized void signalIOError(String feedTitle) {
     syncResult.stats.numIoExceptions++;
     errors++;
-    updateProgress("IO error: " + feedTitle);
+    updateProgress(context.getString(R.string.sync_feed_io_error, feedTitle));
   }
 
   synchronized void signalFeedSuccess(@Nullable String feedTitle, int episodesAdded) {
@@ -131,7 +132,7 @@ public class SyncState {
     parsed++;
     newEpisodes += episodesAdded;
     if (feedTitle != null) {
-      updateProgress("Loaded: " + feedTitle);
+      updateProgress(context.getString(R.string.sync_feed_synced, feedTitle));
     }
   }
 
