@@ -21,13 +21,16 @@ public class Storage {
   public static List<Storage> getAvailableStorages() {
     List<Storage> result = new LinkedList<>();
     for (File dir : ContextCompat.getExternalFilesDirs(PodListenApp.getContext(), null)) {
-      try {
-        Storage storage = new Storage(dir);
-        if (storage.isAvailableRW()) {
-          result.add(storage);
+      if (dir != null) { //getExternalFilesDir could return nulls for currently unavailable storages
+        try {
+          Storage storage = new Storage(dir);
+          if (storage.isAvailableRW()) {
+            result.add(storage);
+          }
+        } catch (IOException e) {
+          Log.e(TAG, "File path couldn't be converted to canonical form:" + dir.getAbsolutePath(),
+                e);
         }
-      } catch (IOException e) {
-        Log.e(TAG, "File path couldn't be converted to canonical form:" + dir.getAbsolutePath(), e);
       }
     }
     return result;
