@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.File;
@@ -26,6 +25,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     DOWNLOAD_NETWORK,
     COMPLETE_ACTION,
     JUMP_INTERVAL,
+    CURRENT_ACTIVITY,
   }
 
   enum JumpInterval {
@@ -236,8 +236,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private JumpInterval jumpInterval;
   private boolean autoDownloadACOnly;
   private boolean playerForeground; // preserve last player service state across app kill/restarts
+  @Nullable
+  private String currentActivity; // current activity class name, for services in separate process
 
-  private final SharedPreferences sPrefs;
+  private SharedPreferences sPrefs;
+
   private final Context context = PodListenApp.getContext();
 
   public static Preferences getInstance() {
@@ -252,7 +255,9 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   }
 
   public Preferences() {
-    sPrefs = PreferenceManager.getDefaultSharedPreferences(PodListenApp.getContext());
+    // TODO make prefs synced between processes via IPC. MULTI_PROCESS is deprecated and unreliable
+    sPrefs = context.getSharedPreferences(context.getPackageName() + "_preferences",
+                                          Context.MODE_MULTI_PROCESS);
     sPrefs.registerOnSharedPreferenceChangeListener(this);
     for (Key key : Key.values()) {
       readPreference(key);
@@ -340,6 +345,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         break;
       case PLAYER_FOREGROUND:
         playerForeground = sPrefs.getBoolean(Key.PLAYER_FOREGROUND.toString(), false);
+        break;
+      case CURRENT_ACTIVITY:
+        currentActivity = sPrefs.getString(Key.CURRENT_ACTIVITY.toString(), null);
+        Log.e(TAG, "read " + currentActivity);
         break;
       case AUTO_DOWNLOAD:
         AutoDownloadMode newM = readEnum(Key.AUTO_DOWNLOAD, DEFAULT_DOWNLOAD_MODE);
@@ -436,6 +445,22 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   public boolean getPlayerForeground() {
     return playerForeground;
   }
+
+  public void setCurrentActivity(@Nullable String currentActivity) {
+    sPrefs.edit().putString(Key.CURRENT_ACTIVITY.toString(), currentActivity).commit();
+  }
+
+  @Nullable
+  public String getCurrentActivity(boolean sync) {
+    if (sync) { // TODO remove this, make preferences synchronized between processes via IPC
+      // need to re-get shared preferences object to cause reloading of preferences file
+      sPrefs = context.getSharedPreferences(context.getPackageName() + "_preferences",
+                                            Context.MODE_MULTI_PROCESS);
+      readPreference(Key.CURRENT_ACTIVITY);
+    }
+    return currentActivity;
+  }
+
 
   public boolean getAutoDownloadACOnly() {
     return autoDownloadACOnly;

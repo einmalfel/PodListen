@@ -1,6 +1,10 @@
 package com.einmalfel.podlisten;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.acra.ACRA;
@@ -26,7 +30,7 @@ import org.acra.annotation.ReportsCrashes;
     resDialogTitle = R.string.crash_dialog_title,
     resDialogOkToast = R.string.crash_dialog_ok_toast
 )
-public class PodListenApp extends DebuggableApp {
+public class PodListenApp extends DebuggableApp implements Application.ActivityLifecycleCallbacks {
   private static PodListenApp instance;
 
   public static PodListenApp getInstance() {
@@ -44,8 +48,34 @@ public class PodListenApp extends DebuggableApp {
   public void onCreate() {
     instance = this;
     ACRA.init(this);
+    registerActivityLifecycleCallbacks(this);
     super.onCreate();
   }
+
+  @Override
+  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+
+  @Override
+  public void onActivityResumed(Activity activity) {
+    Preferences.getInstance().setCurrentActivity(activity.getLocalClassName());
+  }
+
+  @Override
+  public void onActivityStarted(Activity activity) {}
+
+  @Override
+  public void onActivityPaused(Activity activity) {
+    Preferences.getInstance().setCurrentActivity(null);
+  }
+
+  @Override
+  public void onActivityStopped(Activity activity) {}
+
+  @Override
+  public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+
+  @Override
+  public void onActivityDestroyed(Activity activity) {}
 
   // when user decides to send report on his own, disable reporting via crash dialog, send report,
   // re-enable crash dialog
