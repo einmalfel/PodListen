@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import org.acra.ACRA;
+import org.acra.ACRAConfigurationException;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
@@ -46,7 +47,15 @@ public class PodListenApp extends DebuggableApp {
     super.onCreate();
   }
 
+  // when user decides to send report on his own, disable reporting via crash dialog, send report,
+  // re-enable crash dialog
   static void sendLogs() {
-    ACRA.getErrorReporter().handleException(null);
+    try {
+      ACRA.getConfig().setMode(ReportingInteractionMode.SILENT);
+      ACRA.getErrorReporter().handleException(null, false);
+      ACRA.getConfig().setMode(ReportingInteractionMode.DIALOG);
+    } catch (ACRAConfigurationException ex) {
+      ACRA.getErrorReporter().uncaughtException(Thread.currentThread(), ex);
+    }
   }
 }
