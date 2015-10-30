@@ -141,10 +141,16 @@ public class PreferencesActivity extends AppCompatActivity {
       int urlInd = cursor.getColumnIndexOrThrow(Provider.K_PFURL);
       int titleInd = cursor.getColumnIndexOrThrow(Provider.K_PNAME);
       while (cursor.moveToNext()) {
+        String url = cursor.getString(urlInd);
+        String title = cursor.getString(titleInd);
+        if (url == null || url.isEmpty()) {
+          Log.w(TAG, "OPML export: Skipping " + title + " url " + url);
+          continue;
+        }
         serializer.startTag(XmlPullParser.NO_NAMESPACE, "outline");
         serializer.attribute(XmlPullParser.NO_NAMESPACE, "type", "rss");
-        serializer.attribute(XmlPullParser.NO_NAMESPACE, "text", cursor.getString(titleInd));
-        serializer.attribute(XmlPullParser.NO_NAMESPACE, "xmlUrl", cursor.getString(urlInd));
+        serializer.attribute(XmlPullParser.NO_NAMESPACE, "text", title == null ? "Unknown" : title);
+        serializer.attribute(XmlPullParser.NO_NAMESPACE, "xmlUrl", url);
         serializer.endTag(XmlPullParser.NO_NAMESPACE, "outline");
       }
       cursor.close();
