@@ -112,7 +112,8 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       ContentValues values = new ContentValues(2);
       values.put(Provider.K_EPLAYED, service.progress);
       values.put(Provider.K_ELENGTH, service.length);
-      service.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, service.currentId), values, null, null);
+      service.getContentResolver()
+             .update(Provider.getUri(Provider.T_EPISODE, service.currentId), values, null, null);
     }
 
     void addListener(PlayerStateListener listener) {
@@ -348,7 +349,8 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         Log.d(TAG, "Attempting to seek with negative position. Seeking to zero");
       }
       if (length != 0 && timeMs > length) {
-        if (Preferences.getInstance().getCompleteAction() == Preferences.CompleteAction.DO_NOTHING){
+        if (Preferences.getInstance()
+                       .getCompleteAction() == Preferences.CompleteAction.DO_NOTHING) {
           seek(length);
           return true;
         } else {
@@ -470,12 +472,24 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       // while playback is being prepared, check if episode was previously played to some position
       Cursor c = getContentResolver().query(
           Provider.getUri(Provider.T_EPISODE, id),
-          new String[]{Provider.K_EPLAYED},
+          new String[]{Provider.K_EPLAYED, Provider.K_ELENGTH},
           null, null, null);
-      startSeek = c.moveToFirst() ? c.getInt(c.getColumnIndexOrThrow(Provider.K_EPLAYED)) : 0;
+      if (c == null) {
+        throw new AssertionError("Unexpectedly got null from query");
+      }
+      if (c.moveToFirst()) {
+        startSeek = c.getInt(c.getColumnIndexOrThrow(Provider.K_EPLAYED));
+        length = c.getInt(c.getColumnIndexOrThrow(Provider.K_ELENGTH));
+        if (startSeek > length - 5000) { // if starting at the end of ep (with tolerance)
+          startSeek = 0;
+        }
+        progress = startSeek;
+      }
+
       c.close();
     }
     callbackThread.post(CallbackType.STATE);
+    callbackThread.post(CallbackType.PROGRESS);
 
     MediaButtonReceiver.setService(this);
 
