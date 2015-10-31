@@ -87,7 +87,7 @@ public class SyncState {
       } else {
         newEpisodesCount = Integer.toString(count);
         if (newEpisodes > 0) {
-          newEpisodesCount += "(" + Integer.toString(newEpisodes) + ")";
+          newEpisodesCount += "(+" + Integer.toString(newEpisodes) + ")";
         }
       }
       stringBuilder.append(context.getString(R.string.sync_new_episodes, newEpisodesCount));
