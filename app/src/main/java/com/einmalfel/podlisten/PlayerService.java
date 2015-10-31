@@ -76,24 +76,14 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
           switch (ct) {
             case STATE:
               if (lastState != service.getState() || lastEpisode != currentId) {
-                Log.d(TAG, "New playback state " + service.getState() + " id " + currentId);
-                for (PlayerStateListener listener : listeners) {
-                  listener.stateUpdate(service.state, currentId);
-                }
+                sendStateUpdate();
                 lastState = service.state;
                 lastEpisode = currentId;
               }
               break;
             case PROGRESS:
               if (lastLength != service.length || lastProgress != service.getProgress()) {
-                for (PlayerStateListener listener : listeners) {
-                  listener.progressUpdate(service.progress, service.length);
-                }
-                ContentValues values = new ContentValues(2);
-                values.put(Provider.K_EPLAYED, service.progress);
-                values.put(Provider.K_ELENGTH, service.length);
-                service.getContentResolver().update(
-                    Provider.getUri(Provider.T_EPISODE, service.currentId), values, null, null);
+                sendProgressUpdate();
                 lastLength = service.length;
                 lastProgress = service.progress;
               }
@@ -106,6 +96,23 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
     CallbackThread(PlayerService service) {
       this.service = service;
+    }
+
+    private void sendStateUpdate() {
+      Log.d(TAG, "Sending new playback state " + service.getState() + " id " + currentId);
+      for (PlayerStateListener listener : listeners) {
+        listener.stateUpdate(service.state, currentId);
+      }
+    }
+
+    private void sendProgressUpdate() {
+      for (PlayerStateListener listener : listeners) {
+        listener.progressUpdate(service.progress, service.length);
+      }
+      ContentValues values = new ContentValues(2);
+      values.put(Provider.K_EPLAYED, service.progress);
+      values.put(Provider.K_ELENGTH, service.length);
+      service.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, service.currentId), values, null, null);
     }
 
     void addListener(PlayerStateListener listener) {
@@ -346,6 +353,8 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
           return true;
         } else {
           Log.d(TAG, "Attempting to seek past file end, playing next episode");
+          progress = length;
+          callbackThread.sendProgressUpdate();
           return playNext();
         }
       } else {
