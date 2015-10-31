@@ -1,8 +1,8 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
-        android:endColor="@color/accent_material_light"
-        android:centerColor="@color/accent_material_dark"
-        android:startColor="@color/accent_material_light" />
+        android:endColor="@color/accent_primary_dim"
+        android:centerColor="@color/accent_primary"
+        android:startColor="@color/accent_primary_dim" />
 
     <corners android:radius="8dp" />
     <size android:width="4dp"/>
