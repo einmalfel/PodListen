@@ -45,8 +45,7 @@
     <string name="refresh_mode_last_50">Add 50 last episodes</string>
     <string name="refresh_mode_last_100">Add 100 last episodes</string>
 
-    <string name="subscribe_dialog_edit_text_hint">Paste URL or open OPML file</string>
-    <string name="subscribe_dialog_open_opml_description">Pick OPML file from filesystem</string>
+    <string name="subscribe_dialog_edit_text_hint">Paste feed URL here</string>
     <string name="subscribe_dialog_on_first_load_text">How much episodes to add:</string>
     <string name="subscribe_dialog_subscribe_button">SUBSCRIBE</string>
     <string name="subscribe_dialog_install_file_manager">Please install file manager to use this feature.</string>
@@ -55,6 +54,7 @@
     <string name="subscribe_dialog_opml_empty">This OPML doesn\'t contain any feeds</string>
     <string name="subscribe_dialog_title">Add subscription</string>
     <string name="subscribe_dialog_select_opml_prompt">Select OPML File</string>
+    <string name="subscribe_dialog_import_opml">Import OPML</string>
 
     <string name="preferences_title">Preferences</string>
     <string name="preferences_network_title">Network</string>

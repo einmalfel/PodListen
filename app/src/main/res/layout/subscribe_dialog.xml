@@ -17,38 +17,29 @@
         <requestFocus/>
     </View>
 
-    <ImageButton
-        android:id="@+id/open_file_button"
-        android:layout_width="wrap_content"
-        android:layout_height="40sp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/clickable_image_button_bg"
-        android:contentDescription="@string/subscribe_dialog_open_opml_description"
-        android:paddingBottom="2sp"
-        android:paddingTop="2sp"
-        android:src="@mipmap/ic_folder_open_white_36dp"
-        android:tint="@color/accent_primary"/>
-
     <EditText
         android:id="@+id/url_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/open_file_button"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignTop="@id/open_file_button"
-        android:layout_toLeftOf="@id/open_file_button"
-        android:layout_toStartOf="@id/open_file_button"
         android:hint="@string/subscribe_dialog_edit_text_hint"
         android:inputType="textUri"
         android:textSize="16sp"/>
+
+    <Button
+        android:id="@+id/open_file_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/url_text"
+        android:padding="0dp"
+        android:text="@string/subscribe_dialog_search_db"/>
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/url_text"
+        android:layout_below="@+id/open_file_button"
         android:layout_centerInParent="true"
         android:gravity="start|center_vertical"
         android:text="@string/subscribe_dialog_on_first_load_text"

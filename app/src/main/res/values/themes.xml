@@ -17,6 +17,7 @@
         <item name="colorAccent">@color/accent_primary</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="actionBarStyle">@style/PodListenActionBar</item>
+        <item name="colorButtonNormal">@color/background_soft</item>
     </style>
 
     <style name="PodlistenMain" parent="PodListenCommon">

@@ -21,7 +21,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -153,7 +152,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     final Bundle arguments = getArguments();
     urlText.setText(arguments == null ? "" : arguments.getString(URL_ARG, ""));
 
-    ImageButton openFileButton = (ImageButton) getDialog().findViewById(R.id.open_file_button);
+    Button openFileButton = (Button) getDialog().findViewById(R.id.open_file_button);
     openFileButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
