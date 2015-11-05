@@ -11,6 +11,7 @@ public class PodcastCatalogue {
   public class CatalogueHelper extends SQLiteAssetHelper {
     public CatalogueHelper(Context context) {
       super(context, "PodcastCatalogue.sqlite", null, 1);
+      setForcedUpgrade();
     }
   }
 
