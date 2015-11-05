@@ -19,9 +19,6 @@ import android.view.ViewGroup;
 
 import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SearchActivity extends AppCompatActivity
     implements android.support.v7.widget.SearchView.OnQueryTextListener,
     SearchAdapter.SearchClickListener {
@@ -97,24 +94,23 @@ public class SearchActivity extends AppCompatActivity
 
     int longest = 0;
     String[] terms = newText.split(" ");
-    List<String> searchPatterns = new ArrayList<>(terms.length);
     for (String term : terms) {
       if (term.length() > longest) {
         longest = term.length();
       }
-      searchPatterns.add(String.format("web_url:%1$s OR title:%1$s OR description:%1$s",
-                                       term + "*"));
     }
 
     // optimization: don't sort results if number of terms is big (slow WHERE processing) or
     // all terms are short (i.e. a lots of results)
-    String query = "SELECT * FROM catalogue_fts WHERE catalogue_fts MATCH ?";
-    if (longest - searchPatterns.size() > 5) {
+    String query = "SELECT " + PodcastCatalogue.CAT_NAME + ".* FROM " + PodcastCatalogue.FTS_NAME +
+        " JOIN " + PodcastCatalogue.CAT_NAME + " WHERE " + PodcastCatalogue.FTS_NAME + "." +
+        PodcastCatalogue.K_DOCID + " == " + PodcastCatalogue.CAT_NAME + "." +
+        PodcastCatalogue.K_ID + " AND " + PodcastCatalogue.FTS_NAME + " match ?";
+    if (longest - terms.length > 5) {
       query += " ORDER BY length(offsets(catalogue_fts)) DESC";
     }
 
-    Cursor c = catalogue.db.rawQuery(
-        query, new String[]{TextUtils.join(" ", searchPatterns)});
+    Cursor c = catalogue.db.rawQuery(query, new String[]{TextUtils.join("* ", terms) + "*"});
     adapter.swapCursor(c);
 
     return true;
