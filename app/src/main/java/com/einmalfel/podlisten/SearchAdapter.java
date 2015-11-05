@@ -15,8 +15,6 @@ class SearchAdapter extends CursorRecyclerAdapter {
     void onPodcastButtonTap(String rss_url);
   }
 
-  static final String[] COLUMNS = {"_ID", "title", "description", "rss_url", "period", "web_url"};
-
   private final Set<Long> expandedElements = new HashSet<>(10);
   private final SearchClickListener listener;
 

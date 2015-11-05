@@ -1,70 +1,73 @@
 package com.einmalfel.podlisten;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
 
 public class SearchActivity extends AppCompatActivity
     implements android.support.v7.widget.SearchView.OnQueryTextListener,
-    SearchAdapter.SearchClickListener {
-
-  private class InitDbAsync extends AsyncTask<Context, Void, Void> {
-    PodcastCatalogue catalogue;
-
-    @Override
-    protected Void doInBackground(Context... params) {
-      catalogue = new PodcastCatalogue(params[0]);
-      return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void aVoid) {
-      SearchActivity.this.catalogue = this.catalogue;
-      SearchActivity.this.setContentView(R.layout.common_list);
-      RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view);
-      rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(SearchActivity.this));
-      rv.setItemAnimator(new DefaultItemAnimator());
-      rv.setAdapter(adapter);
-      if (pendingQuery != null) {
-        onQueryTextChange(pendingQuery);
-      }
-    }
-  }
+    SearchAdapter.SearchClickListener, CatalogueFragment.CatalogueListener {
 
   static final String RSS_URL_EXTRA = "rss_url";
   private static final String TAG = "SAC";
 
-  private PodcastCatalogue catalogue;
+  private CatalogueFragment catalogue;
   private SearchAdapter adapter;
-  private String pendingQuery;
+  private ProgressBar progressBar;
+  private SearchView searchView;
+
+  @Override
+  public void onLoadProgress(int progress) {
+    if (progress == 100) {
+      setContentView(R.layout.common_list);
+      RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view);
+      rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(SearchActivity.this));
+      rv.setItemAnimator(new DefaultItemAnimator());
+      rv.setAdapter(adapter);
+    } else {
+      progressBar.setIndeterminate(false);
+      progressBar.setProgress(progress);
+    }
+  }
+
+  @Override
+  public void onQueryComplete(Cursor cursor) {
+    adapter.swapCursor(cursor);
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.search_splash);
-    //    setContentView(R.layout.common_list);
+    progressBar = (ProgressBar) findViewById(R.id.splash_progress);
+    PorterDuffColorFilter progressFilter = new PorterDuffColorFilter(
+        ContextCompat.getColor(this, R.color.accent_secondary), PorterDuff.Mode.MULTIPLY);
+    progressBar.getProgressDrawable().setColorFilter(progressFilter);
+    progressBar.getIndeterminateDrawable().setColorFilter(progressFilter);
+
     ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
       actionBar.setBackgroundDrawable(
           new ColorDrawable(ContextCompat.getColor(this, R.color.background_primary)));
-      SearchView searchView = new SearchView(this);
+      searchView = new SearchView(this);
       searchView.setIconified(false);
       searchView.setOnQueryTextListener(this);
       searchView.requestFocus();
@@ -76,8 +79,30 @@ public class SearchActivity extends AppCompatActivity
       Log.wtf(TAG, "Should never get here: failed to get action bar of preference activity");
     }
 
-    new InitDbAsync().execute(this);
     adapter = new SearchAdapter(this);
+
+    FragmentManager fm = getSupportFragmentManager();
+    catalogue = (CatalogueFragment) fm.findFragmentByTag("catalogue");
+    if (catalogue == null) {
+      catalogue = new CatalogueFragment();
+      catalogue.setRetainInstance(true);
+      fm.beginTransaction().add(catalogue, "catalogue").commit();
+    } else {
+      onLoadProgress(catalogue.getLoadProgress());
+    }
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    catalogue.setListener(null);
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    catalogue.setListener(this);
+    catalogue.query(searchView.getQuery().toString().split(" "));
   }
 
   @Override
@@ -87,32 +112,7 @@ public class SearchActivity extends AppCompatActivity
 
   @Override
   public boolean onQueryTextChange(String newText) {
-    if (catalogue == null) {
-      pendingQuery = newText;
-      return true;
-    }
-
-    int longest = 0;
-    String[] terms = newText.split(" ");
-    for (String term : terms) {
-      if (term.length() > longest) {
-        longest = term.length();
-      }
-    }
-
-    // optimization: don't sort results if number of terms is big (slow WHERE processing) or
-    // all terms are short (i.e. a lots of results)
-    String query = "SELECT " + PodcastCatalogue.CAT_NAME + ".* FROM " + PodcastCatalogue.FTS_NAME +
-        " JOIN " + PodcastCatalogue.CAT_NAME + " WHERE " + PodcastCatalogue.FTS_NAME + "." +
-        PodcastCatalogue.K_DOCID + " == " + PodcastCatalogue.CAT_NAME + "." +
-        PodcastCatalogue.K_ID + " AND " + PodcastCatalogue.FTS_NAME + " match ?";
-    if (longest - terms.length > 5) {
-      query += " ORDER BY length(offsets(catalogue_fts)) DESC";
-    }
-
-    Cursor c = catalogue.db.rawQuery(query, new String[]{TextUtils.join("* ", terms) + "*"});
-    adapter.swapCursor(c);
-
+    catalogue.query(newText.split(" "));
     return true;
   }
 

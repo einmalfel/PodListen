@@ -2,18 +2,21 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:background="@color/background_soft"
     android:gravity="center"
-    android:background="@color/background_soft">
+    android:orientation="horizontal">
 
     <ProgressBar
+        android:id="@+id/splash_progress"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:indeterminate="true"
         android:indeterminateDrawable="@drawable/episode_progress_bar_indeterminate"
-        android:indeterminate="true"/>
+        android:max="100"
+        android:progressDrawable="@drawable/episode_progress_bar"/>
 
     <TextView
-        android:id="@+id/splash_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
