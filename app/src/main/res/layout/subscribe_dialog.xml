@@ -28,12 +28,20 @@
         android:textSize="16sp"/>
 
     <Button
-        android:id="@+id/open_file_button"
+        android:id="@+id/search_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/url_text"
         android:padding="0dp"
         android:text="@string/subscribe_dialog_search_db"/>
+
+    <Button
+        android:id="@+id/open_file_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/search_button"
+        android:padding="0dp"
+        android:text="@string/subscribe_dialog_import_opml"/>
 
     <TextView
         android:id="@+id/textView2"

@@ -1,0 +1,87 @@
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardBackgroundColor="@color/background_contrast"
+    card_view:cardCornerRadius="5dp"
+    card_view:cardElevation="5dp"
+    card_view:cardPreventCornerOverlap="true"
+    card_view:cardUseCompatPadding="true"
+    card_view:contentPadding="3dp">
+
+    <RelativeLayout
+        android:id="@+id/card_layout"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/podcast_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="75dp"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/podcast_frequency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/podcast_title"
+            android:layout_marginRight="75dp"
+            android:singleLine="true"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:id="@+id/podcast_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/podcast_frequency"
+            android:layout_marginRight="75dp"
+            android:autoLink="web"
+            android:textSize="12sp"/>
+
+        <ImageButton
+            android:id="@+id/podcast_button"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/podcast_url"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/clickable_list_element"
+            android:contentDescription="@string/search_subscribe_button"
+            android:minHeight="70dp"
+            android:scaleType="center"
+            android:src="@mipmap/ic_add_white_48dp"/>
+
+        <View
+            android:id="@+id/description_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/podcast_button"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:background="@color/background_soft"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="-3dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="72dp"
+            android:layout_alignBottom="@id/podcast_url"
+            android:layout_alignTop="@id/podcast_title"
+            android:layout_alignParentRight="true"
+            android:background="@color/background_soft"/>
+
+        <com.einmalfel.podlisten.support.PatchedTextView
+            android:id="@+id/podcast_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/description_divider"
+            android:linksClickable="true"
+            android:singleLine="true"
+            android:textSize="14sp"/>
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

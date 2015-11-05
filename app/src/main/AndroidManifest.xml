@@ -172,5 +172,14 @@
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance"
             android:process=":error_report"/>
+        <activity
+            android:name=".SearchActivity"
+            android:label="@string/search_title"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.einmalfel.podlisten.MainActivity"/>
+        </activity>
     </application>
+
 </manifest>

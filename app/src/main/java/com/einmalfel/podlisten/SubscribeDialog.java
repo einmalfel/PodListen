@@ -37,6 +37,8 @@ import java.util.regex.Pattern;
 public class SubscribeDialog extends AppCompatDialogFragment implements View.OnClickListener {
   static final String URL_ARG = "com.einmalfel.podlisten.url_arg";
   private static final String TAG = "SDF";
+  private static final int SEARCH_REQUEST_ID = 1;
+  private static final int FILE_REQUEST_ID = 0;
 
   private EditText urlText;
   private Provider.RefreshMode refreshMode = Provider.RefreshMode.WEEK;
@@ -44,7 +46,14 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK) {
-      urlText.setText(data.getData().toString());
+      switch (requestCode) {
+        case FILE_REQUEST_ID:
+          urlText.setText(data.getData().toString());
+          break;
+        case SEARCH_REQUEST_ID:
+          urlText.setText(data.getStringExtra(SearchActivity.RSS_URL_EXTRA));
+          break;
+      }
     }
   }
 
@@ -152,6 +161,15 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     final Bundle arguments = getArguments();
     urlText.setText(arguments == null ? "" : arguments.getString(URL_ARG, ""));
 
+
+    Button searchButton = (Button) getDialog().findViewById(R.id.search_button);
+    searchButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        startActivityForResult(new Intent(getContext(), SearchActivity.class), SEARCH_REQUEST_ID);
+      }
+    });
+
     Button openFileButton = (Button) getDialog().findViewById(R.id.open_file_button);
     openFileButton.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -160,9 +178,8 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         try {
-          startActivityForResult(
-              Intent.createChooser(intent, getString(R.string.subscribe_dialog_select_opml_prompt)),
-              0);
+          startActivityForResult(Intent.createChooser(
+              intent, getString(R.string.subscribe_dialog_select_opml_prompt)), FILE_REQUEST_ID);
         } catch (android.content.ActivityNotFoundException ex) {
           Snackbar.make(v, R.string.subscribe_dialog_install_file_manager, Snackbar.LENGTH_LONG)
                   .show();
