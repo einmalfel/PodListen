@@ -1,7 +1,6 @@
 package com.einmalfel.podlisten;
 
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +47,7 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
             boolean expanded) {
     if (this.id != id) {
       titleView.setText(title);
-      descriptionView.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
+      descriptionView.setText(description);
       urlView.setText(url != null && !url.isEmpty() ? url : rss_url);
       double freq = 30d * 24 * 60 * 60 * 1000 / period;
       frequencyView.setText(String.format("Frequency: %.1f episodes/month", freq));
