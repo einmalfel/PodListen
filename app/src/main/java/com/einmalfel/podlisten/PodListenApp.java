@@ -18,7 +18,7 @@ import org.acra.annotation.ReportsCrashes;
     logcatArguments = {"-t", "1000", "-v", "time", "*:S",
                        "PLA:V", "DLR:V", "ELA:V", "SSA:V", "EVH:V", "IMG:V", "MAC:V", "NEF:V",
                        "PLC:V", "PPS:V", "PLF:V", "EPM:V", "PLP:V", "SSF:V", "SWK:V", "WGH:V",
-                       "SDF:V", "STB:V", "MBR:V", "PAC:V", "STR:V", "PRF:V",
+                       "SDF:V", "STB:V", "MBR:V", "PAC:V", "STR:V", "PRF:V", "PCT:V",
                        "AndroidRuntime:V", "ACRA:V"},
     customReportContent = {
         ReportField.USER_CRASH_DATE, ReportField.AVAILABLE_MEM_SIZE, ReportField.TOTAL_MEM_SIZE,
