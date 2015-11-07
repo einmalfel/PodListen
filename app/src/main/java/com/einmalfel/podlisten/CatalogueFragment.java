@@ -126,7 +126,7 @@ public class CatalogueFragment extends Fragment {
               longest = term.length();
             }
           }
-          if (longest - terms.length > 5) {
+          if (longest - (terms.length - 1) >= 3) { // minimal term size for sorting is 3 chars
             query += " ORDER BY length(offsets(" + FTS_NAME + ")) DESC";
           }
         }
