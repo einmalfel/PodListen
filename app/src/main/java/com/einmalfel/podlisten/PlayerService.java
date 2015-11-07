@@ -51,7 +51,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
     private void register() {
-      registerReceiver(this, filter);
+      if (Preferences.getInstance().getPauseOnDisconnect()) {
+        registerReceiver(this, filter);
+      }
     }
 
     private void unregister() {

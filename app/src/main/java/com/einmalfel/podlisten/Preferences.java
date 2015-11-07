@@ -26,6 +26,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     COMPLETE_ACTION,
     JUMP_INTERVAL,
     CURRENT_ACTIVITY,
+    PAUSE_ON_DISCONNECT,
   }
 
   enum JumpInterval {
@@ -238,6 +239,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private boolean playerForeground; // preserve last player service state across app kill/restarts
   @Nullable
   private String currentActivity; // current activity class name, for services in separate process
+  private boolean pauseOnDisconnect;
 
   private SharedPreferences sPrefs;
 
@@ -331,6 +333,9 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
           DownloadReceiver.stopDownloads(null);
           context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
         }
+        break;
+      case PAUSE_ON_DISCONNECT:
+        pauseOnDisconnect = sPrefs.getBoolean(Key.PAUSE_ON_DISCONNECT.toString(), true);
         break;
       case AUTO_DOWNLOAD_AC:
         boolean newAutoDownloadAC = sPrefs.getBoolean(Key.AUTO_DOWNLOAD_AC.toString(), false);
@@ -484,6 +489,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   @NonNull
   public JumpInterval getJumpInterval() {
     return jumpInterval;
+  }
+
+  public boolean getPauseOnDisconnect() {
+    return pauseOnDisconnect;
   }
 
   @Override

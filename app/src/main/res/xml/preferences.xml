@@ -36,6 +36,11 @@
             android:key="JUMP_INTERVAL"
             android:summary="%s"
             android:title="@string/preferences_jump_interval_title"/>
+        <CheckBoxPreference
+            android:key="PAUSE_ON_DISCONNECT"
+            android:defaultValue="true"
+            android:summary="@string/preferences_pause_on_disconnect_summary"
+            android:title="@string/preferences_pause_on_disconnect_title"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/preferences_other_title">

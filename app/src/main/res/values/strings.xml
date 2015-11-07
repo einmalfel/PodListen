@@ -78,6 +78,8 @@
     <string name="preferences_refresh_interval_title">Auto-refresh subscriptions</string>
     <string name="preferences_jump_interval_title">Jump buttons interval</string>
     <string name="preferences_on_playback_completed_title">On playback complete</string>
+    <string name="preferences_pause_on_disconnect_title">Pause on headphones disconnect</string>
+    <string name="preferences_pause_on_disconnect_summary">Pauses playback when user unplugs earphones or BT headset loses connection</string>
 
     <string name="opml_dialog_done">Done</string>
     <string name="opml_dialog_message">Your subscriptions where exported to %s</string>
