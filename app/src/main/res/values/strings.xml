@@ -115,6 +115,7 @@
     <string name="download_network_any">Use all networks</string>
 
     <string name="playback_complete_do_nothing">Do nothing</string>
+    <string name="playback_complete_delete_do_nothing">Delete played episode and do nothing</string>
     <string name="playback_complete_play_next">Play next episode in playlist</string>
     <string name="playback_complete_delete_play_next">Delete played episode and play next</string>
     <string name="playback_complete_play_first">Play first episode in playlist</string>

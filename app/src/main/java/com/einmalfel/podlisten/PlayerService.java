@@ -610,15 +610,16 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
             completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST);
 
     if (completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST ||
-        completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT) {
+        completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT ||
+        completeAction == Preferences.CompleteAction.DELETE_DO_NOTHING) {
       PodcastHelper.getInstance().markEpisodeGone(currentId);
     }
 
-    if (nextId == 0) {
+    if (nextId == 0 || completeAction == Preferences.CompleteAction.DELETE_DO_NOTHING) {
       Log.i(TAG, "No more playable episodes");
       releasePlayer();
       state = State.STOPPED_EMPTY;
-      currentId = 0;
+      currentId = nextId;
       progress = 0;
       callbackThread.post(CallbackType.STATE);
       callbackThread.post(CallbackType.PROGRESS);

@@ -70,7 +70,8 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     PLAY_NEXT(R.string.playback_complete_play_next),
     DELETE_PLAY_NEXT(R.string.playback_complete_delete_play_next),
     PLAY_FIRST(R.string.playback_complete_play_first),
-    DELETE_PLAY_FIRST(R.string.playback_complete_delete_play_first);
+    DELETE_PLAY_FIRST(R.string.playback_complete_delete_play_first),
+    DELETE_DO_NOTHING(R.string.playback_complete_delete_do_nothing);
 
     private final int stringId;
 
