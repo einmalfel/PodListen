@@ -1,8 +1,11 @@
 package com.einmalfel.podlisten;
 
 import android.app.Notification;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -41,6 +44,28 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     void progressUpdate(int position, int max);
 
     void stateUpdate(State state, long episodeId);
+  }
+
+  private class NoisyAudioReceiver extends BroadcastReceiver {
+    private final IntentFilter filter = new IntentFilter(
+        AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+
+    private void register() {
+      registerReceiver(this, filter);
+    }
+
+    private void unregister() {
+      unregisterReceiver(this);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction()) &&
+          !getState().isStopped()) {
+        Log.i(TAG, "Lost audio device connection, pausing playback.");
+        pause();
+      }
+    }
   }
 
   private class CallbackThread extends Thread {
@@ -149,6 +174,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   private static final int LOADER_ID = 10;
 
   private final CallbackThread callbackThread = new CallbackThread(this);
+  private final NoisyAudioReceiver noisyAudioReceiver = new NoisyAudioReceiver();
   private MediaPlayer player;
   private long currentId;
   private int startSeek;
@@ -387,6 +413,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   public synchronized boolean stop() {
     Log.d(TAG, "Stopping playback");
     MediaButtonReceiver.setService(null);
+    noisyAudioReceiver.unregister();
     releasePlayer();
     state = State.STOPPED;
     callbackThread.post(CallbackType.STATE);
@@ -494,6 +521,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     callbackThread.post(CallbackType.PROGRESS);
 
     MediaButtonReceiver.setService(this);
+    noisyAudioReceiver.register();
 
     return state == State.PLAYING;
   }
