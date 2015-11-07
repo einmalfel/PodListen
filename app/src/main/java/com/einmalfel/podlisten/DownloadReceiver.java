@@ -90,6 +90,14 @@ public class DownloadReceiver extends BroadcastReceiver {
         .setDestinationInExternalFilesDir(
             context, Environment.DIRECTORY_PODCASTS, Long.toString(id));
       downloadId = dM.enqueue(rq);
+    } catch (NullPointerException npe) {
+      // By reading DownloadManager code I found that it could throw NPE when requesting download.
+      // DM process provides ContentProvider, that contains state of downloads. When new download
+      // is being queued DM client class inserts new row into it, and if DM service is killed
+      // (because of crash or low memory condition) insert call trows RemoteException, which isn't
+      // handled properly and this cause dereference of null in DownloadManager.enqueue()
+      Log.e(TAG, "Ignoring NPE in DM.enqueue(). Will try to restart d/l next time", npe);
+      return false;
     }
 
     ContentValues cv = new ContentValues(1);
