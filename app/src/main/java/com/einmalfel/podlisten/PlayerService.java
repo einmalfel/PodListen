@@ -285,9 +285,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     if (currentId == 0 && data.moveToFirst()) {
       currentId = data.getLong(data.getColumnIndexOrThrow(Provider.K_ID));
     }
-    if (state == State.STOPPED_EMPTY && data.getCount() != 0) {
-      state = State.STOPPED;
-    } else if (state.isStopped() && data.getCount() == 0) {
+    if (state.isStopped() && data.getCount() == 0) {
       state = State.STOPPED_EMPTY;
     }
     callbackThread.post(CallbackType.STATE);
@@ -634,6 +632,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     switch (state) {
       case STOPPED:
       case STOPPED_ERROR:
+      case STOPPED_EMPTY:
         if (currentId != 0) {
           playEpisode(currentId);
         } else {
