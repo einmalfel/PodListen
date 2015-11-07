@@ -164,6 +164,38 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     void post(CallbackType callback) {
       synchronized (service) {
         queue.add(callback);
+        if (queue.size() > 1) {
+          // reorder queue:
+          // - squash duplicated callbacks
+          // - call STATE after PROGRESS to increase chances to see episode image in player
+          // notification after system-ui crash/restart
+          boolean progressCbPending = false;
+          boolean stateCbPending = false;
+          for (CallbackType enqueued : queue) {
+            switch (enqueued) {
+              case STATE:
+                stateCbPending = true;
+                break;
+              case PROGRESS:
+                progressCbPending = true;
+                break;
+              default:
+                throw new AssertionError();
+            }
+            if (progressCbPending && stateCbPending) {
+              break;
+            }
+          }
+          queue.clear();
+          if (progressCbPending && stateCbPending) {
+            queue.add(CallbackType.PROGRESS);
+            queue.add(CallbackType.STATE);
+          } else if (progressCbPending) {
+            queue.add(CallbackType.PROGRESS);
+          } else {
+            queue.add(CallbackType.STATE);
+          }
+        }
       }
     }
   }
