@@ -1,7 +1,6 @@
 package com.einmalfel.podlisten;
 
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -22,6 +21,26 @@ import android.widget.RemoteViews;
  * Should already be instantiated by the moment of playback launch, so it is set up when:
  * - there is active app widget (WidgetProvider.onEnabled)
  * - MainActivity launched
+ *
+ * PodListen widget contains episode image. I consider it a bad practice to
+ * serialize-send-deserialize the image on each widget update, cause this happens at least at 2 Hz
+ * (playback progress updates).
+ * Widget in notification is able to accumulate updates sent in form of partial RemoteViews in
+ * same way as home screen widgets do. But in case system-ui process restarts, there is nothing
+ * like
+ * WidgetProvider.onUpdate to be called to notify app that full widget update is needed. Instead
+ * system-ui will rebuilt widget with last RemoteViews it has received (partial).
+ * What WidgetHelper do, trying to minimize traffic to widget and notification managers:
+ * 1 on WidgetProvider.onUpdate:
+ * - send full update to given home screen widgets
+ * 2 on progress update:
+ * - send minimal update to all home screen widgets
+ * - send full update except for image to notification
+ * 3 on state update:
+ * - send minimal update to all home screen widgets
+ * - send full update to notification
+ * In worst case, after system-ui restart user will get no image in notification widget, but widget
+ * itself will be functional.
  */
 public class WidgetHelper implements PlayerService.PlayerStateListener {
   enum WidgetAction {PLAY_PAUSE, SEEK_FORWARD, SEEK_BACKWARD, NEXT_EPISODE, STOP}
@@ -37,10 +56,16 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   private final ComponentName receiverComponent = new ComponentName(context, WidgetProvider.class);
   private final AppWidgetManager awm = AppWidgetManager.getInstance(context);
   private final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+  private final RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
   private final RemoteViews rvFull = new RemoteViews(context.getPackageName(), R.layout.player);
   private final Intent activityIntent = new Intent(context, MainActivity.class);
 
-  private boolean notificationNeverUpdated = true;
+  private long episodeId;
+  private String title;
+  private long podcastId;
+  private PlayerService.State state = PlayerService.State.UPDATE_ME;
+  private int position;
+  private int max;
 
   static WidgetHelper getInstance() {
     if (instance == null) {
@@ -63,10 +88,10 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
 
   private WidgetHelper() {
     activityIntent.putExtra(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.PLAYLIST.ordinal());
-    rvFull.setOnClickPendingIntent(R.id.play_button, getIntent(context, WidgetAction.PLAY_PAUSE));
     rvFull.setOnClickPendingIntent(R.id.next_button, getIntent(context, WidgetAction.NEXT_EPISODE));
     rvFull.setOnClickPendingIntent(R.id.fb_button, getIntent(context, WidgetAction.SEEK_BACKWARD));
     rvFull.setOnClickPendingIntent(R.id.ff_button, getIntent(context, WidgetAction.SEEK_FORWARD));
+    rvFull.setOnClickPendingIntent(R.id.play_button, getIntent(context, WidgetAction.PLAY_PAUSE));
     rvFull.setOnClickPendingIntent(R.id.play_options, getIntent(context, WidgetAction.STOP));
     rvFull.setImageViewResource(R.id.play_options, R.mipmap.ic_close_white_36dp);
     builder.setSmallIcon(R.drawable.logo).setPriority(NotificationCompat.PRIORITY_LOW)
@@ -74,12 +99,52 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     connection.bind();
   }
 
+  private void rvApplyState(RemoteViews rv) {
+    setButtonEnabled(!state.isStopped(), rv, R.id.ff_button);
+    setButtonEnabled(!state.isStopped(), rv, R.id.fb_button);
+    setButtonEnabled(state != PlayerService.State.STOPPED, rv, R.id.play_options);
+    if (state == PlayerService.State.PLAYING) {
+      rv.setImageViewResource(R.id.play_button, R.mipmap.ic_pause_white_36dp);
+    } else {
+      rv.setImageViewResource(R.id.play_button, R.mipmap.ic_play_arrow_white_36dp);
+    }
+
+    if (episodeId == 0) {
+      rv.setTextViewText(R.id.play_title,
+                         context.getString(state == PlayerService.State.STOPPED_EMPTY ?
+                                               R.string.player_empty : R.string.player_stopped));
+      activityIntent.removeExtra(MainActivity.EPISODE_ID_OPTION);
+    } else {
+      activityIntent.putExtra(MainActivity.EPISODE_ID_OPTION, episodeId);
+      rv.setTextViewText(R.id.play_title, title);
+    }
+    PendingIntent pendingIntent = PendingIntent.getActivity(
+        context, INTENT_ID_LAUNCH_ACTIVITY, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    rv.setOnClickPendingIntent(R.id.player, pendingIntent);
+  }
+
+  private void rvApplyImage(RemoteViews rv) {
+    Bitmap img = ImageManager.getInstance().getImage(episodeId);
+    if (img == null) {
+      img = ImageManager.getInstance().getImage(podcastId);
+    }
+    if (img == null) {
+      rv.setImageViewResource(R.id.episode_image, R.drawable.logo);
+    } else {
+      rv.setImageViewBitmap(R.id.play_episode_image, img);
+    }
+  }
+
+  private void rvApplyProgress(RemoteViews rv) {
+    rv.setProgressBar(R.id.play_progress, max, position, false);
+  }
+
   public boolean processIntent(Intent intent) {
     WidgetAction action = null;
 
     try {
       action = WidgetAction.valueOf(intent.getAction());
-    } catch (IllegalArgumentException|NullPointerException ignored) {}
+    } catch (IllegalArgumentException | NullPointerException ignored) {}
 
     if (action == null) {
       return false;
@@ -109,14 +174,17 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
         connection.service.jumpBackward();
         break;
       case STOP:
-        notificationNeverUpdated = true;
         connection.service.stop();
         break;
     }
   }
 
   public void updateWidgetsFull(int[] appWidgetIds) {
-    awm.updateAppWidget(appWidgetIds, rvFull);
+    RemoteViews rv = rvFull.clone();
+    rvApplyImage(rv);
+    rvApplyProgress(rv);
+    rvApplyState(rv);
+    awm.updateAppWidget(appWidgetIds, rv);
   }
 
   private void updateWidgetsPartial(RemoteViews rv) {
@@ -126,20 +194,23 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   private void updateNotification(RemoteViews rv) {
     if (connection.service != null &&
         connection.service.getState() != PlayerService.State.STOPPED) {
-      if (notificationNeverUpdated) {
-        connection.service.updateNotification(builder.setContent(rvFull).build());
-        notificationNeverUpdated = false;
-      }
       connection.service.updateNotification(builder.setContent(rv).build());
     }
   }
 
   @Override
   public void progressUpdate(int position, int max) {
-    RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
-    rvPartial.setProgressBar(R.id.play_progress, max, position, false);
-    updateWidgetsPartial(rvPartial);
-    updateNotification(rvPartial);
+    if (this.position != position || this.max != max) {
+      this.position = position;
+      this.max = max;
+      RemoteViews rv = rvPartial.clone();
+      rvApplyProgress(rv);
+      updateWidgetsPartial(rv);
+      rv = rvFull.clone();
+      rvApplyState(rv);
+      rvApplyProgress(rv);
+      updateNotification(rv);
+    }
   }
 
   private void setButtonEnabled(boolean enabled, @NonNull RemoteViews rv, @IdRes int id) {
@@ -149,24 +220,31 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
 
   @Override
   public void stateUpdate(PlayerService.State state, long episodeId) {
-    RemoteViews rvPartial = new RemoteViews(context.getPackageName(), R.layout.player);
-    setButtonEnabled(!state.isStopped(), rvPartial, R.id.ff_button);
-    setButtonEnabled(!state.isStopped(), rvPartial, R.id.fb_button);
-    setButtonEnabled(state != PlayerService.State.STOPPED, rvPartial, R.id.play_options);
-    if (state == PlayerService.State.PLAYING) {
-      rvPartial.setImageViewResource(R.id.play_button, R.mipmap.ic_pause_white_36dp);
-    } else {
-      rvPartial.setImageViewResource(R.id.play_button, R.mipmap.ic_play_arrow_white_36dp);
+    if (this.episodeId != episodeId) {
+      getEpisodeInfo(episodeId);
     }
+    if (this.episodeId != episodeId || this.state != state) {
+      this.state = state;
+      RemoteViews rv = rvPartial.clone();
+      if (this.episodeId != episodeId) {
+        this.episodeId = episodeId;
+        rvApplyImage(rv);
+      }
+      rvApplyState(rv);
+      updateWidgetsPartial(rv);
+      rv = rvFull.clone();
+      rvApplyImage(rv);
+      rvApplyProgress(rv);
+      rvApplyState(rv);
+      updateNotification(rv);
+    }
+  }
 
-    String title = null;
-    Bitmap img = null;
+  private void getEpisodeInfo(long episodeId) {
     if (episodeId == 0) {
-      activityIntent.removeExtra(MainActivity.EPISODE_ID_OPTION);
-      title = context.getString(state == PlayerService.State.STOPPED_EMPTY ?
-                                    R.string.player_empty : R.string.player_stopped);
+      title = "";
+      podcastId = 0;
     } else {
-      activityIntent.putExtra(MainActivity.EPISODE_ID_OPTION, episodeId);
       Cursor c = context.getContentResolver().query(
           Provider.getUri(Provider.T_EPISODE, episodeId),
           new String[]{Provider.K_ENAME, Provider.K_EPID},
@@ -174,28 +252,15 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
       if (c != null) {
         if (c.moveToFirst()) {
           title = c.getString(c.getColumnIndex(Provider.K_ENAME));
-          img = ImageManager.getInstance().getImage(episodeId);
-          if (img == null) {
-            img = ImageManager.getInstance().getImage(c.getLong(c.getColumnIndex(Provider.K_EPID)));
-          }
+          podcastId = c.getLong(c.getColumnIndex(Provider.K_EPID));
         } else {
           title = context.getString(R.string.player_episode_does_not_exist, episodeId);
+          podcastId = 0;
         }
         c.close();
       } else {
         Log.wtf(TAG, "Unexpectedly got null cursor from content provider", new AssertionError());
       }
     }
-    if (img == null) {
-      rvPartial.setImageViewResource(R.id.episode_image, R.drawable.logo);
-    } else {
-      rvPartial.setImageViewBitmap(R.id.play_episode_image, img);
-    }
-    rvPartial.setTextViewText(R.id.play_title, title);
-    PendingIntent pendingIntent = PendingIntent.getActivity(
-        context, INTENT_ID_LAUNCH_ACTIVITY, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-    rvPartial.setOnClickPendingIntent(R.id.player, pendingIntent);
-    updateWidgetsPartial(rvPartial);
-    updateNotification(rvPartial);
   }
 }
