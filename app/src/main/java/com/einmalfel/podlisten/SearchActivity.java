@@ -76,7 +76,7 @@ public class SearchActivity extends AppCompatActivity
       actionBar.setDisplayShowCustomEnabled(true);
       actionBar.setDisplayShowTitleEnabled(false);
     } else {
-      Log.wtf(TAG, "Should never get here: failed to get action bar of preference activity");
+      Log.wtf(TAG, "Should never get here: failed to get action bar of search activity");
     }
 
     adapter = new SearchAdapter(this);

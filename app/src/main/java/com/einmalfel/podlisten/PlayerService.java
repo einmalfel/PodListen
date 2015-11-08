@@ -253,6 +253,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       // Service process was crashed/killed while running foreground. Service is restarting now.
       // System has recovered our notification to last value passed to startForeground, but it
       // contains partial remote views and thus doesn't work, so instantiate WidgetHelper to fix it.
+      Log.w(TAG, "Restarting service and recovering player notification");
       state = State.STOPPED_ERROR;
       WidgetHelper.getInstance();
     }
@@ -337,6 +338,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
   @Override
   public synchronized void onAudioFocusChange(int focusChange) {
+    Log.i(TAG, "Audio focus chagned from " + focusMode + " to " + focusChange);
     switch (focusChange) {
       case AudioManager.AUDIOFOCUS_GAIN:
         if (focusMode == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {

@@ -203,7 +203,7 @@ public class DownloadReceiver extends BroadcastReceiver {
         return source;
       }
     } catch (IOException exception) {
-      Log.e(TAG, "Failed to convert file name to canonical form: " + source);
+      Log.e(TAG, "Failed to convert file name to canonical form: " + source, exception);
       return null;
     }
   }
@@ -231,7 +231,7 @@ public class DownloadReceiver extends BroadcastReceiver {
     DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
     c = dM.query(new DownloadManager.Query().setFilterById(downloadId));
     if (c == null || !c.moveToFirst()) {
-      Log.e(TAG, "DownloadManager query failed");
+      Log.i(TAG, "DownloadManager query failed");
       if (c != null) {
         c.close();
       }
