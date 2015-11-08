@@ -19,7 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * This class is in charge of downloading, storing memory-caching images
+ * This class is in charge of downloading, storing and memory-caching images
  */
 public class ImageManager {
   private static final String TAG = "IMG";

@@ -20,7 +20,7 @@ import android.widget.RemoteViews;
  * (including widget in notification bar) and player service.
  * Should already be instantiated by the moment of playback launch, so it is set up when:
  * - there is active app widget (WidgetProvider.onEnabled)
- * - MainActivity launched
+ * - PlayService is in foreground
  *
  * PodListen widget contains episode image. I consider it a bad practice to
  * serialize-send-deserialize the image on each widget update, cause this happens at least at 2 Hz
@@ -47,7 +47,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
 
   private static final String TAG = "WGH";
   private static final int INTENT_ID_LAUNCH_ACTIVITY = 100;
-  private static final int INTENT_ID_BASE = 101; //ids 100-104 will be used for notification buttons
+  private static final int INTENT_ID_BASE = 101; //ids 101-105 will be used for notification buttons
 
   private static WidgetHelper instance;
 

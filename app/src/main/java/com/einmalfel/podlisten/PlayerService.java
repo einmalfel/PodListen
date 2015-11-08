@@ -31,7 +31,12 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
 
   enum State {
-    STOPPED, STOPPED_ERROR, STOPPED_EMPTY, PLAYING, PAUSED, UPDATE_ME;
+    STOPPED, // player stopped, resources released, service set to background state
+    STOPPED_ERROR,
+    STOPPED_EMPTY, // stopped cause playlist was empty. To determine if it's empty now see currentId
+    PLAYING,
+    PAUSED,
+    UPDATE_ME; // state is uninitialized, need update
 
     public boolean isStopped() {
       return this == STOPPED || this == STOPPED_EMPTY || this == STOPPED_ERROR;

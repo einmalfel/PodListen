@@ -14,7 +14,6 @@ import android.view.KeyEvent;
  */
 public class MediaButtonReceiver extends BroadcastReceiver {
   private static final String TAG = "MBR";
-  //  private static final MediaButtonReceiver instance = new MediaButtonReceiver();
   private static PlayerService service = null;
   private static MediaSessionCompat session = null;
 
