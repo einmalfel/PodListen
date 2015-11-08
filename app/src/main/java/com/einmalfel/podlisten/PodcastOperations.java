@@ -41,6 +41,7 @@ public class PodcastOperations extends IntentService {
 
   public PodcastOperations() {
     super("PodcastOperations");
+    setIntentRedelivery(true);
   }
 
   @Override
