@@ -247,7 +247,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         this,
         Provider.episodeUri, new String[]{Provider.K_ID},
         Provider.K_ESTATE + " == " + Integer.toString(Provider.ESTATE_IN_PLAYLIST) + " AND " +
-            Provider.K_EDFIN + " == 100",
+            Provider.K_EDFIN + " == " + Provider.EDFIN_COMPLETE,
         null,
         Preferences.getInstance().getSortingMode().toSql());
     playableEpisodesLoader.registerListener(LOADER_ID, this);

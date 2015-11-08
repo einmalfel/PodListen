@@ -86,7 +86,7 @@ public class PlaylistFragment extends DebuggableFragment implements
       String aURL = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EAURL));
       String title = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ENAME));
       cursor.close();
-      if (dId == 0 && downloaded != 100) {
+      if (dId == 0 && downloaded != Provider.EDFIN_COMPLETE) {
         Intent bi = new Intent(DownloadReceiver.DOWNLOAD_EPISODE_ACTION);
         bi.putExtra(DownloadReceiver.URL_EXTRA_NAME, aURL);
         bi.putExtra(DownloadReceiver.TITLE_EXTRA_NAME, title);

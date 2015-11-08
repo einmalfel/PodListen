@@ -113,6 +113,10 @@ public class Provider extends ContentProvider {
   public static final int ESTATE_LEAVING = 1; // marked for deletion. Will be deleted in background
   public static final int ESTATE_IN_PLAYLIST = 2;
   public static final int ESTATE_GONE = 3;
+  public static final int EDFIN_COMPLETE = 100;
+  public static final int EDFIN_MOVING = 101; // ep. will be moved from primary to current storage
+  public static final int EDFIN_PROCESSING = 102; // awaiting processing
+  public static final int EDFIN_ERROR = 103;
   public static final int PSTATE_NEW = 0;
   public static final int PSTATE_SEEN_ONCE = 1;
   public static final int PSTATE_LAST_REFRESH_FAILED = 2;

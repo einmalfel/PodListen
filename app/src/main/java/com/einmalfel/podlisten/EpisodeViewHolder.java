@@ -140,7 +140,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       }
     }
 
-    if (downloaded == 100 && state != Provider.ESTATE_NEW) {
+    if (downloaded == Provider.EDFIN_COMPLETE && state != Provider.ESTATE_NEW) {
       if (playerState.isStopped()) {
         progressBar.getProgressDrawable().setColorFilter(playedFilter);
         setTextColor(ContextCompat.getColor(context, R.color.text));
@@ -148,22 +148,27 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
         progressBar.getProgressDrawable().setColorFilter(playingFilter);
         setTextColor(ContextCompat.getColor(context, R.color.text_bright));
       }
+      progressBar.setIndeterminate(false);
       progressBar.setMax((int) length);
       progressBar.setProgress((int) played);
-      progressBar.setIndeterminate(false);
     } else {
       setTextColor(ContextCompat.getColor(context, R.color.text));
-      if (downloaded == 100) {
+      if (downloaded == Provider.EDFIN_COMPLETE) {
         progressBar.getProgressDrawable().setColorFilter(loadedFilter);
       } else {
         progressBar.getProgressDrawable().setColorFilter(loadingFilter);
       }
-      progressBar.setMax(100);
-      progressBar.setProgress((int) downloaded);
-      progressBar.setIndeterminate(downloadId != 0 && downloaded == 0);
+      if (downloaded == Provider.EDFIN_MOVING || downloaded == Provider.EDFIN_PROCESSING ||
+          (downloadId != 0 && downloaded == 0)) {
+        progressBar.setIndeterminate(true);
+      } else {
+        progressBar.setIndeterminate(false);
+        progressBar.setMax(100);
+        progressBar.setProgress(downloaded == Provider.EDFIN_ERROR ? 0 : (int) downloaded);
+      }
     }
 
-    if (downloaded != 100 && state != Provider.ESTATE_NEW) {
+    if (downloaded != Provider.EDFIN_COMPLETE && state != Provider.ESTATE_NEW) {
       buttonImage.setContentDescription(context.getString(R.string.episode_action_download));
       if (downloadId == 0) {
         playAddFrame.setEnabled(true);
@@ -186,7 +191,8 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       }
     }
 
-    if ((downloaded == 100 && this.downloaded != 100) || id != this.id) {
+    if ((downloaded == Provider.EDFIN_COMPLETE && this.downloaded != Provider.EDFIN_COMPLETE) ||
+        id != this.id) {
       StringBuilder timeSize = new StringBuilder();
       if (length > 0) {
         timeSize.append(PodcastHelper.getInstance().shortFormatDurationMs(length));

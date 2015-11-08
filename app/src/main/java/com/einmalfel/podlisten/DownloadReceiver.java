@@ -249,7 +249,7 @@ public class DownloadReceiver extends BroadcastReceiver {
     File file = getTargetFile(fileName);
     if (status == DownloadManager.STATUS_SUCCESSFUL && isDownloadedFileOk(file)) {
       Log.i(TAG, "Successfully downloaded " + episodeId);
-      values.put(Provider.K_EDFIN, 100);
+      values.put(Provider.K_EDFIN, Provider.EDFIN_COMPLETE);
       values.put(Provider.K_ESIZE, file.length());
       values.put(Provider.K_EERROR, (String) null);
       // try get length
@@ -275,7 +275,7 @@ public class DownloadReceiver extends BroadcastReceiver {
       Log.w(TAG, episodeId + " download failed, reason " + reason);
       // TODO: replace error code with smth human-readable
       values.put(Provider.K_EERROR, "Download failed. Error code: " + reason);
-      values.put(Provider.K_EDFIN, 0);
+      values.put(Provider.K_EDFIN, Provider.EDFIN_ERROR);
       values.put(Provider.K_EDATT, attempts + 1);
     }
     int updated = context.getContentResolver().update(
@@ -318,7 +318,9 @@ public class DownloadReceiver extends BroadcastReceiver {
       return;
     }
 
-    String condition = Provider.K_EDID + " == 0 AND " + Provider.K_EDFIN + " != 100 AND ";
+    String condition = Provider.K_EDID + " == 0 AND " + Provider.K_EDFIN + " NOT IN (" +
+        Provider.EDFIN_COMPLETE + ", " + Provider.EDFIN_MOVING + ", " + Provider.EDFIN_PROCESSING +
+        ") AND ";
     if (prefs.getAutoDownloadMode() == Preferences.AutoDownloadMode.PLAYLIST) {
       condition += Provider.K_ESTATE + " == " + Integer.toString(Provider.ESTATE_IN_PLAYLIST);
     } else {
@@ -471,7 +473,7 @@ public class DownloadReceiver extends BroadcastReceiver {
           // ignore dubious data. E.g. sometimes it reports total size is -1B or 128B
           if (got > 0 && total > 1000 && total > got) {
             ContentValues v = new ContentValues(2);
-            v.put(Provider.K_EDFIN, 100L * got / total);
+            v.put(Provider.K_EDFIN, 99L * got / total);
             v.put(Provider.K_ESIZE, total);
             context.getContentResolver().update(
                 Provider.getUri(Provider.T_EPISODE, id), v, null, null);
