@@ -118,8 +118,8 @@ public class PlaylistFragment extends DebuggableFragment implements
     return new CursorLoader(activity,
                             Provider.episodeJoinPodcastUri,
                             EpisodeListAdapter.REQUIRED_DB_COLUMNS,
-                            Provider.K_ESTATE + " = ?",
-                            new String[]{Integer.toString(Provider.ESTATE_IN_PLAYLIST)},
+                            Provider.K_ESTATE + " = " + Provider.ESTATE_IN_PLAYLIST,
+                            null,
                             Preferences.getInstance().getSortingMode().toSql());
   }
 

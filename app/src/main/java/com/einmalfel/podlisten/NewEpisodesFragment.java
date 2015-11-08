@@ -64,8 +64,8 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
     return new CursorLoader(activity,
         Provider.episodeJoinPodcastUri,
         EpisodeListAdapter.REQUIRED_DB_COLUMNS,
-        Provider.K_ESTATE + " = ?",
-        new String[]{Integer.toString(Provider.ESTATE_NEW)},
+        Provider.K_ESTATE + " = " + Provider.ESTATE_NEW,
+        null,
         Provider.K_EDATE);
   }
 

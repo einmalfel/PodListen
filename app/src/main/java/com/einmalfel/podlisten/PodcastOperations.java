@@ -67,8 +67,8 @@ public class PodcastOperations extends IntentService {
     Cursor cursor = resolver.query(
         Provider.episodeJoinPodcastUri,
         new String[]{Provider.K_EID, Provider.K_ETSTAMP, Provider.K_PTSTAMP, Provider.K_EDID},
-        Provider.K_ESTATE + " == ?",
-        new String[]{Integer.toString(stateFilter)},
+        Provider.K_ESTATE + " == " + stateFilter,
+        null,
         null
     );
     if (cursor == null) {
@@ -120,8 +120,8 @@ public class PodcastOperations extends IntentService {
     cv.put(Provider.K_ESTATE, state);
     int result = getContentResolver().update(Provider.episodeUri,
                                              cv,
-                                             Provider.K_ESTATE + " == ?",
-                                             new String[]{Integer.toString(stateFilter)});
+                                             Provider.K_ESTATE + " == " + stateFilter,
+                                             null);
     Log.i(TAG, "Switched state from " + stateFilter + " to " + state + " for " + result + " eps");
   }
 }

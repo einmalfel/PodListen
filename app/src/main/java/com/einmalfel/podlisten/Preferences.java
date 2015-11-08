@@ -361,7 +361,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         if (newM != autoDownloadMode) {
           if (newM == AutoDownloadMode.PLAYLIST && autoDownloadMode == AutoDownloadMode.ALL_NEW) {
             DownloadReceiver.stopDownloads(
-                Provider.K_ESTATE + " != " + Integer.toString(Provider.ESTATE_IN_PLAYLIST));
+                Provider.K_ESTATE + " != " + Provider.ESTATE_IN_PLAYLIST);
           } else if (newM == AutoDownloadMode.NEVER) {
             DownloadReceiver.stopDownloads(null);
           }

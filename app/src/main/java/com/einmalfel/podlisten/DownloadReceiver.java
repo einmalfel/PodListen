@@ -213,8 +213,8 @@ public class DownloadReceiver extends BroadcastReceiver {
     Cursor c = context.getContentResolver().query(
         Provider.episodeUri,
         new String[]{Provider.K_ID, Provider.K_EDATT},
-        Provider.K_EDID + " == ?",
-        new String[]{Long.toString(downloadId)},
+        Provider.K_EDID + " == " + downloadId,
+        null,
         null);
     int count = c.getCount();
     if (count != 1) {
@@ -322,9 +322,9 @@ public class DownloadReceiver extends BroadcastReceiver {
         Provider.EDFIN_COMPLETE + ", " + Provider.EDFIN_MOVING + ", " + Provider.EDFIN_PROCESSING +
         ") AND ";
     if (prefs.getAutoDownloadMode() == Preferences.AutoDownloadMode.PLAYLIST) {
-      condition += Provider.K_ESTATE + " == " + Integer.toString(Provider.ESTATE_IN_PLAYLIST);
+      condition += Provider.K_ESTATE + " == " + Provider.ESTATE_IN_PLAYLIST;
     } else {
-      condition += Provider.K_ESTATE + " != " + Integer.toString(Provider.ESTATE_GONE);
+      condition += Provider.K_ESTATE + " != " + Provider.ESTATE_GONE;
     }
     if (!force) {
       long refreshIntervalMs = prefs.getRefreshInterval().periodSeconds * 1000;
@@ -332,8 +332,7 @@ public class DownloadReceiver extends BroadcastReceiver {
       if (refreshIntervalMs == 0 || refreshIntervalMs > dayRefreshInterval) {
         refreshIntervalMs = dayRefreshInterval;
       }
-      condition += " AND " + Provider.K_EDTSTAMP + " < " + Long.toString(
-          new Date().getTime() - refreshIntervalMs);
+      condition += " AND " + Provider.K_EDTSTAMP + "<" + (new Date().getTime() - refreshIntervalMs);
     }
     Cursor queue = context.getContentResolver().query(
         Provider.episodeUri,

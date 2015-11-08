@@ -71,7 +71,8 @@ public class SyncState {
     Cursor cursor = context.getContentResolver().query(
         Provider.episodeUri,
         null,
-        Provider.K_ESTATE + " == ?", new String[]{Integer.toString(Provider.ESTATE_NEW)},
+        Provider.K_ESTATE + " == " + Provider.ESTATE_NEW,
+        null,
         null,
         null);
     StringBuilder stringBuilder = new StringBuilder();
@@ -87,7 +88,7 @@ public class SyncState {
       } else {
         newEpisodesCount = Integer.toString(count);
         if (newEpisodes > 0) {
-          newEpisodesCount += "(+" + Integer.toString(newEpisodes) + ")";
+          newEpisodesCount += "(+" + newEpisodes + ")";
         }
       }
       stringBuilder.append(context.getString(R.string.sync_new_episodes, newEpisodesCount));
