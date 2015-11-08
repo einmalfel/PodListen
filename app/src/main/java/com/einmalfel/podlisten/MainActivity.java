@@ -107,6 +107,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private TabsAdapter tabsAdapter;
   private FloatingActionButton fab;
   private Snackbar snackbar;
+  private Snackbar.Callback snackbarCallback;
   private Timer timer;
   private PlaylistFragment playlistFragment = null;
   private FabAction currentFabAction;
@@ -341,6 +342,36 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     });
   }
 
+  private void showSnackbar(@NonNull String text, int duration, @Nullable String action,
+                            @Nullable final Snackbar.Callback callback) {
+    if (snackbar == null || !snackbar.isShownOrQueued()) {
+      // On some devices (e.g. Galaxy TAB 4 7.0) single snackbar instance cannot be showed
+      // multiple times, so reinstantiate it
+      if (snackbar != null) {
+        snackbar.dismiss();
+      }
+      snackbar = Snackbar.make(findViewById(R.id.tabbed_frame), text, duration);
+    } else {
+      // In genymotion (and therefore probably on some devices) snackbar queue glitches, so update
+      // current snackbar instead of enqueuing it
+      if (snackbarCallback != null) {
+        Log.d(TAG, "Replacing snackbar with " + text + ". Emulating dismiss callback");
+        snackbarCallback.onDismissed(snackbar, Snackbar.Callback.DISMISS_EVENT_TIMEOUT);
+      }
+      snackbar.setText(text);
+      snackbar.setDuration(duration);
+    }
+    snackbar.setAction(action, callback == null ? null : new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        callback.onDismissed(snackbar, Snackbar.Callback.DISMISS_EVENT_ACTION);
+      }
+    });
+    snackbar.setCallback(callback);
+    snackbarCallback = callback;
+    snackbar.show();
+  }
+
   @Override
   public synchronized void onClick(View v) {
     if (connection.service == null) {
@@ -369,18 +400,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           } else {
             Log.w(TAG, "Playlist fragment doesn't exist yet, skipping reload");
           }
-          // on some devices (e.g. Galaxy TAB 4 7.0) single snackbar instance cannot be showed
-          // multiple times, so reinstantiate it
-          if (snackbar == null || !snackbar.isShownOrQueued()) {
-            if (snackbar != null ) {
-              snackbar.dismiss();
-            }
-            snackbar = Snackbar.make(
-                findViewById(R.id.tabbed_frame), newMode.toString(), Snackbar.LENGTH_SHORT);
-          } else {
-            snackbar.setText(newMode.toString());
-          }
-          snackbar.show();
+          showSnackbar(newMode.toString(), Snackbar.LENGTH_SHORT, null, null);
           break;
       }
     } else if (v == playButton) {
