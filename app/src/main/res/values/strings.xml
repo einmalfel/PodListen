@@ -22,6 +22,7 @@
     <string name="episode_downloading">Downloading episode %s</string>
     <string name="episode_delete_question">Delete episode?</string>
     <string name="episode_deleted">Episode deleted: %s</string>
+    <string name="episode_deleted_undo">Undo</string>
     <string name="episode_image_description">Image of this episode if any</string>
     <string name="episode_deleted_subscription">Deleted subscription</string>
 

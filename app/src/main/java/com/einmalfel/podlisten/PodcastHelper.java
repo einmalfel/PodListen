@@ -1,32 +1,27 @@
 package com.einmalfel.podlisten;
 
 
-import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.einmalfel.podlisten.support.UnitConverter;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 /**
- * Helper class intended to do podcast-related stuff, like properly deleting episodes, etc
+ * Helper class intended to do podcast-related stuff
  */
 public class PodcastHelper {
   static final int MIN_IMAGE_WIDTH_SP = 70;
@@ -62,87 +57,8 @@ public class PodcastHelper {
     return (long) url.hashCode() - Integer.MIN_VALUE;
   }
 
-  public static void deleteEpisodeDialog(final long episodeId, final Context context) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int id) {
-        PodcastHelper.getInstance().markEpisodeGone(episodeId);
-      }
-    });
-    builder
-        .setNegativeButton(R.string.cancel, null)
-        .setTitle(context.getString(R.string.episode_delete_question))
-        .create()
-        .show();
-  }
 
-  private void tryDeleteFiles(long id) {
-    Storage storage = Preferences.getInstance().getStorage();
-    if (storage == null || !storage.isAvailableRW()) {
-      Log.w(TAG, "failed to delete episode media: no storage or it isn't writable");
-      return;
-    }
 
-    File f = new File(storage.getPodcastDir(), Long.toString(id));
-    if (f.exists() && !f.delete()) {
-      Log.w(TAG, "Failed to delete " + f.toURI());
-    }
-
-    ImageManager.getInstance().deleteImage(id);
-  }
-
-  public boolean markEpisodeGone(long id) {
-    return markEpisodeGone(id, false);
-  }
-
-  /**
-   * Marks episode as gone.
-   * If episode is absent in origin feed, deletes it from DB.
-   * Tries to delete downloaded media (if there is some on mounted external storage)
-   *
-   * @param id episode id to delete
-   * @return true if success, false if episode is already absent in db
-   */
-  public boolean markEpisodeGone(long id, boolean quiet) {
-    boolean result = false;
-    // TODO what if subscription is deleted?
-    Cursor c = resolver.query(
-        Provider.getUri(Provider.T_E_JOIN_P, id),
-        new String[]{Provider.K_ETSTAMP, Provider.K_PTSTAMP, Provider.K_ENAME, Provider.K_EDID},
-        Provider.K_ESTATE + " != ?",
-        new String[]{Integer.toString(Provider.ESTATE_GONE)},
-        null);
-    if (c.moveToFirst()) {
-      if (!quiet) {
-        Toast.makeText(
-            context,
-            context.getString(R.string.episode_deleted,
-                              c.getString(c.getColumnIndex(Provider.K_ENAME))),
-            Toast.LENGTH_SHORT
-        ).show();
-      }
-      long dId = c.getLong(c.getColumnIndexOrThrow(Provider.K_EDID));
-      if (dId != 0) {
-        DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        dm.remove(dId);
-      }
-      if (c.getLong(c.getColumnIndexOrThrow(Provider.K_ETSTAMP)) < c.getLong(c.getColumnIndexOrThrow(Provider.K_PTSTAMP))) {
-        Log.i(TAG, "Feed doesn't contain episode " + id + " anymore. Deleting..");
-        c.close();
-        return deleteEpisode(id);
-      } else {
-        ContentValues val = new ContentValues(3);
-        val.put(Provider.K_ESTATE, Provider.ESTATE_GONE);
-        val.put(Provider.K_EDFIN, 0);
-        val.put(Provider.K_EDID, 0);
-        result = resolver.update(Provider.getUri(Provider.T_EPISODE, id), val, null, null) == 1;
-      }
-    }
-    c.close();
-    tryDeleteFiles(id);
-    return result;
-
-  }
 
   private static final DateFormat formatYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
@@ -173,18 +89,6 @@ public class PodcastHelper {
     int exp = (int) (Math.log(bytes) / Math.log(unit));
     String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
     return String.format("%d%sB", (int) (bytes / Math.pow(unit, exp)), pre);
-  }
-
-  /**
-   * Try remove episode from db.
-   * Remove media files if any.
-   *
-   * @param id of episode
-   * @return true if successfully deleted from db
-   */
-  public boolean deleteEpisode(long id) {
-    tryDeleteFiles(id);
-    return resolver.delete(Provider.getUri(Provider.T_EPISODE, id), null, null) == 1;
   }
 
   public class SubscriptionNotInsertedException extends Throwable {
@@ -251,19 +155,5 @@ public class PodcastHelper {
     } else {
       return width;
     }
-  }
-
-  void clearNewEpisodes() {
-    Cursor c = context.getContentResolver().query(
-        Provider.episodeUri,
-        new String[]{Provider.K_ID},
-        Provider.K_ESTATE + " = ?",
-        new String[]{Integer.toString(Provider.ESTATE_NEW)},
-        null);
-    while (c.moveToNext()) {
-      PodcastHelper.getInstance().markEpisodeGone(
-          c.getLong(c.getColumnIndex(Provider.K_ID)), true);
-    }
-    c.close();
   }
 }

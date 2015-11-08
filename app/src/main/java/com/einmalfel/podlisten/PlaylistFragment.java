@@ -67,7 +67,7 @@ public class PlaylistFragment extends DebuggableFragment implements
 
   @Override
   public boolean onLongTap(long id) {
-    PodcastHelper.deleteEpisodeDialog(id, activity);
+    activity.deleteEpisodeDialog(id);
     return true;
   }
 

@@ -110,7 +110,7 @@ public class Provider extends ContentProvider {
   public static final String K_PATSTAMP = "podcast_add_timestamp";
   public static final String K_PERROR = "podcast_error"; // string describing feed refresh problem
   public static final int ESTATE_NEW = 0;
-  public static final int ESTATE_SELECTED = 1;
+  public static final int ESTATE_LEAVING = 1; // marked for deletion. Will be deleted in background
   public static final int ESTATE_IN_PLAYLIST = 2;
   public static final int ESTATE_GONE = 3;
   public static final int PSTATE_NEW = 0;

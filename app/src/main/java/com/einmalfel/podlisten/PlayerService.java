@@ -612,7 +612,10 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     if (completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST ||
         completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT ||
         completeAction == Preferences.CompleteAction.DELETE_DO_NOTHING) {
-      PodcastHelper.getInstance().markEpisodeGone(currentId);
+      ContentValues cv = new ContentValues(1);
+      cv.put(Provider.K_ESTATE, Provider.ESTATE_GONE);
+      getContentResolver().update(Provider.getUri(Provider.T_EPISODE, currentId), cv, null, null);
+      PodcastOperations.cleanupEpisodes(this, Provider.ESTATE_GONE);
     }
 
     if (nextId == 0 || completeAction == Preferences.CompleteAction.DELETE_DO_NOTHING) {

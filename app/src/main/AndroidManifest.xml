@@ -181,6 +181,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.einmalfel.podlisten.MainActivity"/>
         </activity>
+
+        <service
+            android:name=".PodcastOperations"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

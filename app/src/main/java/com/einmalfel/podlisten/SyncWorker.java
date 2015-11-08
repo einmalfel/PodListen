@@ -3,7 +3,6 @@ package com.einmalfel.podlisten;
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,7 +61,6 @@ class SyncWorker implements Runnable {
 
   @Override
   public void run() {
-    String title = null;
     try {
       InputStream inputStream = openConnectionWithTO(new URL(link)).getInputStream();
       Feed feed = EarlParser.parseOrThrow(inputStream, MAX_EPISODES_TO_PARSE);
@@ -83,46 +81,23 @@ class SyncWorker implements Runnable {
         }
       }
 
-      title = updateFeed(id, feed, timestamp);
+      updateFeed(id, feed, timestamp);
 
       // delete every gone episode whose timestamp is less then feeds timestamp
-      if (title != null) {
-        Cursor episodesToDelete = provider.query(
-            Provider.episodeUri,
-            new String[]{Provider.K_ID},
-            Provider.K_ETSTAMP + " < ? AND " + Provider.K_ESTATE + " == ? AND " + Provider.K_EPID + " == ?",
-            new String[]{Long.toString(timestamp.getTime()),
-                         Integer.toString(Provider.ESTATE_GONE),
-                         Long.toString(id)},
-            null);
-        if (episodesToDelete != null) {
-          while (episodesToDelete.moveToNext()) {
-            long id = episodesToDelete.getLong(episodesToDelete.getColumnIndex(Provider.K_ID));
-            boolean result = PodcastHelper.getInstance().deleteEpisode(id);
-            Log.d(TAG, "Episode " + id + " is absent in updated feed and gone. Deleted: " + result);
-          }
-          episodesToDelete.close();
-        } else {
-          Log.e(TAG, "Failed to obtain episodesToDelete cursor");
-        }
+      PodcastOperations.cleanupEpisodes(PodListenApp.getContext(), Provider.ESTATE_GONE);
 
-        syncState.signalFeedSuccess(title, newEpisodesInserted);
-      } else {
-        storeFeedError(new Exception("Failed to update podcast data in db"));
-        syncState.signalDBError(link);
-      }
     } catch (IOException exception) {
       storeFeedError(exception);
       syncState.signalIOError(link);
     } catch (RemoteException exception) {
       storeFeedError(exception);
-      syncState.signalDBError(title == null ? link : title);
+      syncState.signalDBError(link);
     } catch (DataFormatException | XmlPullParserException exception) {
       storeFeedError(exception);
       syncState.signalParseError(link);
     } catch (Exception exception) {
       storeFeedError(exception);
-      syncState.signalIOError(title == null ? link : title);
+      syncState.signalIOError(link);
     }
   }
 
@@ -244,12 +219,7 @@ class SyncWorker implements Runnable {
     return true;
   }
 
-  /**
-   * @return feed title if success, null otherwise
-   * @throws RemoteException
-   */
-  @Nullable
-  private String updateFeed(long id, @NonNull Feed feed, @NonNull Date timestamp)
+  private void updateFeed(long id, @NonNull Feed feed, @NonNull Date timestamp)
       throws RemoteException {
     ContentValues values = new ContentValues();
     String title = feed.getTitle();
@@ -274,8 +244,9 @@ class SyncWorker implements Runnable {
         Log.w(TAG, image + ": Feed image download failed: ", exception);
       }
     }
-    int updated = provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null);
-    return updated == 1 ? title : null;
+    if (provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null) != 1) {
+      throw new RemoteException("Failed to update database with new podcast data");
+    }
   }
 
   @NonNull

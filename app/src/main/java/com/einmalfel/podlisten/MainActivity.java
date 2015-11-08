@@ -1,5 +1,7 @@
 package com.einmalfel.podlisten;
 
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -19,6 +21,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -342,6 +345,57 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     });
   }
 
+  void deleteEpisodeDialog(final long episodeId) {
+    Cursor c = getContentResolver().query(Provider.getUri(Provider.T_EPISODE, episodeId),
+                                          new String[]{Provider.K_ENAME, Provider.K_ESTATE},
+                                          null, null, null);
+    if (c == null) {
+      Log.wtf(TAG, "Failed to delete " + episodeId + ". Got null from query");
+      return;
+    }
+    if (c.moveToFirst()) {
+      final String episodeName = c.getString(c.getColumnIndexOrThrow(Provider.K_ENAME));
+      final int prevState = c.getInt(c.getColumnIndexOrThrow(Provider.K_ESTATE));
+      new AlertDialog.Builder(this)
+          .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+              ContentValues cv = new ContentValues(1);
+              cv.put(Provider.K_ESTATE, Provider.ESTATE_LEAVING);
+              getContentResolver().update(
+                  Provider.getUri(Provider.T_EPISODE, episodeId), cv, null, null);
+              deleteEpisodeSnackbar(getString(R.string.episode_deleted, episodeName), prevState);
+            }
+          })
+          .setNegativeButton(R.string.cancel, null)
+          .setTitle(getString(R.string.episode_delete_question))
+          .create()
+          .show();
+    } else {
+      Log.e(TAG, "Trying to delete absent episode " + episodeId);
+    }
+    c.close();
+  }
+
+  void deleteEpisodeSnackbar(String title, final int prevState) {
+    showSnackbar(
+        title,
+        Snackbar.LENGTH_LONG,
+        getString(R.string.episode_deleted_undo),
+        new Snackbar.Callback() {
+          @Override
+          public void onDismissed(Snackbar snackbar, int event) {
+            Log.d(TAG, "Snackbar dismissed, event: " + event);
+            if (event == DISMISS_EVENT_ACTION) {
+              PodcastOperations.setEpisodesState(
+                  MainActivity.this, prevState, Provider.ESTATE_LEAVING);
+            } else {
+              PodcastOperations.cleanupEpisodes(MainActivity.this, Provider.ESTATE_LEAVING);
+            }
+          }
+        }
+    );
+  }
+
   private void showSnackbar(@NonNull String text, int duration, @Nullable String action,
                             @Nullable final Snackbar.Callback callback) {
     if (snackbar == null || !snackbar.isShownOrQueued()) {
@@ -383,7 +437,8 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     if (v == fab) {
       switch (currentFabAction) {
         case CLEAR:
-          PodcastHelper.getInstance().clearNewEpisodes();
+          PodcastOperations.setEpisodesState(this, Provider.ESTATE_LEAVING, Provider.ESTATE_NEW);
+          deleteEpisodeSnackbar("New episodes cleaned", Provider.ESTATE_NEW);
           break;
         case ADD:
           openSubscribeDialog(null);
