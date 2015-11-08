@@ -13,6 +13,7 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
   private final TextView descriptionView;
   private final TextView urlView;
   private final TextView frequencyView;
+  private final View dividerBottom;
 
   private String rss_url;
   private boolean expanded;
@@ -26,6 +27,7 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
     urlView = (TextView) layout.findViewById(R.id.podcast_url);
     frequencyView = (TextView) layout.findViewById(R.id.podcast_frequency);
     descriptionView = (TextView) layout.findViewById(R.id.podcast_description);
+    dividerBottom = layout.findViewById(R.id.description_divider);
     ImageButton addButton = (ImageButton) layout.findViewById(R.id.podcast_button);
     addButton.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -47,6 +49,8 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
             boolean expanded) {
     if (this.id != id) {
       titleView.setText(title);
+      descriptionView.setVisibility(TextUtils.isEmpty(description) ? View.GONE : View.VISIBLE);
+      dividerBottom.setVisibility(TextUtils.isEmpty(description) ? View.GONE : View.VISIBLE);
       descriptionView.setText(description);
       urlView.setText(url != null && !url.isEmpty() ? url : rss_url);
       double freq = 30d * 24 * 60 * 60 * 1000 / period;
