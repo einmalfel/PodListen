@@ -4,12 +4,16 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class Storage {
   private static final String TAG = "STR";
@@ -20,7 +24,26 @@ public class Storage {
   @NonNull
   public static List<Storage> getAvailableStorages() {
     List<Storage> result = new LinkedList<>();
-    for (File dir : ContextCompat.getExternalFilesDirs(PodListenApp.getContext(), null)) {
+    Set<File> dirs = new HashSet<>(Arrays.asList(
+        ContextCompat.getExternalFilesDirs(PodListenApp.getContext(), null)));
+    for (String env : new String[]{"EXTERNAL_STORAGE", "SECONDARY_STORAGE",
+                                   "EXTERNAL_SDCARD_STORAGE", "SECOND_VOLUME_STORAGE",
+                                   "THIRD_VOLUME_STORAGE"}) {
+      String value = System.getenv(env);
+      if (!TextUtils.isEmpty(value)) {
+        for (String path : value.split(":")) {
+          File storageDir = new File(path);
+          if (storageDir.isDirectory()) {
+            File filesDir = new File(storageDir, "Android/data/com.einmalfel.podlisten/files");
+            if (dirs.add(filesDir)) {
+              Log.i(TAG, "Found storage via environment variable: " + filesDir);
+            }
+          }
+        }
+      }
+    }
+    for (File dir : dirs) {
+      Log.i(TAG, "Available storage: " + dir);
       if (dir != null) { //getExternalFilesDir could return nulls for currently unavailable storages
         try {
           Storage storage = new Storage(dir);
