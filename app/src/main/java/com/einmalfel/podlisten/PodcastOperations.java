@@ -115,7 +115,6 @@ public class PodcastOperations extends IntentService {
       if (cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ETSTAMP)) <
           cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_PTSTAMP))) {
         Log.i(TAG, "Feed doesn't contain episode " + episodeId + " anymore. Deleting from db..");
-        cursor.close();
         if (resolver.delete(Provider.getUri(Provider.T_EPISODE, episodeId), null, null) != 1) {
           Log.w(TAG, "Failed to delete " + episodeId + " from db");
         }
