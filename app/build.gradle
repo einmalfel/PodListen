@@ -10,8 +10,8 @@ android {
         resValue "string", "app_id", applicationId
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 10201
-        versionName "1.2.1"
+        versionCode 10202
+        versionName "1.2.2"
     }
     buildTypes {
         release {
