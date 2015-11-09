@@ -7,19 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.util.Date;
 
 public class DownloadReceiver extends BroadcastReceiver {
@@ -106,130 +102,9 @@ public class DownloadReceiver extends BroadcastReceiver {
     return true;
   }
 
-
-  /**
-   * Sometimes body of redirect response is downloaded instead of media file (seen this on xperia
-   * Z2 with moscow metro wifi). Such body could be empty or could contain some html code.
-   * If downloaded file size is less then 1kB, consider it is an error. If file size is between
-   * 1kB and 5MB, check if it starts with < and ends with > (which means it's html/xml).
-   */
-  private boolean isDownloadedFileOk(@Nullable File file) {
-    if (file == null) {
-      return false;
-    }
-    try {
-      long length = file.length();
-      if (length < 1024) {
-        return false; // it's to small to be audio file
-      } else if (length < 5 * 1024 * 1024) {
-        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-
-        for (long offset = 0; offset < length; offset++) {
-          randomAccessFile.seek(offset);
-          char firstChar = (char) randomAccessFile.readByte();
-          if (!Character.isWhitespace(firstChar)) {
-            if (firstChar == '<') {
-              break; // file begins with \s*<, now check if it ends with >\s*
-            } else {
-              return true;
-            }
-          }
-        }
-
-        for (long offset = length - 1; offset >= 0; offset--) {
-          randomAccessFile.seek(offset);
-          char lastChar = (char) randomAccessFile.readByte();
-          if (!Character.isWhitespace(lastChar)) {
-            return lastChar != '>';
-          }
-        }
-
-        return false; // file consists of whitespaces. It's probably not media
-      } else {
-        return true; // file is big enough, it's probably media, not html
-      }
-    } catch (IOException exception) {
-      Log.e(TAG, "Error while checking downloaded file", exception);
-      return false;
-    }
-  }
-
-  public static void moveFile(File source, File destination) throws IOException {
-    FileChannel outChannel = null;
-    FileChannel inChannel = null;
-    try {
-      inChannel = new FileInputStream(source).getChannel();
-      outChannel = new FileOutputStream(destination).getChannel();
-      inChannel.transferTo(0, inChannel.size(), outChannel);
-      if (!source.delete()) {
-        throw new IOException("Failed to delete " + source);
-      }
-    } finally {
-      if (inChannel != null)
-        inChannel.close();
-      if (outChannel != null)
-        outChannel.close();
-    }
-  }
-
-  /**
-   * Check if file was temporarily downloaded to primary external storage, copy it to its
-   * destination and return destination file
-   */
-  @Nullable
-  private File getTargetFile(@Nullable String filename) {
-    if (filename == null || filename.isEmpty()) {
-      Log.e(TAG, "Got empty filename " + filename);
-      return null;
-    }
-    File source = new File(filename);
-    if (!source.exists()) {
-      Log.e(TAG, "Temporary download file doesn't exist " + source);
-      return null;
-    }
-    Storage storage = Preferences.getInstance().getStorage();
-    if (storage == null) {
-      Log.e(TAG, "No external storage available");
-      return null;
-    }
-
-    try {
-      if (!storage.contains(source)) {
-        // TODO dispatch copy task to service and run it in background
-        File destination = new File(storage.getPodcastDir(), source.getName());
-        moveFile(source, destination);
-        return destination;
-      } else {
-        return source;
-      }
-    } catch (IOException exception) {
-      Log.e(TAG, "Failed to convert file name to canonical form: " + source, exception);
-      return null;
-    }
-  }
-
   private void processDownloadResult(Context context, long downloadId) {
-    // get episode id and attempts count
-    Cursor c = context.getContentResolver().query(
-        Provider.episodeUri,
-        new String[]{Provider.K_ID, Provider.K_EDATT},
-        Provider.K_EDID + " == " + downloadId,
-        null,
-        null);
-    int count = c.getCount();
-    if (count != 1) {
-      Log.e(TAG, "Wrong number(" + count + ") of episodes for completed download #" + downloadId);
-      c.close();
-      return;
-    }
-    c.moveToFirst();
-    long episodeId = c.getLong(c.getColumnIndexOrThrow(Provider.K_ID));
-    long attempts = c.getLong(c.getColumnIndexOrThrow(Provider.K_EDATT));
-    c.close();
-
-    // get download status and filename
     DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-    c = dM.query(new DownloadManager.Query().setFilterById(downloadId));
+    Cursor c = dM.query(new DownloadManager.Query().setFilterById(downloadId));
     if (c == null || !c.moveToFirst()) {
       Log.i(TAG, "DownloadManager query failed");
       if (c != null) {
@@ -242,46 +117,30 @@ public class DownloadReceiver extends BroadcastReceiver {
     int reason = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON));
     c.close();
 
-    // update episode download state
-    ContentValues values = new ContentValues(4);
+    ContentValues values = new ContentValues(3);
+    Storage currentStorage = Preferences.getInstance().getStorage();
     values.put(Provider.K_EDID, 0);
-    values.put(Provider.K_EDTSTAMP, new Date().getTime());
-    File file = getTargetFile(fileName);
-    if (status == DownloadManager.STATUS_SUCCESSFUL && isDownloadedFileOk(file)) {
-      Log.i(TAG, "Successfully downloaded " + episodeId);
-      values.put(Provider.K_EDFIN, Provider.EDFIN_COMPLETE);
-      values.put(Provider.K_ESIZE, file.length());
-      values.put(Provider.K_EERROR, (String) null);
-      // try get length
-      MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-      String durationString = null;
-      // setDataSource may throw RuntimeException for damaged media file
+    if (status == DownloadManager.STATUS_SUCCESSFUL && !TextUtils.isEmpty(fileName) &&
+        currentStorage != null) {
       try {
-        mmr.setDataSource(file.getPath());
-        durationString = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-      } catch (RuntimeException exception) {
-        Log.e(TAG, "Failed to get duration of " + file, exception);
+        values.put(Provider.K_EDFIN, currentStorage.contains(new File(fileName)) ?
+            Provider.EDFIN_PROCESSING : Provider.EDFIN_MOVING);
+        values.put(Provider.K_EERROR, (String) null);
+      } catch (IOException exception) {
+        Log.wtf(TAG, "Can't convert download path to cannonical form", exception);
       }
-      if (durationString != null) {
-        try {
-          Long duration = Long.parseLong(durationString);
-          values.put(Provider.K_ELENGTH, duration);
-        } catch (NumberFormatException ignored) {
-          Log.e(TAG, file + ": Wrong duration metadata: " + durationString);
-        }
-      }
-      mmr.release();
-    } else {
-      Log.w(TAG, episodeId + " download failed, reason " + reason);
+    }
+    if (!values.containsKey(Provider.K_EDFIN)) {
+      Log.w(TAG, downloadId + " download failed, reason " + reason);
       // TODO: replace error code with smth human-readable
       values.put(Provider.K_EERROR, "Download failed. Error code: " + reason);
       values.put(Provider.K_EDFIN, Provider.EDFIN_ERROR);
-      values.put(Provider.K_EDATT, attempts + 1);
     }
-    int updated = context.getContentResolver().update(
-        Provider.getUri(Provider.T_EPISODE, episodeId), values, null, null);
-    if (updated != 1) {
-      Log.e(TAG, "Something went wrong while updating " + episodeId + ", updated " + updated);
+    if (context.getContentResolver().update(
+        Provider.episodeUri, values, Provider.K_EDID + " == " + downloadId, null) == 1) {
+      PodcastOperations.handleDownloads(context);
+    } else {
+      Log.e(TAG, "Failed to update dp row for download " + downloadId);
     }
   }
 
