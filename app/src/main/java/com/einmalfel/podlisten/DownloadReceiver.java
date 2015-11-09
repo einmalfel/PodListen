@@ -96,8 +96,9 @@ public class DownloadReceiver extends BroadcastReceiver {
       return false;
     }
 
-    ContentValues cv = new ContentValues(1);
+    ContentValues cv = new ContentValues(2);
     cv.put(Provider.K_EDID, downloadId);
+    cv.put(Provider.K_EDFIN, 0);
     context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), cv, null, null);
     return true;
   }
