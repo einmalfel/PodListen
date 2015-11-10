@@ -15,7 +15,8 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/background_contrast"/>
+            android:background="@color/background_contrast"
+            android:elevation="4dp"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
@@ -34,7 +35,7 @@
         android:layout_marginRight="55sp"
         android:visibility="gone"
         app:backgroundTint="@color/accent_secondary"
-        app:elevation="10dp"
+        app:elevation="6dp"
         app:fabSize="normal"
         app:layout_behavior="com.einmalfel.podlisten.ScrollTrackingBehaviour"/>
 
