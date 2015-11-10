@@ -1,11 +1,14 @@
 package com.einmalfel.podlisten;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.einmalfel.podlisten.support.UnitConverter;
 
 class SearchElementHolder extends RecyclerView.ViewHolder {
 
@@ -14,6 +17,7 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
   private final TextView urlView;
   private final TextView frequencyView;
   private final View dividerBottom;
+  private final CardView cardView;
 
   private String rss_url;
   private boolean expanded;
@@ -28,6 +32,7 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
     frequencyView = (TextView) layout.findViewById(R.id.podcast_frequency);
     descriptionView = (TextView) layout.findViewById(R.id.podcast_description);
     dividerBottom = layout.findViewById(R.id.description_divider);
+    cardView = (CardView) layout.findViewById(R.id.card);
     ImageButton addButton = (ImageButton) layout.findViewById(R.id.podcast_button);
     addButton.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -60,6 +65,11 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
     }
 
     if (this.expanded != expanded) {
+      if (expanded) {
+        cardView.setCardElevation(UnitConverter.getInstance().dpToPx(8));
+      } else {
+        cardView.setCardElevation(UnitConverter.getInstance().dpToPx(2));
+      }
       descriptionView.setSingleLine(!expanded);
       // without next line TextView still ellipsize first line when single line mode is turned off
       descriptionView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);

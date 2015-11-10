@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -15,6 +16,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.einmalfel.podlisten.support.UnitConverter;
 
 public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private static final String TAG = "EVH";
@@ -40,6 +43,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private final TextView timeSizeText;
   private final ProgressBar progressBar;
   private final FrameLayout playAddFrame;
+  private final CardView cardView;
   private long id = 0;
   private boolean expanded = false;
   private long downloaded = -1;
@@ -64,6 +68,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     timeSizeText = (TextView) layout.findViewById(R.id.time_size);
     episodeImage = (ImageView) layout.findViewById(R.id.episode_image);
     progressBar = (ProgressBar) layout.findViewById(R.id.play_load_progress);
+    cardView = (CardView) layout.findViewById(R.id.card);
     View relativeLayout = layout.findViewById(R.id.card_layout);
     relativeLayout.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -124,8 +129,10 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       } else {
         if (expanded) {
           descriptionText.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
+          cardView.setCardElevation(UnitConverter.getInstance().dpToPx(8));
         } else {
           descriptionText.setText(shortDescr, TextView.BufferType.NORMAL);
+          cardView.setCardElevation(UnitConverter.getInstance().dpToPx(2));
         }
         descriptionText.setSingleLine(!expanded);
         // without next line TextView still ellipsize first line when single line mode is turned off

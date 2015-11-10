@@ -3,6 +3,7 @@ package com.einmalfel.podlisten;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -12,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.einmalfel.podlisten.support.PatchedTextView;
+import com.einmalfel.podlisten.support.UnitConverter;
 
 public class PodcastViewHolder extends RecyclerView.ViewHolder {
   private final PatchedTextView descriptionView;
@@ -21,6 +23,7 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
   private final ImageView imageView;
   private final Context context;
   private final View dividerBottom;
+  private final CardView cardView;
   private long id = 0;
   private boolean expanded = false;
 
@@ -34,6 +37,7 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
     urlView = (TextView) layout.findViewById(R.id.podcast_url);
     statusView = (TextView) layout.findViewById(R.id.podcast_status);
     imageView = (ImageView) layout.findViewById(R.id.podcast_image);
+    cardView = (CardView) layout.findViewById(R.id.card);
     RelativeLayout relativeLayout = (RelativeLayout) layout.findViewById(R.id.card_layout);
     relativeLayout.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -72,9 +76,11 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
       dividerBottom.setVisibility(View.GONE);
     } else {
       if (expanded) {
+        cardView.setCardElevation(UnitConverter.getInstance().dpToPx(8));
         descriptionView.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
       } else {
         descriptionView.setText(shortDescr, TextView.BufferType.NORMAL);
+        cardView.setCardElevation(UnitConverter.getInstance().dpToPx(2));
       }
       descriptionView.setVisibility(View.VISIBLE);
       dividerBottom.setVisibility(View.VISIBLE);
