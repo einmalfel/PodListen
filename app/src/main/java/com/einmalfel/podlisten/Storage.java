@@ -42,6 +42,24 @@ public class Storage {
         }
       }
     }
+
+    // some paths found in env variables may cause Android API to produce exceptions in following
+    // functions on android versions 5.0+ (seen this bug in emulator). Filter such storages out
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      Set<File> filtered = new HashSet<>(dirs.size());
+      for (File dir : dirs) {
+        try {
+          Environment.getExternalStorageState(dir);
+          Environment.isExternalStorageRemovable(dir);
+          filtered.add(dir);
+        } catch (IllegalArgumentException ex) {
+          Log.w(TAG, "Storage " + dir + " makes Android API throw exception, ignoring it", ex);
+        }
+      }
+      dirs = filtered;
+    }
+
+    // filter out read-only storages
     for (File dir : dirs) {
       Log.i(TAG, "Available storage: " + dir);
       if (dir != null) { //getExternalFilesDir could return nulls for currently unavailable storages
