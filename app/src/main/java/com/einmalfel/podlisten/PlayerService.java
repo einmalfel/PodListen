@@ -2,6 +2,7 @@ package com.einmalfel.podlisten;
 
 import android.app.Notification;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -514,23 +515,33 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     currentId = id;
     progress = 0;
     state = State.STOPPED_ERROR;
+    ContentResolver resolver = getContentResolver();
 
     initPlayer();
 
     synchronized (Preferences.getInstance()) {
       Storage storage = Preferences.getInstance().getStorage();
       File source = storage == null ? null : new File(storage.getPodcastDir(), Long.toString(id));
-      if (source != null && source.exists() && storage.isAvailableRead()) {
-        Log.d(TAG, "Launching playback of " + source.getAbsolutePath());
-        try {
-          player.setDataSource(this, Uri.fromFile(source));
-          state = State.PLAYING;
-          WidgetHelper.getInstance(); // ensure widget helper is up to handle player notification
-        } catch (IOException e) {
-          Log.e(TAG, "set source produced an exception, playback stopped: ", e);
+      if (source != null && source.exists()) {
+        if (storage.isAvailableRead()) {
+          Log.d(TAG, "Launching playback of " + source.getAbsolutePath());
+          try {
+            player.setDataSource(this, Uri.fromFile(source));
+            state = State.PLAYING;
+            WidgetHelper.getInstance(); // ensure widget helper is up to handle player notification
+          } catch (IOException e) {
+            Log.e(TAG, "set source produced an exception, playback stopped: ", e);
+          }
+        } else {
+          Log.e(TAG, "Failed to play ep " + id + ", storage is not available for read: " + storage);
         }
       } else {
-        Log.e(TAG, "Failed to start playback, media is absent for episode " + id);
+        Log.e(TAG, "Failed to play ep " + id + ": media absent. Resetting downloaded state");
+        ContentValues cv = new ContentValues(1);
+        cv.put(Provider.K_EDFIN, 0);
+        if (resolver.update(Provider.getUri(Provider.T_EPISODE, id), cv, null, null) != 1) {
+          Log.wtf(TAG, "Failed to reset download state of " + id);
+        }
       }
     }
 
@@ -538,10 +549,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       preparing = true;
       player.prepareAsync();
       // while playback is being prepared, check if episode was previously played to some position
-      Cursor c = getContentResolver().query(
-          Provider.getUri(Provider.T_EPISODE, id),
-          new String[]{Provider.K_EPLAYED, Provider.K_ELENGTH},
-          null, null, null);
+      Cursor c = resolver.query(Provider.getUri(Provider.T_EPISODE, id),
+                                new String[]{Provider.K_EPLAYED, Provider.K_ELENGTH},
+                                null, null, null);
       if (c == null) {
         throw new AssertionError("Unexpectedly got null from query");
       }
