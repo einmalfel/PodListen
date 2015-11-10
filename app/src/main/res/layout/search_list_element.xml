@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginRight="75dp"
+            android:minLines="2"
             android:textSize="16sp"/>
 
         <TextView
@@ -48,10 +49,10 @@
             android:layout_width="70dp"
             android:layout_height="match_parent"
             android:layout_alignBottom="@id/podcast_url"
+            android:layout_alignTop="@+id/podcast_title"
             android:layout_alignParentRight="true"
             android:background="@drawable/clickable_list_element"
             android:contentDescription="@string/search_subscribe_button"
-            android:minHeight="70dp"
             android:scaleType="center"
             android:src="@mipmap/ic_add_white_48dp"/>
 
