@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -86,6 +87,7 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
       dividerBottom.setVisibility(View.VISIBLE);
     }
     descriptionView.setSingleLine(!expanded);
+    descriptionView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
 
     Bitmap image = ImageManager.getInstance().getImage(id);
     if (image == null) {
