@@ -1,5 +1,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
-        android:endColor="@color/background_primary"
-        android:startColor="@color/accent_primary_dim"/>
+        android:endColor="@color/background_contrast"
+        android:startColor="@color/accent_primary_dim_dim"/>
 </shape>

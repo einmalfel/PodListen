@@ -65,8 +65,6 @@ public class SearchActivity extends AppCompatActivity
     ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
-      actionBar.setBackgroundDrawable(
-          new ColorDrawable(ContextCompat.getColor(this, R.color.background_primary)));
       searchView = new SearchView(this);
       searchView.setIconified(false);
       searchView.setOnQueryTextListener(this);

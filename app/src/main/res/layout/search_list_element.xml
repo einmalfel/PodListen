@@ -3,7 +3,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardBackgroundColor="@color/background_contrast"
+    card_view:cardBackgroundColor="@color/background_soft"
     card_view:cardCornerRadius="5dp"
     card_view:cardElevation="5dp"
     card_view:cardPreventCornerOverlap="true"
@@ -61,7 +61,7 @@
             android:layout_below="@id/podcast_button"
             android:layout_marginBottom="2dp"
             android:layout_marginTop="2dp"
-            android:background="@color/background_soft"/>
+            android:background="@color/background_contrast"/>
 
         <View
             android:layout_width="1dp"
@@ -72,7 +72,7 @@
             android:layout_alignBottom="@id/podcast_url"
             android:layout_alignTop="@id/podcast_title"
             android:layout_alignParentRight="true"
-            android:background="@color/background_soft"/>
+            android:background="@color/background_contrast"/>
 
         <com.einmalfel.podlisten.support.PatchedTextView
             android:id="@+id/podcast_description"
