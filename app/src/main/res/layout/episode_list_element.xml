@@ -70,24 +70,25 @@
 
 
         <TextView
-            android:id="@+id/episode_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@id/play_add_frame"
-            android:layout_toRightOf="@id/episode_image"
-            android:minHeight="55sp"
-            android:textSize="16sp"/>
-
-        <TextView
             android:id="@+id/feed_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/episode_title"
+            android:layout_alignBottom="@id/episode_image"
             android:layout_toLeftOf="@id/play_add_frame"
             android:layout_toRightOf="@id/episode_image"
             android:singleLine="true"
-            android:textSize="12sp"/>
+            android:textSize="11sp"/>
+
+        <TextView
+            android:id="@+id/episode_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/feed_title"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/play_add_frame"
+            android:layout_toRightOf="@id/episode_image"
+            android:maxLines="3"
+            android:textSize="15sp"/>
 
         <View
             android:id="@+id/play_add_frame_divider"
