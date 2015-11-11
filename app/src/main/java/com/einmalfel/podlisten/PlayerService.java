@@ -55,15 +55,20 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   private class NoisyAudioReceiver extends BroadcastReceiver {
     private final IntentFilter filter = new IntentFilter(
         AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+    private boolean registered = false;
 
     private void register() {
-      if (Preferences.getInstance().getPauseOnDisconnect()) {
+      if (Preferences.getInstance().getPauseOnDisconnect() && !registered) {
         registerReceiver(this, filter);
+        registered = true;
       }
     }
 
     private void unregister() {
-      unregisterReceiver(this);
+      if (registered) {
+        unregisterReceiver(this);
+        registered = false;
+      }
     }
 
     @Override
