@@ -4,5 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/background_primary"
+    android:paddingBottom="4dp"
+    android:paddingTop="4dp"
+    android:clipToPadding="false"
     android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
     android:scrollbars="vertical"/>
