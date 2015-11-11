@@ -2,7 +2,6 @@ package com.einmalfel.podlisten;
 
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -209,11 +208,6 @@ class SyncWorker implements Runnable {
           Log.w(TAG, image + ": Episode image download failed: ", exception);
         }
       }
-      Intent bi = new Intent(DownloadReceiver.NEW_EPISODE_ACTION);
-      bi.putExtra(DownloadReceiver.URL_EXTRA_NAME, audioLink);
-      bi.putExtra(DownloadReceiver.TITLE_EXTRA_NAME, title);
-      bi.putExtra(DownloadReceiver.ID_EXTRA_NAME, id);
-      PodListenApp.getContext().sendBroadcast(bi);
     }
 
     return true;

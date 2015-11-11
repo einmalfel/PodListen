@@ -277,16 +277,6 @@ public class DownloadReceiver extends BroadcastReceiver {
         case UPDATE_QUEUE_ACTION:
           updateDownloadQueue(context, true);
           break;
-        case NEW_EPISODE_ACTION:
-          if (getRunningCount(context) < preferences.getMaxDownloads().toInt() &&
-              (charging || !preferences.getAutoDownloadACOnly()) &&
-              preferences.getAutoDownloadMode() == Preferences.AutoDownloadMode.ALL_NEW) {
-            download(context,
-                     intent.getStringExtra(URL_EXTRA_NAME),
-                     intent.getStringExtra(TITLE_EXTRA_NAME),
-                     intent.getLongExtra(ID_EXTRA_NAME, -1));
-          }
-          break;
         case DownloadManager.ACTION_NOTIFICATION_CLICKED:
           Intent i = new Intent(context, MainActivity.class)
               .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
