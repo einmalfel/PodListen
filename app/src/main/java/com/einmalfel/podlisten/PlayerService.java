@@ -58,7 +58,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     private boolean registered = false;
 
     private void register() {
-      if (Preferences.getInstance().getPauseOnDisconnect() && !registered) {
+      if (!registered) {
         registerReceiver(this, filter);
         registered = true;
       }
@@ -74,7 +74,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     @Override
     public void onReceive(Context context, Intent intent) {
       if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction()) &&
-          !getState().isStopped()) {
+          Preferences.getInstance().getPauseOnDisconnect() && !getState().isStopped()) {
         Log.i(TAG, "Lost audio device connection, pausing playback.");
         pause();
       }
