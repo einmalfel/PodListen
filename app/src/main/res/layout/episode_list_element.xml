@@ -119,7 +119,7 @@
             android:layout_below="@id/description_divider"
             android:autoLink="web"
             android:linksClickable="true"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:singleLine="true"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

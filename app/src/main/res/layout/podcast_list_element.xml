@@ -34,7 +34,7 @@
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@id/podcast_image"
             android:minHeight="34sp"
-            android:textSize="16sp"/>
+            android:textSize="15sp"/>
 
         <TextView
             android:id="@+id/podcast_url"
@@ -43,7 +43,7 @@
             android:layout_below="@id/podcast_title"
             android:layout_toRightOf="@id/podcast_image"
             android:autoLink="web"
-            android:textSize="14sp"/>
+            android:textSize="11sp"/>
 
         <TextView
             android:id="@+id/podcast_status"
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_url"
             android:layout_toRightOf="@id/podcast_image"
-            android:textSize="14sp"/>
+            android:textSize="11sp"/>
 
         <View
             android:id="@+id/description_divider"
@@ -70,7 +70,7 @@
             android:autoLink="web"
             android:linksClickable="true"
             android:singleLine="true"
-            android:textSize="14sp"/>
+            android:textSize="13sp"/>
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>
