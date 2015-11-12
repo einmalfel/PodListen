@@ -28,6 +28,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginRight="75dp"
             android:minLines="2"
+            android:singleLine="true"
             android:textSize="16sp"/>
 
         <TextView
@@ -46,11 +47,12 @@
             android:layout_below="@id/podcast_frequency"
             android:layout_marginRight="75dp"
             android:autoLink="web"
+            android:singleLine="true"
             android:textSize="12sp"/>
 
         <ImageButton
             android:id="@+id/podcast_button"
-            android:layout_width="70dp"
+            android:layout_width="55dp"
             android:layout_height="match_parent"
             android:layout_alignBottom="@id/podcast_url"
             android:layout_alignTop="@+id/podcast_title"
@@ -74,10 +76,10 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="-3dp"
             android:layout_marginLeft="2dp"
-            android:layout_marginRight="72dp"
             android:layout_alignBottom="@id/podcast_url"
             android:layout_alignTop="@id/podcast_title"
             android:layout_alignParentRight="true"
+            android:layout_marginRight="57dp"
             android:background="@color/background_contrast"/>
 
         <com.einmalfel.podlisten.support.PatchedTextView

@@ -73,6 +73,12 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
       descriptionView.setSingleLine(!expanded);
       // without next line TextView still ellipsize first line when single line mode is turned off
       descriptionView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
+      titleView.setSingleLine(!expanded);
+      titleView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
+      urlView.setSingleLine(!expanded);
+      urlView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
+      frequencyView.setSingleLine(!expanded);
+      frequencyView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
       this.expanded = expanded;
     }
   }
