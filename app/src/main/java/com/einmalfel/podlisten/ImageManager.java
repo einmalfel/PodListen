@@ -84,14 +84,12 @@ public class ImageManager {
         bitmap, bitmap.getWidth() * heightPx / bitmap.getHeight(), heightPx, true);
     // synchronize to be sure that isDownloaded won't return true while image file is being written
     synchronized (this) {
-      synchronized (Preferences.getInstance()) {
-        File file = getImageFile(id, true);
-        if (file != null) {
-          FileOutputStream stream = new FileOutputStream(file);
-          scaled.compress(Bitmap.CompressFormat.PNG, 100, stream);
-          stream.close();
-          Log.d(TAG, url.toString() + " written to " + file.getAbsolutePath());
-        }
+      File file = getImageFile(id, true);
+      if (file != null) {
+        FileOutputStream stream = new FileOutputStream(file);
+        scaled.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        stream.close();
+        Log.d(TAG, url.toString() + " written to " + file.getAbsolutePath());
       }
     }
   }
