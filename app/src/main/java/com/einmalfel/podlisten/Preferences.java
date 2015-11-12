@@ -11,6 +11,8 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 /** This class is intended to encapsulate preferences names and default values */
 public class Preferences implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -390,14 +392,30 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         String storagePreferenceString = sPrefs.getString(Key.STORAGE_PATH.toString(), "");
         if (storagePreferenceString.isEmpty()) {
           // by default, if there are removable storages use first removable, otherwise use last one
-          for (Storage storageOption : Storage.getAvailableStorages()) {
-            storage = storageOption;
-            if (storage.isRemovable()) {
+          List<Storage> storages = Storage.getAvailableStorages();
+          List<Storage> prioritized = new LinkedList<>();
+          List<Storage> nonRemovable = new LinkedList<>();
+          for (Storage storageOption : storages) {
+            if (storageOption.isRemovable()) {
+              prioritized.add(storageOption);
+            } else {
+              nonRemovable.add(0, storageOption);
+            }
+          }
+          prioritized.addAll(nonRemovable);
+          for (Storage storageOption : prioritized) {
+            try {
+              storageOption.createSubdirs();
+              storage = storageOption;
               break;
+            } catch (IOException exception) {
+              Log.w(TAG, "Failed to init directories in " + storageOption, exception);
             }
           }
           if (storage != null) {
             sPrefs.edit().putString(Key.STORAGE_PATH.toString(), storage.toString()).commit();
+          } else {
+            Log.e(TAG, "Found no writable storage available");
           }
         } else {
           try {
