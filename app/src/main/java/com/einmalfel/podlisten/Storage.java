@@ -10,7 +10,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +24,7 @@ public class Storage {
   @NonNull
   public static List<Storage> getWritableStorages() {
     List<Storage> result = new LinkedList<>();
-    Set<File> dirs = new HashSet<>(Arrays.asList(
+    Set<File> dirs = new LinkedHashSet<>(Arrays.asList(
         ContextCompat.getExternalFilesDirs(PodListenApp.getContext(), null)));
     for (String env : new String[]{"EXTERNAL_STORAGE", "SECONDARY_STORAGE",
                                    "EXTERNAL_SDCARD_STORAGE", "SECOND_VOLUME_STORAGE",
@@ -46,7 +46,7 @@ public class Storage {
     // some paths found in env variables may cause Android API to produce exceptions in following
     // functions on android versions 5.0+ (seen this bug in emulator). Filter such storages out
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      Set<File> filtered = new HashSet<>(dirs.size());
+      Set<File> filtered = new LinkedHashSet<>(dirs.size());
       for (File dir : dirs) {
         try {
           Environment.getExternalStorageState(dir);
