@@ -64,7 +64,7 @@ class SyncWorker implements Runnable {
       InputStream inputStream = openConnectionWithTO(new URL(link)).getInputStream();
       Feed feed = EarlParser.parseOrThrow(inputStream, MAX_EPISODES_TO_PARSE);
 
-      updateFeed(id, feed);
+      String title = updateFeed(id, feed);
 
       // Episodes need to be timestamped before subscriptions, otherwise cleanup algorithm may
       // delete fresh episodes in case of an exception between feed and episodes update
@@ -85,6 +85,7 @@ class SyncWorker implements Runnable {
       ContentValues values = new ContentValues(1);
       values.put(Provider.K_PTSTAMP, timestamp.getTime());
       if (provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null) == 1) {
+        syncState.signalFeedSuccess(title, newEpisodesInserted);
         // delete every gone episode whose timestamp is less then feeds timestamp
         BackgroundOperations.cleanupEpisodes(PodListenApp.getContext(), Provider.ESTATE_GONE);
       } else {
@@ -219,7 +220,8 @@ class SyncWorker implements Runnable {
     return true;
   }
 
-  private void updateFeed(long id, @NonNull Feed feed)
+  @NonNull
+  private String updateFeed(long id, @NonNull Feed feed)
       throws RemoteException {
     ContentValues values = new ContentValues();
     String title = feed.getTitle();
@@ -247,6 +249,7 @@ class SyncWorker implements Runnable {
     if (provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null) != 1) {
       throw new RemoteException("Failed to update database with new podcast data");
     }
+    return title;
   }
 
   @NonNull
