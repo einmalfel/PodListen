@@ -23,7 +23,7 @@ public class CatalogueFragment extends Fragment {
 
   private class CatalogueHelper extends SQLiteAssetHelper {
     public CatalogueHelper(Context context) {
-      super(context, "PodcastCatalogue.sqlite", null, 3);
+      super(context, "PodcastCatalogue.sqlite", null, 4);
       setForcedUpgrade();
     }
   }
