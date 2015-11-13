@@ -64,6 +64,8 @@ class SyncWorker implements Runnable {
       InputStream inputStream = openConnectionWithTO(new URL(link)).getInputStream();
       Feed feed = EarlParser.parseOrThrow(inputStream, MAX_EPISODES_TO_PARSE);
 
+      updateFeed(id, feed);
+
       // Episodes need to be timestamped before subscriptions, otherwise cleanup algorithm may
       // delete fresh episodes in case of an exception between feed and episodes update
       Date timestamp = new Date();
@@ -80,10 +82,14 @@ class SyncWorker implements Runnable {
         }
       }
 
-      updateFeed(id, feed, timestamp);
-
-      // delete every gone episode whose timestamp is less then feeds timestamp
-      PodcastOperations.cleanupEpisodes(PodListenApp.getContext(), Provider.ESTATE_GONE);
+      ContentValues values = new ContentValues(1);
+      values.put(Provider.K_PTSTAMP, timestamp.getTime());
+      if (provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null) == 1) {
+        // delete every gone episode whose timestamp is less then feeds timestamp
+        PodcastOperations.cleanupEpisodes(PodListenApp.getContext(), Provider.ESTATE_GONE);
+      } else {
+        throw new RemoteException("Failed to update feed timestamp");
+      }
 
     } catch (IOException exception) {
       storeFeedError(exception);
@@ -213,7 +219,7 @@ class SyncWorker implements Runnable {
     return true;
   }
 
-  private void updateFeed(long id, @NonNull Feed feed, @NonNull Date timestamp)
+  private void updateFeed(long id, @NonNull Feed feed)
       throws RemoteException {
     ContentValues values = new ContentValues();
     String title = feed.getTitle();
@@ -229,7 +235,7 @@ class SyncWorker implements Runnable {
       values.put(Provider.K_PSDESCR, getShortDescription(simplifiedDescription));
     }
     values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
-    values.put(Provider.K_PTSTAMP, timestamp.getTime());
+    values.put(Provider.K_PTSTAMP, 0);
     String image = feed.getImageLink();
     if (!ImageManager.getInstance().isDownloaded(id) && image != null) {
       try {
