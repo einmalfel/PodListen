@@ -32,7 +32,7 @@ class SyncWorker implements Runnable {
    * Feed parsing stops after reading this number of feed items
    */
   private static final int MAX_EPISODES_TO_PARSE = 1000;
-  private static final Pattern AUDIO_PATTERN = Pattern.compile("^audio/\\w*");
+  private static final Pattern AUDIO_PATTERN = Pattern.compile("\\Aaudio/.*\\Z");
   private static final int TIMEOUT_MS = 15000;
   private static final Date PODCAST_EPOCH;
 
