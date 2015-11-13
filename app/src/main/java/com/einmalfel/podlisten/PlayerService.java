@@ -637,7 +637,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       ContentValues cv = new ContentValues(1);
       cv.put(Provider.K_ESTATE, Provider.ESTATE_GONE);
       getContentResolver().update(Provider.getUri(Provider.T_EPISODE, currentId), cv, null, null);
-      PodcastOperations.cleanupEpisodes(this, Provider.ESTATE_GONE);
+      BackgroundOperations.cleanupEpisodes(this, Provider.ESTATE_GONE);
     }
 
     if (nextId == 0 || completeAction == Preferences.CompleteAction.DELETE_DO_NOTHING) {

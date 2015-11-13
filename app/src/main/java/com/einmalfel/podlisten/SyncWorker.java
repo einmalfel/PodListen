@@ -86,7 +86,7 @@ class SyncWorker implements Runnable {
       values.put(Provider.K_PTSTAMP, timestamp.getTime());
       if (provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null) == 1) {
         // delete every gone episode whose timestamp is less then feeds timestamp
-        PodcastOperations.cleanupEpisodes(PodListenApp.getContext(), Provider.ESTATE_GONE);
+        BackgroundOperations.cleanupEpisodes(PodListenApp.getContext(), Provider.ESTATE_GONE);
       } else {
         throw new RemoteException("Failed to update feed timestamp");
       }

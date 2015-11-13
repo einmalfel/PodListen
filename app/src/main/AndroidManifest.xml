@@ -183,7 +183,11 @@
         </activity>
 
         <service
-            android:name=".PodcastOperations"
+            android:name=".BackgroundOperations"
+            android:exported="false">
+        </service>
+        <service
+            android:name=".ForegroundOperations"
             android:exported="false">
         </service>
     </application>

@@ -386,10 +386,10 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           public void onDismissed(Snackbar snackbar, int event) {
             Log.d(TAG, "Snackbar dismissed, event: " + event);
             if (event == DISMISS_EVENT_ACTION) {
-              PodcastOperations.setEpisodesState(
+              ForegroundOperations.setEpisodesState(
                   MainActivity.this, prevState, Provider.ESTATE_LEAVING);
             } else {
-              PodcastOperations.cleanupEpisodes(MainActivity.this, Provider.ESTATE_LEAVING);
+              BackgroundOperations.cleanupEpisodes(MainActivity.this, Provider.ESTATE_LEAVING);
             }
           }
         }
@@ -437,7 +437,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     if (v == fab) {
       switch (currentFabAction) {
         case CLEAR:
-          PodcastOperations.setEpisodesState(this, Provider.ESTATE_LEAVING, Provider.ESTATE_NEW);
+          ForegroundOperations.setEpisodesState(this, Provider.ESTATE_LEAVING, Provider.ESTATE_NEW);
           deleteEpisodeSnackbar("New episodes cleaned", Provider.ESTATE_NEW);
           break;
         case ADD:

@@ -139,7 +139,7 @@ public class DownloadReceiver extends BroadcastReceiver {
     }
     if (context.getContentResolver().update(
         Provider.episodeUri, values, Provider.K_EDID + " == " + downloadId, null) == 1) {
-      PodcastOperations.handleDownloads(context);
+      BackgroundOperations.handleDownloads(context);
     } else {
       Log.e(TAG, "Failed to update dp row for download " + downloadId);
     }

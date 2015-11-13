@@ -20,40 +20,30 @@ import java.nio.channels.FileChannel;
 import java.util.Date;
 
 
-public class PodcastOperations extends IntentService {
-  private static final String TAG = "POS";
+public class BackgroundOperations extends IntentService {
+  private static final String TAG = "BGS";
 
   private static final String ACTION_CLEANUP_EPISODES = "com.einmalfel.podlisten.CLEANUP_EPISODES";
-  private static final String ACTION_SET_STATE = "com.einmalfel.podlisten.SET_STATE";
   private static final String ACTION_HANDLE_DOWNLOADS = "com.einmalfel.podlisten.HANDLE_DOWNLOADS";
 
   private static final String EXTRA_EPISODE_STATE = "com.einmalfel.podlisten.EPISODE_STATE";
-  private static final String EXTRA_EPISODE_FILTER = "com.einmalfel.podlisten.EPISODE_FILTER";
 
   public static void handleDownloads(Context context) {
-    Intent intent = new Intent(context, PodcastOperations.class);
+    Intent intent = new Intent(context, BackgroundOperations.class);
     intent.setAction(ACTION_HANDLE_DOWNLOADS);
-    context.startService(intent);
-  }
-
-  public static void setEpisodesState(@NonNull Context context, int state, int stateFilter) {
-    Intent intent = new Intent(context, PodcastOperations.class);
-    intent.setAction(ACTION_SET_STATE);
-    intent.putExtra(EXTRA_EPISODE_FILTER, stateFilter);
-    intent.putExtra(EXTRA_EPISODE_STATE, state);
     context.startService(intent);
   }
 
   /** deletes episodes whose state == stateFilter */
   public static void cleanupEpisodes(@NonNull Context context, int stateFilter) {
-    Intent intent = new Intent(context, PodcastOperations.class);
+    Intent intent = new Intent(context, BackgroundOperations.class);
     intent.setAction(ACTION_CLEANUP_EPISODES);
     intent.putExtra(EXTRA_EPISODE_STATE, stateFilter);
     context.startService(intent);
   }
 
-  public PodcastOperations() {
-    super("PodcastOperations");
+  public BackgroundOperations() {
+    super("BackgroundOperations");
     setIntentRedelivery(true);
   }
 
@@ -63,10 +53,6 @@ public class PodcastOperations extends IntentService {
       final String action = intent.getAction();
       Log.i(TAG, "Processing " + action);
       switch (action) {
-        case ACTION_SET_STATE:
-          setEpisodesState(intent.getIntExtra(EXTRA_EPISODE_STATE, Provider.ESTATE_GONE),
-                           intent.getIntExtra(EXTRA_EPISODE_FILTER, Provider.ESTATE_GONE));
-          break;
         case ACTION_CLEANUP_EPISODES:
           cleanupEpisodes(intent.getIntExtra(EXTRA_EPISODE_STATE, Provider.ESTATE_GONE));
           break;
@@ -76,6 +62,7 @@ public class PodcastOperations extends IntentService {
         default:
           Log.wtf(TAG, "Unexpected intent action: " + action);
       }
+      Log.i(TAG, "Finished processing of " + action);
     }
   }
 
@@ -131,16 +118,6 @@ public class PodcastOperations extends IntentService {
     cursor.close();
   }
 
-  private void setEpisodesState(int state, int stateFilter) {
-    ContentValues cv = new ContentValues(1);
-    cv.put(Provider.K_ESTATE, state);
-    int result = getContentResolver().update(Provider.episodeUri,
-                                             cv,
-                                             Provider.K_ESTATE + " == " + stateFilter,
-                                             null);
-    Log.i(TAG, "Switched state from " + stateFilter + " to " + state + " for " + result + " eps");
-  }
-
   private void handleDownloads() {
     Storage currentStorage = Preferences.getInstance().getStorage();
     if (currentStorage == null) {
@@ -187,7 +164,8 @@ public class PodcastOperations extends IntentService {
       if (duration != 0) {
         cv.put(Provider.K_ELENGTH, duration);
       }
-      if (getContentResolver().update(Provider.getUri(Provider.T_EPISODE, epId), cv, null, null) != 1) {
+      if (getContentResolver()
+          .update(Provider.getUri(Provider.T_EPISODE, epId), cv, null, null) != 1) {
         Log.e(TAG, "Failed to update db row for episode " + epId);
       } else {
         Log.i(TAG, "Successfully downloaded " + epId);
