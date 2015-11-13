@@ -11,7 +11,6 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 /** This class is intended to encapsulate preferences names and default values */
@@ -384,29 +383,18 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         if (storagePreferenceString.isEmpty()) {
           // by default, if there are removable storages use first removable, otherwise use last one
           List<Storage> storages = Storage.getWritableStorages();
-          List<Storage> prioritized = new LinkedList<>();
-          List<Storage> nonRemovable = new LinkedList<>();
+          storage = Storage.getPrimaryStorage();
           for (Storage storageOption : storages) {
+            storage = storageOption;
             if (storageOption.isRemovable()) {
-              prioritized.add(storageOption);
-            } else {
-              nonRemovable.add(0, storageOption);
-            }
-          }
-          prioritized.addAll(nonRemovable);
-          for (Storage storageOption : prioritized) {
-            try {
-              storageOption.createSubdirs();
-              storage = storageOption;
               break;
-            } catch (IOException exception) {
-              Log.w(TAG, "Failed to init directories in " + storageOption, exception);
             }
           }
-          if (storage != null) {
+          try {
+            storage.createSubdirs();
             sPrefs.edit().putString(Key.STORAGE_PATH.toString(), storage.toString()).commit();
-          } else {
-            Log.e(TAG, "Found no writable storage available");
+          } catch (IOException exception) {
+            Log.wtf(TAG, "Failed to init storage known to be writable " + storage, exception);
           }
         } else {
           try {
