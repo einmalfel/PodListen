@@ -101,6 +101,8 @@ public class ImageManager {
     } catch (IOException exception) {
       Log.e(TAG, "Failed to read image " + id + "from flash", exception);
     } finally {
+      bitmap.recycle();
+      scaled.recycle();
       if (lock != null) {
         try {
           lock.release();
