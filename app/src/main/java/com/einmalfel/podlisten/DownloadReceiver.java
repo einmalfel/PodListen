@@ -20,7 +20,6 @@ import java.util.Date;
 
 public class DownloadReceiver extends BroadcastReceiver {
   private static final String TAG = "DLR";
-  static final String NEW_EPISODE_ACTION = "com.einmalfel.podlisten.NEW_EPISODE";
   static final String DOWNLOAD_HEARTBEAT_ACTION = "com.einmalfel.podlisten.DOWNLOAD_HEARTBEAT";
   static final String UPDATE_QUEUE_ACTION = "com.einmalfel.podlisten.UPDATE_QUEUE";
   static final String DOWNLOAD_EPISODE_ACTION = "com.einmalfel.podlisten.DOWNLOAD_EPISODE";
