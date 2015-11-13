@@ -88,13 +88,13 @@ public class ImageManager {
     HttpURLConnection urlConnection = null;
     Bitmap bitmap = null;
     try {
-      urlConnection = (HttpURLConnection) url.openConnection();
+      urlConnection = (HttpURLConnection) PodcastHelper.openConnectionWithTO(url);
       urlConnection.connect();
       BitmapFactory.Options options = new BitmapFactory.Options();
       options.inJustDecodeBounds = true;
       bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
       urlConnection.disconnect();
-      urlConnection = (HttpURLConnection) url.openConnection();
+      urlConnection = (HttpURLConnection) PodcastHelper.openConnectionWithTO(url);
       options.inJustDecodeBounds = false;
       options.inSampleSize = calculateInSampleSize(options, heightPx);
       Log.d(TAG, "Downloading " + url + ". Sampling factor: " + options.inSampleSize);
