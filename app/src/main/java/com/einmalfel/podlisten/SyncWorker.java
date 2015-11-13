@@ -126,6 +126,17 @@ class SyncWorker implements Runnable {
     return date == null || date.after(current) || date.before(PODCAST_EPOCH) ? current : date;
   }
 
+  private boolean urlPointsToAudio(@NonNull String link) {
+    String lowerCase = link.toLowerCase();
+    // following formats are used in podcasting and supported officially on Android 3.1+
+    for (String extension : new String[]{".mp3", ".ogg", ".flac", ".aac", ".wav", ".m4a", ".oga"}) {
+      if (lowerCase.endsWith(extension)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** @return true if episode was inserted, false in case of error or if episode was already in DB */
   private boolean tryInsertEpisode(
       @NonNull Item episode, long subscriptionId, @NonNull Date timestamp,
@@ -140,8 +151,10 @@ class SyncWorker implements Runnable {
     Integer audioSize = null;
     for (Enclosure enclosure : episode.getEnclosures()) {
       String type = enclosure.getType();
-      if (type != null && AUDIO_PATTERN.matcher(type).matches()) {
-        audioLink = enclosure.getLink();
+      String link = enclosure.getLink();
+      if ((type != null && AUDIO_PATTERN.matcher(type).matches()) ||
+          (type == null && urlPointsToAudio(link))) {
+        audioLink = link;
         audioSize = enclosure.getLength();
       }
     }
