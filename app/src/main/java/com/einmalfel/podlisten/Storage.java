@@ -106,6 +106,27 @@ public class Storage {
     }
   }
 
+  public void cleanup() {
+    File[] podcasts = getPodcastDir().listFiles();
+    File[] images = getPodcastDir().listFiles();
+    File[] dirs = appFilesDir.listFiles();
+    File appDir = appFilesDir.getParentFile();
+    // if there no other data in */Android/data, try to rm it too
+    File dataDir = appDir.getParentFile();
+    File androidDir = dataDir.getParentFile();
+
+    for (File[] fileArray : new File[][]{podcasts, images, dirs,
+                                         new File[]{appFilesDir, appDir, dataDir, androidDir}}) {
+      if (fileArray != null) {
+        for (File file : fileArray) {
+          if (file.exists() && !file.delete()) {
+            Log.e(TAG, "Failed to delete " + file.getAbsolutePath());
+          }
+        }
+      }
+    }
+  }
+
   @NonNull
   public File getPodcastDir() {
     return new File(appFilesDir, Environment.DIRECTORY_PODCASTS);

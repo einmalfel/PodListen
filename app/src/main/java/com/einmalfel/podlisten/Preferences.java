@@ -293,16 +293,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     cv.put(Provider.K_EERROR, (String)null);
     context.getContentResolver().update(Provider.episodeUri, cv, null, null);
 
-    for (File file : storage.getPodcastDir().listFiles()) {
-      if (!file.delete()) {
-        Log.e(TAG, "Failed to delete " + file.getAbsolutePath());
-      }
-    }
-    for (File file : storage.getImagesDir().listFiles()) {
-      if (!file.delete()) {
-        Log.e(TAG, "Failed to delete " + file.getAbsolutePath());
-      }
-    }
+    storage.cleanup();
 
     context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
     account.refresh(0);
