@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -33,7 +32,6 @@ class SyncWorker implements Runnable {
    */
   private static final int MAX_EPISODES_TO_PARSE = 1000;
   private static final Pattern AUDIO_PATTERN = Pattern.compile("\\Aaudio/.*\\Z");
-  private static final int TIMEOUT_MS = 15000;
   private static final Date PODCAST_EPOCH;
 
   // there where no podcasts before year 2000. Earlier pubDate's will be replaced with current time
@@ -61,7 +59,7 @@ class SyncWorker implements Runnable {
   @Override
   public void run() {
     try {
-      InputStream inputStream = openConnectionWithTO(new URL(link)).getInputStream();
+      InputStream inputStream = PodcastHelper.openConnectionWithTO(new URL(link)).getInputStream();
       Feed feed = EarlParser.parseOrThrow(inputStream, MAX_EPISODES_TO_PARSE);
 
       String title = updateFeed(id, feed);
@@ -176,7 +174,7 @@ class SyncWorker implements Runnable {
 
     if (audioSize == null || audioSize < 10 * 1024) {
       try {
-        audioSize = openConnectionWithTO(new URL(audioLink)).getContentLength();
+        audioSize = PodcastHelper.openConnectionWithTO(new URL(audioLink)).getContentLength();
       } catch (MalformedURLException ex) {
         Log.e(TAG,
               "Episode " + episode.getLink() + " has malformed URL: " + audioLink, ex);
@@ -313,12 +311,5 @@ class SyncWorker implements Runnable {
     ContentValues values = new ContentValues();
     values.put(Provider.K_ETSTAMP, timestamp.getTime());
     return provider.update(Provider.getUri(Provider.T_EPISODE, id), values, null, null) > 0;
-  }
-
-  URLConnection openConnectionWithTO(URL url) throws IOException {
-    URLConnection result = url.openConnection();
-    result.setConnectTimeout(TIMEOUT_MS);
-    result.setReadTimeout(TIMEOUT_MS);
-    return result;
   }
 }

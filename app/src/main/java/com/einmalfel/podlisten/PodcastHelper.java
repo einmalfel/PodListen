@@ -15,6 +15,9 @@ import android.view.View;
 
 import com.einmalfel.podlisten.support.UnitConverter;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,11 +30,19 @@ public class PodcastHelper {
   static final int MIN_IMAGE_WIDTH_SP = 70;
   static final int MAX_IMAGE_WIDTH_SP = 150;
   private static final String TAG = "EPM";
+  private static final int TIMEOUT_MS = 15000;
   private static PodcastHelper instance;
   final int minImageWidthPX;
   final int maxImageWidthPX;
   private final Context context = PodListenApp.getContext();
   private final ContentResolver resolver= context.getContentResolver();
+
+  static URLConnection openConnectionWithTO(URL url) throws IOException {
+    URLConnection result = url.openConnection();
+    result.setConnectTimeout(TIMEOUT_MS);
+    result.setReadTimeout(TIMEOUT_MS);
+    return result;
+  }
 
   public PodcastHelper() {
     // allow image to take up to 150dp but not more then one fifth of screen width
