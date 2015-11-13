@@ -37,7 +37,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
 
     ListPreference storageLP = (ListPreference) findPreference(
         Preferences.Key.STORAGE_PATH.toString());
-    List<Storage> storageOptions = Storage.getAvailableStorages();
+    List<Storage> storageOptions = Storage.getWritableStorages();
     String[] optionStrings = new String[storageOptions.size()];
     for (int i = 0; i < storageOptions.size(); i++) {
       optionStrings[i] = storageOptions.get(i).toString();

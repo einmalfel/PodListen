@@ -22,7 +22,7 @@ public class Storage {
   private final File appFilesDir; // /*/Android/data/com.einmalfel.podlisten/files
 
   @NonNull
-  public static List<Storage> getAvailableStorages() {
+  public static List<Storage> getWritableStorages() {
     List<Storage> result = new LinkedList<>();
     Set<File> dirs = new HashSet<>(Arrays.asList(
         ContextCompat.getExternalFilesDirs(PodListenApp.getContext(), null)));
@@ -61,11 +61,31 @@ public class Storage {
 
     // filter out read-only storages
     for (File dir : dirs) {
-      Log.i(TAG, "Available storage: " + dir);
-      if (dir != null) { //getExternalFilesDir could return nulls for currently unavailable storages
+      if (dir != null) {//getExternalFilesDir could return nulls for currently unavailable storages
         try {
           Storage storage = new Storage(dir);
-          if (storage.isAvailableRW()) {
+          String state = storage.getState();
+          // unlike isAvailableRW(), use more slow and precise method to determine writability here
+          if (UNKNOWN_STATE.equals(state) && !storage.isPrimaryStorage()) {
+            // if PodListen directories already exist, assume it's a writable storage
+            if (storage.getImagesDir().exists() || storage.getPodcastDir().exists()) {
+              state = Environment.MEDIA_MOUNTED;
+              Log.i(TAG, "Storage " + storage + ". Already contains PodListen dirs. It's writable");
+            } else {
+              // try create dirs to check storage is writable
+              try {
+                storage.createSubdirs();
+                state = Environment.MEDIA_MOUNTED;
+                Log.i(TAG, "Successfully created directories in " + storage + ". It's writable");
+              } catch (IOException ignored) {
+                Log.i(TAG, "Failed to create directories in " + storage + ". It's not writable");
+              } finally {
+                storage.cleanup();
+              }
+            }
+          }
+          if (Environment.MEDIA_MOUNTED.equals(state) || storage.isPrimaryStorage()) {
+            Log.i(TAG, "Found writable storage: " + dir);
             result.add(storage);
           }
         } catch (IOException e) {

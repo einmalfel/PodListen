@@ -383,7 +383,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         String storagePreferenceString = sPrefs.getString(Key.STORAGE_PATH.toString(), "");
         if (storagePreferenceString.isEmpty()) {
           // by default, if there are removable storages use first removable, otherwise use last one
-          List<Storage> storages = Storage.getAvailableStorages();
+          List<Storage> storages = Storage.getWritableStorages();
           List<Storage> prioritized = new LinkedList<>();
           List<Storage> nonRemovable = new LinkedList<>();
           for (Storage storageOption : storages) {
