@@ -67,14 +67,38 @@ public class ImageManager {
     }
   }
 
+  // based on snippet from http://developer.android.com/training/displaying-bitmaps/load-bitmap.html
+  private static int calculateInSampleSize(BitmapFactory.Options options, int reqHeight) {
+    int inSampleSize = 1;
+
+    if (options.outHeight > reqHeight) {
+      final int halfHeight = options.outHeight / 2;
+      // Calculate the largest inSampleSize value that is a power of 2 and keeps height larger than
+      // requested
+      while ((halfHeight / inSampleSize) > reqHeight) {
+        inSampleSize *= 2;
+      }
+    }
+
+    return inSampleSize;
+  }
+
   public void download(long id, URL url) throws IOException {
-    Log.d(TAG, "Downloading " + url);
+
     HttpURLConnection urlConnection = null;
     Bitmap bitmap = null;
     try {
       urlConnection = (HttpURLConnection) url.openConnection();
       urlConnection.connect();
-      bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream());
+      BitmapFactory.Options options = new BitmapFactory.Options();
+      options.inJustDecodeBounds = true;
+      bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
+      urlConnection.disconnect();
+      urlConnection = (HttpURLConnection) url.openConnection();
+      options.inJustDecodeBounds = false;
+      options.inSampleSize = calculateInSampleSize(options, heightPx);
+      Log.d(TAG, "Downloading " + url + ". Sampling factor: " + options.inSampleSize);
+      bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
       if (bitmap == null) {
         throw new IOException("Failed to load image from " + url);
       }
