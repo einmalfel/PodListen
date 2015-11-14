@@ -26,9 +26,9 @@ import java.nio.channels.FileLock;
  */
 public class ImageManager {
   private static final String TAG = "IMG";
-  private static final int HEIGHT_SP = 70;
+  private static final int WIDTH_DP = 70;
   private static final int PAGES_TO_CACHE = 10;
-  private final int heightPx;
+  private final int widthPx;
   private static ImageManager instance;
 
   private final LruCache<Long, Bitmap> memoryCache;
@@ -68,14 +68,14 @@ public class ImageManager {
   }
 
   // based on snippet from http://developer.android.com/training/displaying-bitmaps/load-bitmap.html
-  private static int calculateInSampleSize(BitmapFactory.Options options, int reqHeight) {
+  private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth) {
     int inSampleSize = 1;
 
-    if (options.outHeight > reqHeight) {
-      final int halfHeight = options.outHeight / 2;
-      // Calculate the largest inSampleSize value that is a power of 2 and keeps height larger than
+    if (options.outWidth > reqWidth) {
+      final int halfWidth = options.outWidth / 2;
+      // Calculate the largest inSampleSize value that is a power of 2 and keeps width larger than
       // requested
-      while ((halfHeight / inSampleSize) > reqHeight) {
+      while ((halfWidth / inSampleSize) > reqWidth) {
         inSampleSize *= 2;
       }
     }
@@ -96,7 +96,7 @@ public class ImageManager {
       urlConnection.disconnect();
       urlConnection = (HttpURLConnection) PodcastHelper.openConnectionWithTO(url);
       options.inJustDecodeBounds = false;
-      options.inSampleSize = calculateInSampleSize(options, heightPx);
+      options.inSampleSize = calculateInSampleSize(options, widthPx);
       Log.d(TAG, "Downloading " + url + ". Sampling factor: " + options.inSampleSize);
       bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
       if (bitmap == null) {
@@ -108,7 +108,7 @@ public class ImageManager {
       }
     }
     Bitmap scaled = Bitmap.createScaledBitmap(
-        bitmap, bitmap.getWidth() * heightPx / bitmap.getHeight(), heightPx, true);
+        bitmap, widthPx, bitmap.getHeight() * widthPx / bitmap.getWidth(), true);
 
     File file = getImageFile(id, false);
     if (file == null) {
@@ -206,11 +206,13 @@ public class ImageManager {
 
   private ImageManager() {
     context = PodListenApp.getContext();
-    heightPx = UnitConverter.getInstance().spToPx(HEIGHT_SP);
+    widthPx = UnitConverter.getInstance().dpToPx(WIDTH_DP);
     Point displaySize = new Point();
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     wm.getDefaultDisplay().getSize(displaySize);
-    int imagesPerPage = displaySize.y / heightPx;
+    // to estimate how many images list page holds, assume images are square and sum of images
+    // heights equals to a half of screen height
+    int imagesPerPage = displaySize.y / 2 / widthPx;
     memoryCache = new LruCache<>(PAGES_TO_CACHE * imagesPerPage);
   }
 }
