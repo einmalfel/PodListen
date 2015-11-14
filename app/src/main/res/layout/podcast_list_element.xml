@@ -20,20 +20,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/podcast_image"
-            android:layout_width="70sp"
-            android:layout_height="70sp"
-            android:layout_marginRight="2sp"
-            android:contentDescription="@string/podcast_image_description"/>
-
         <TextView
             android:id="@+id/podcast_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@id/podcast_image"
-            android:minHeight="34sp"
+            android:layout_marginLeft="75dp"
+            android:maxLines="2"
+            android:minLines="2"
             android:textSize="15sp"/>
 
         <TextView
@@ -41,8 +35,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_title"
-            android:layout_toRightOf="@id/podcast_image"
+            android:layout_marginLeft="75dp"
             android:autoLink="all"
+            android:singleLine="true"
             android:textSize="11sp"/>
 
         <TextView
@@ -50,8 +45,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_url"
-            android:layout_toRightOf="@id/podcast_image"
+            android:layout_marginLeft="75dp"
+            android:singleLine="true"
             android:textSize="11sp"/>
+
+        <ImageView
+            android:id="@+id/podcast_image"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/podcast_status"
+            android:layout_alignTop="@id/podcast_title"
+            android:contentDescription="@string/podcast_image_description"/>
 
         <View
             android:id="@+id/description_divider"

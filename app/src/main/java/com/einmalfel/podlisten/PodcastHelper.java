@@ -5,15 +5,12 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
-
-import com.einmalfel.podlisten.support.UnitConverter;
 
 import java.io.IOException;
 import java.net.URL;
@@ -27,13 +24,9 @@ import java.util.Locale;
  * Helper class intended to do podcast-related stuff
  */
 public class PodcastHelper {
-  static final int MIN_IMAGE_WIDTH_SP = 70;
-  static final int MAX_IMAGE_WIDTH_SP = 150;
   private static final String TAG = "EPM";
   private static final int TIMEOUT_MS = 15000;
   private static PodcastHelper instance;
-  final int minImageWidthPX;
-  final int maxImageWidthPX;
   private final Context context = PodListenApp.getContext();
   private final ContentResolver resolver= context.getContentResolver();
 
@@ -42,14 +35,6 @@ public class PodcastHelper {
     result.setConnectTimeout(TIMEOUT_MS);
     result.setReadTimeout(TIMEOUT_MS);
     return result;
-  }
-
-  public PodcastHelper() {
-    // allow image to take up to 150dp but not more then one fifth of screen width
-    int HalfScreenWidth = context.getResources().getDisplayMetrics().widthPixels / 2;
-    int boundSetInSp = UnitConverter.getInstance().spToPx(MAX_IMAGE_WIDTH_SP);
-    maxImageWidthPX = boundSetInSp > HalfScreenWidth ? HalfScreenWidth : boundSetInSp;
-    minImageWidthPX = UnitConverter.getInstance().spToPx(MIN_IMAGE_WIDTH_SP);
   }
 
   //  not making synchronized method to speed up access
@@ -154,17 +139,6 @@ public class PodcastHelper {
         Snackbar.make(container, R.string.podcast_subscribe_failed, Snackbar.LENGTH_LONG).show();
       }
       return 0;
-    }
-  }
-
-  int getListImageWidth(@NonNull Bitmap image) {
-    final int width = image.getWidth();
-    if (width < minImageWidthPX) {
-      return minImageWidthPX;
-    } else if (width > maxImageWidthPX) {
-      return maxImageWidthPX;
-    } else {
-      return width;
     }
   }
 }

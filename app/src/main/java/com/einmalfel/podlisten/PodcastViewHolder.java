@@ -84,16 +84,22 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
       descriptionView.setVisibility(View.VISIBLE);
       dividerBottom.setVisibility(View.VISIBLE);
     }
-    descriptionView.setSingleLine(!expanded);
-    descriptionView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
-    cardView.setCardElevation(UnitConverter.getInstance().dpToPx(expanded ? 8 : 2));
+    if (this.expanded != expanded) {
+      descriptionView.setSingleLine(!expanded);
+      descriptionView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
+      statusView.setSingleLine(!expanded);
+      statusView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
+      urlView.setSingleLine(!expanded);
+      urlView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
+      titleView.setMaxLines(expanded ? Integer.MAX_VALUE : 2);
+      titleView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
+      cardView.setCardElevation(UnitConverter.getInstance().dpToPx(expanded ? 8 : 2));
+    }
 
     Bitmap image = ImageManager.getInstance().getImage(id);
     if (image == null) {
-      imageView.getLayoutParams().width = PodcastHelper.getInstance().minImageWidthPX;
       imageView.setImageResource(R.drawable.logo);
     } else {
-      imageView.getLayoutParams().width = PodcastHelper.getInstance().getListImageWidth(image);
       imageView.setImageBitmap(image);
     }
 
