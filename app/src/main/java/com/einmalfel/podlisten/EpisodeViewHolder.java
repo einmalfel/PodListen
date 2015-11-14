@@ -129,14 +129,9 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       } else {
         if (expanded) {
           descriptionText.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
-          cardView.setCardElevation(UnitConverter.getInstance().dpToPx(8));
         } else {
           descriptionText.setText(shortDescr, TextView.BufferType.NORMAL);
-          cardView.setCardElevation(UnitConverter.getInstance().dpToPx(2));
         }
-        descriptionText.setSingleLine(!expanded);
-        // without next line TextView still ellipsize first line when single line mode is turned off
-        descriptionText.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
         dividerBottom.setVisibility(View.VISIBLE);
         descriptionText.setVisibility(View.VISIBLE);
       }
@@ -145,6 +140,12 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       } else {
         feedTitleText.setText(feedTitle);
       }
+    }
+
+    if (expanded != this.expanded) {
+      cardView.setCardElevation(UnitConverter.getInstance().dpToPx(expanded ? 8 : 2));
+      descriptionText.setSingleLine(!expanded);
+      descriptionText.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
     }
 
     if (downloaded == Provider.EDFIN_COMPLETE && state != Provider.ESTATE_NEW) {
