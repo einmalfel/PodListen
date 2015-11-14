@@ -25,7 +25,7 @@ class SearchAdapter extends CursorRecyclerAdapter {
 
   @Override
   public void onBindViewHolderCursor(RecyclerView.ViewHolder holder, Cursor cursor) {
-    long id = cursor.getLong(cursor.getColumnIndex("_ID"));
+    long id = cursor.getLong(cursor.getColumnIndexOrThrow("_ID"));
     SearchElementHolder sHolder = (SearchElementHolder) holder;
     sHolder.bind(cursor.getString(cursor.getColumnIndexOrThrow("title")),
                  cursor.getString(cursor.getColumnIndexOrThrow("description")),

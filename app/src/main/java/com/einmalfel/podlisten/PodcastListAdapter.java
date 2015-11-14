@@ -45,7 +45,7 @@ public class PodcastListAdapter extends CursorRecyclerAdapter<PodcastViewHolder>
   @Override
   public void onBindViewHolderCursor(PodcastViewHolder holder, Cursor cursor) {
     long id = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ID));
-    holder.bind(cursor.getInt(cursor.getColumnIndex(Provider.K_PSTATE)),
+    holder.bind(cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_PSTATE)),
                 cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_PNAME)),
                 cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_PDESCR)),
                 cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_PFURL)),

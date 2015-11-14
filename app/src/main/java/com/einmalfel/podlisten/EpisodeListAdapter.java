@@ -71,23 +71,23 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
 
   @Override
   public void onBindViewHolderCursor(EpisodeViewHolder holder, Cursor cursor) {
-    long id = cursor.getLong(cursor.getColumnIndex(Provider.K_ID));
+    long id = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ID));
     holder.bindEpisode(
-        cursor.getString(cursor.getColumnIndex(Provider.K_ENAME)),
-        cursor.getString(cursor.getColumnIndex(Provider.K_EDESCR)),
+        cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ENAME)),
+        cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EDESCR)),
         id,
-        cursor.getLong(cursor.getColumnIndex(Provider.K_EPID)),
-        cursor.getLong(cursor.getColumnIndex(Provider.K_ESIZE)),
-        cursor.getInt(cursor.getColumnIndex(Provider.K_ESTATE)),
-        cursor.getString(cursor.getColumnIndex(Provider.K_PNAME)),
-        cursor.getLong(cursor.getColumnIndex(Provider.K_EPLAYED)),
-        cursor.getLong(cursor.getColumnIndex(Provider.K_ELENGTH)),
-        cursor.getLong(cursor.getColumnIndex(Provider.K_EDATE)),
-        cursor.getLong(cursor.getColumnIndex(Provider.K_EDFIN)),
-        cursor.getString(cursor.getColumnIndex(Provider.K_ESDESCR)),
-        cursor.getString(cursor.getColumnIndex(Provider.K_EERROR)),
+        cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EPID)),
+        cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ESIZE)),
+        cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_ESTATE)),
+        cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_PNAME)),
+        cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EPLAYED)),
+        cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ELENGTH)),
+        cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDATE)),
+        cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDFIN)),
+        cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ESDESCR)),
+        cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EERROR)),
         currentPlayingId == id ? currentState : PlayerService.State.STOPPED,
-        cursor.getLong(cursor.getColumnIndex(Provider.K_EDID)),
+        cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDID)),
         expandedElements.contains(id));
   }
 

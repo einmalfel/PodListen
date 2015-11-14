@@ -320,11 +320,11 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
                                                 null, null, null);
           if (c != null) {
             if (c.moveToFirst()) {
-              title = c.getString(c.getColumnIndex(Provider.K_ENAME));
+              title = c.getString(c.getColumnIndexOrThrow(Provider.K_ENAME));
               img = ImageManager.getInstance().getImage(episodeId);
               if (img == null) {
                 img = ImageManager.getInstance()
-                                  .getImage(c.getLong(c.getColumnIndex(Provider.K_EPID)));
+                                  .getImage(c.getLong(c.getColumnIndexOrThrow(Provider.K_EPID)));
               }
             } else {
               title = getString(R.string.player_episode_does_not_exist, episodeId);

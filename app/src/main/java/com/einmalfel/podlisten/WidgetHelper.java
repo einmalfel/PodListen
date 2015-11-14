@@ -251,8 +251,8 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
           null, null, null);
       if (c != null) {
         if (c.moveToFirst()) {
-          title = c.getString(c.getColumnIndex(Provider.K_ENAME));
-          podcastId = c.getLong(c.getColumnIndex(Provider.K_EPID));
+          title = c.getString(c.getColumnIndexOrThrow(Provider.K_ENAME));
+          podcastId = c.getLong(c.getColumnIndexOrThrow(Provider.K_EPID));
         } else {
           title = context.getString(R.string.player_episode_does_not_exist, episodeId);
           podcastId = 0;
