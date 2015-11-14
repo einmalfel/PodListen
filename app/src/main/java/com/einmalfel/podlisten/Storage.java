@@ -48,12 +48,14 @@ public class Storage {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       Set<File> filtered = new LinkedHashSet<>(dirs.size());
       for (File dir : dirs) {
-        try {
-          Environment.getExternalStorageState(dir);
-          Environment.isExternalStorageRemovable(dir);
-          filtered.add(dir);
-        } catch (IllegalArgumentException ex) {
-          Log.w(TAG, "Storage " + dir + " makes Android API throw exception, ignoring it", ex);
+        if (dir != null) {
+          try {
+            Environment.getExternalStorageState(dir);
+            Environment.isExternalStorageRemovable(dir);
+            filtered.add(dir);
+          } catch (IllegalArgumentException ex) {
+            Log.w(TAG, "Storage " + dir + " makes Android API throw exception, ignoring it", ex);
+          }
         }
       }
       dirs = filtered;
