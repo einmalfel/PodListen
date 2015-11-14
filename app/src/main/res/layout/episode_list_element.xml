@@ -19,14 +19,55 @@
                     android:id="@+id/card_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/episode_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="75sp"
+            android:layout_marginLeft="72dp"
+            android:maxLines="2"
+            android:minLines="2"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:id="@+id/episode_url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/episode_title"
+            android:layout_marginRight="75sp"
+            android:layout_marginLeft="72dp"
+            android:autoLink="all"
+            android:singleLine="true"
+            android:textSize="11sp"/>
+
+        <TextView
+            android:id="@+id/feed_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/episode_url"
+            android:layout_marginRight="75sp"
+            android:layout_marginLeft="72dp"
+            android:singleLine="true"
+            android:textSize="11sp"/>
+
+        <ImageView
+            android:id="@+id/episode_image"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:layout_alignTop="@id/episode_title"
+            android:layout_alignBottom="@id/feed_title"
+            android:contentDescription="@string/episode_image_description"/>
+
         <FrameLayout
             android:id="@+id/play_add_frame"
-            android:layout_width="wrap_content"
-            android:layout_height="70sp"
+            android:layout_width="70sp"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/feed_title"
+            android:layout_alignTop="@id/episode_title"
             android:layout_alignParentRight="true"
-            android:layout_marginLeft="5dp"
-            android:background="@drawable/clickable_list_element"
-            android:minWidth="70sp">
+            android:background="@drawable/clickable_list_element">
 
             <TextView
                 android:id="@+id/time_size"
@@ -61,47 +102,17 @@
                 android:textSize="11sp"/>
         </FrameLayout>
 
-        <ImageView
-            android:id="@+id/episode_image"
-            android:layout_width="70sp"
-            android:layout_height="70sp"
-            android:layout_marginRight="2sp"
-            android:contentDescription="@string/episode_image_description"/>
-
-
-        <TextView
-            android:id="@+id/feed_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/episode_image"
-            android:layout_toLeftOf="@id/play_add_frame"
-            android:layout_toRightOf="@id/episode_image"
-            android:singleLine="true"
-            android:textSize="11sp"/>
-
-        <TextView
-            android:id="@+id/episode_title"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@id/feed_title"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@id/play_add_frame"
-            android:layout_toRightOf="@id/episode_image"
-            android:maxLines="3"
-            android:textSize="15sp"/>
-
         <View
             android:id="@+id/play_add_frame_divider"
-            android:layout_width="1dp"
+            android:layout_width="1sp"
             android:layout_height="match_parent"
             android:layout_alignBottom="@id/feed_title"
             android:layout_alignTop="@id/episode_title"
             android:layout_marginBottom="-3dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_toRightOf="@id/episode_title"
+            android:layout_marginLeft="2sp"
+            android:layout_marginRight="2sp"
+            android:layout_toLeftOf="@id/play_add_frame"
             android:background="@color/background_contrast"/>
-
 
         <View
             android:id="@+id/description_divider"

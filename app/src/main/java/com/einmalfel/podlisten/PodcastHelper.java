@@ -46,9 +46,9 @@ public class PodcastHelper {
 
   public PodcastHelper() {
     // allow image to take up to 150dp but not more then one fifth of screen width
-    int oneFifthScreenWidth = context.getResources().getDisplayMetrics().widthPixels / 5;
+    int HalfScreenWidth = context.getResources().getDisplayMetrics().widthPixels / 2;
     int boundSetInSp = UnitConverter.getInstance().spToPx(MAX_IMAGE_WIDTH_SP);
-    maxImageWidthPX = boundSetInSp > oneFifthScreenWidth ? oneFifthScreenWidth : boundSetInSp;
+    maxImageWidthPX = boundSetInSp > HalfScreenWidth ? HalfScreenWidth : boundSetInSp;
     minImageWidthPX = UnitConverter.getInstance().spToPx(MIN_IMAGE_WIDTH_SP);
   }
 
