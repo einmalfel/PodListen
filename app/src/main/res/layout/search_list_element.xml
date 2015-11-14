@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_frequency"
             android:layout_marginRight="75dp"
-            android:autoLink="web"
+            android:autoLink="all"
             android:singleLine="true"
             android:textSize="11sp"/>
 
@@ -87,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/description_divider"
-            android:autoLink="web"
+            android:autoLink="all"
             android:linksClickable="true"
             android:singleLine="true"
             android:textSize="13sp"/>
