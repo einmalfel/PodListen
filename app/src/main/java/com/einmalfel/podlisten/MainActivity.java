@@ -405,6 +405,8 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         snackbar.dismiss();
       }
       snackbar = Snackbar.make(findViewById(R.id.tabbed_frame), text, duration);
+      snackbar.getView().setBackgroundColor(
+          ContextCompat.getColor(this, R.color.background_contrast));
     } else {
       // In genymotion (and therefore probably on some devices) snackbar queue glitches, so update
       // current snackbar instead of enqueuing it
