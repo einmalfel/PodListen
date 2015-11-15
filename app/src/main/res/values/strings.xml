@@ -1,5 +1,27 @@
 <resources>
     <string name="app_name">PodListen</string>
+    <string name="google_play_title">PodListen - free podcast app</string>
+    <string name="google_play_short_description">Free and open source podcast player with lightweight interface.</string>
+    <string name="google_play_long_description">Main idea behind this app is to set podcast listening  free from inconvenience of switching between screens and going through menus. Instead, all navigation in PodListen is done by simply swiping between 3 tabs, basic actions are done with single tap.
+
+PodListen is open-source ad-free app, it doesn\'t include analytics services, collect any user data or use strange system permissions.
+
+Besides original interface, it has basic features one can expect from podcatcher app:
+ * searchable podcast database
+ * OPML import and export
+ * feeds auto-refresh and episodes download
+ * subscription by clicking on RSS links in browser
+ * home screen widget
+ * playlist sorting modes
+ * preferences like “download on wi-fi only”, "pause on headphones disconnect" etc.
+
+NB!: as interface of this app was intentionally made simplistic, don\'t expect it to have some features big paid apps have: episode ratings, sharing of anything via social networks, video episodes support, various folders and categories like “recommended”, “favorite”, “downloaded”, “played”, etc.
+
+Podcast search feature is planned for an update.
+
+PodListen source code is available at https://github.com/einmalfel/PodListen under GPL-3.0 license.
+If you encounter a bug or come up with a feature request, please open an issue on github.</string>
+
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="hour_abbreviation">h</string>
