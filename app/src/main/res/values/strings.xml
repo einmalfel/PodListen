@@ -111,7 +111,7 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="opml_dialog_send">Send</string>
     <string name="opml_dialog_FMapp">Show in file manager</string>
     <string name="opml_dialog_title">Exported successfully</string>
-    <string name="opml_export_file_name">PodListen_Subscriptions.opml</string>
+    <string name="opml_export_file_name" translatable="false">PodListen_Subscriptions.opml</string>
 
     <string name="refresh_period_never">Never</string>
     <string name="refresh_period_hour">Hourly</string>
