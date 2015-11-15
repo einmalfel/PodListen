@@ -77,7 +77,7 @@ public class SyncState {
         null);
     StringBuilder stringBuilder = new StringBuilder();
     if (cursor == null) {
-      stringBuilder.append(context.getString(R.string.sync_db_error));
+      stringBuilder.append(context.getString(R.string.sync_database_error));
     } else {
       int count = cursor.getCount();
       cursor.close();

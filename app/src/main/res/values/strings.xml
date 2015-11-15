@@ -164,7 +164,6 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="sync_interrupted_by_system">Refresh interrupted by system</string>
     <string name="sync_failed">Refresh failed</string>
     <string name="sync_running">Refreshing PodListen..</string>
-    <string name="sync_db_error">DB error</string>
     <string name="sync_new_episodes">New episodes: %s</string>
     <string name="sync_feeds_synced">Feeds loaded: %d</string>
     <string name="sync_feeds_failed">Failed to load: %d</string>
