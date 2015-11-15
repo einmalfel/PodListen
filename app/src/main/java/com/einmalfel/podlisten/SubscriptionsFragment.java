@@ -18,7 +18,7 @@ import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
 
 
 public class SubscriptionsFragment extends DebuggableFragment implements
-    LoaderManager.LoaderCallbacks<Cursor>, EpisodeListAdapter.ItemClickListener {
+    LoaderManager.LoaderCallbacks<Cursor>, PodcastListAdapter.ItemClickListener {
   private MainActivity activity;
   private static final MainActivity.Pages activityPage = MainActivity.Pages.SUBSCRIPTIONS;
   private static final String TAG = "SSF";
@@ -44,7 +44,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements
   }
 
   @Override
-  public boolean onLongTap(final long pId) {
+  public boolean onLongTap(final long pId, String title) {
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
       @Override
@@ -55,14 +55,14 @@ public class SubscriptionsFragment extends DebuggableFragment implements
     });
     builder
         .setNegativeButton(R.string.cancel, null)
-        .setTitle(activity.getString(R.string.podcast_delete_question))
+        .setTitle(activity.getString(R.string.podcast_delete_question, title))
         .create()
         .show();
     return true;
   }
 
   @Override
-  public void onButtonTap(long id) {}
+  public void onButtonTap(long id, String title) {}
 
   static final String[] projection = new String[]{
       Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE,

@@ -12,11 +12,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PodcastListAdapter extends CursorRecyclerAdapter<PodcastViewHolder> {
+  public interface ItemClickListener {
+    /**
+     * @return true if event was consumed
+     */
+    boolean onLongTap(long id, String title);
+
+    void onButtonTap(long id, String title);
+  }
+
   private static final String TAG = "PLA";
-  private final EpisodeListAdapter.ItemClickListener listener;
+  private final ItemClickListener listener;
   private final Set<Long> expandedElements = new HashSet<>(5);
 
-  public PodcastListAdapter(Cursor cursor, EpisodeListAdapter.ItemClickListener listener) {
+  public PodcastListAdapter(Cursor cursor, ItemClickListener listener) {
     super(cursor);
     setHasStableIds(true);
     this.listener = listener;

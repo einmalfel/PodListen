@@ -27,8 +27,9 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
   private final CardView cardView;
   private long id = 0;
   private boolean expanded = false;
+  private String title;
 
-  public PodcastViewHolder(View layout, final EpisodeListAdapter.ItemClickListener listener,
+  public PodcastViewHolder(View layout, final PodcastListAdapter.ItemClickListener listener,
                            final PodcastListAdapter adapter) {
     super(layout);
     context = layout.getContext();
@@ -49,7 +50,7 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
     relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
       public boolean onLongClick(View v) {
-        return listener.onLongTap(id);
+        return listener.onLongTap(id, title);
       }
     });
   }
@@ -105,5 +106,6 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
 
     this.id = id;
     this.expanded = expanded;
+    this.title = title;
   }
 }

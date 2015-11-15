@@ -11,7 +11,7 @@
 
     <string name="podcast_already_subscribed">Already subscribed to %s</string>
     <string name="podcast_subscribe_failed">Failed to subscribe</string>
-    <string name="podcast_delete_question">Unsubscribe from feed?</string>
+    <string name="podcast_delete_question">Unsubscribe from %s?</string>
     <string name="podcast_no_title">No title</string>
     <string name="podcast_refresh_failed">Refresh failed: %s</string>
     <string name="podcast_not_loaded_yet">Feed isn\'t loaded yet</string>
