@@ -17,6 +17,7 @@
     <string name="podcast_not_loaded_yet">Feed isn\'t loaded yet</string>
     <string name="podcast_refresh_time">Refreshed %s</string>
     <string name="podcast_image_description">Image of this podcast if any</string>
+    <string name="podcast_button_description">Show episodes of this feed</string>
 
     <string name="episode_no_title">NO TITLE</string>
     <string name="episode_downloading">Downloading episode %s</string>
@@ -25,6 +26,7 @@
     <string name="episode_deleted_undo">Undo</string>
     <string name="episode_image_description">Image of this episode if any</string>
     <string name="episode_deleted_subscription">Deleted subscription</string>
+    <string name="episode_published">Published %s</string>
 
     <string name="episode_action_download">Download episode</string>
     <string name="episode_action_add">Add this episode to playlist</string>

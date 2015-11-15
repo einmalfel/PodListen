@@ -62,7 +62,10 @@ public class SubscriptionsFragment extends DebuggableFragment implements
   }
 
   @Override
-  public void onButtonTap(long id, String title) {}
+  public void onButtonTap(long id, String title) {
+    FeedHistoryFragment historyFragment = FeedHistoryFragment.newInstance(id, title);
+    historyFragment.show(getActivity().getSupportFragmentManager(), "history");
+  }
 
   static final String[] projection = new String[]{
       Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE,

@@ -26,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="75dp"
+            android:layout_marginRight="75sp"
             android:maxLines="2"
             android:minLines="2"
             android:textSize="15sp"/>
@@ -36,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_title"
             android:layout_marginLeft="75dp"
+            android:layout_marginRight="75sp"
             android:autoLink="all"
             android:singleLine="true"
             android:textSize="11sp"/>
@@ -46,6 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_url"
             android:layout_marginLeft="75dp"
+            android:layout_marginRight="75sp"
             android:singleLine="true"
             android:textSize="11sp"/>
 
@@ -56,6 +59,29 @@
             android:layout_alignBottom="@id/podcast_status"
             android:layout_alignTop="@id/podcast_title"
             android:contentDescription="@string/podcast_image_description"/>
+
+        <ImageButton
+            android:id="@+id/podcast_button"
+            android:layout_width="70sp"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/podcast_status"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/podcast_title"
+            android:background="@drawable/clickable_image_button_bg"
+            android:contentDescription="@string/podcast_button_description"
+            android:scaleType="center"
+            android:src="@mipmap/ic_list_white_36dp"/>
+
+        <View
+            android:layout_width="1sp"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@id/podcast_status"
+            android:layout_alignTop="@id/podcast_title"
+            android:layout_marginBottom="-3dp"
+            android:layout_marginLeft="2sp"
+            android:layout_marginRight="2sp"
+            android:layout_toLeftOf="@id/podcast_button"
+            android:background="@color/background_contrast"/>
 
         <View
             android:id="@+id/description_divider"

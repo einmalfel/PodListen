@@ -9,6 +9,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -40,6 +41,13 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
     statusView = (TextView) layout.findViewById(R.id.podcast_status);
     imageView = (ImageView) layout.findViewById(R.id.podcast_image);
     cardView = (CardView) layout.findViewById(R.id.card);
+    ImageButton button = (ImageButton) layout.findViewById(R.id.podcast_button);
+    button.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        listener.onButtonTap(id, title);
+      }
+    });
     RelativeLayout relativeLayout = (RelativeLayout) layout.findViewById(R.id.card_layout);
     relativeLayout.setOnClickListener(new View.OnClickListener() {
       @Override
