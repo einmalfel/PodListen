@@ -32,6 +32,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.einmalfel.podlisten.support.SnackbarController;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -109,11 +111,10 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   private TabLayout tabLayout;
   private TabsAdapter tabsAdapter;
   private FloatingActionButton fab;
-  private Snackbar snackbar;
-  private Snackbar.Callback snackbarCallback;
   private Timer timer;
   private PlaylistFragment playlistFragment = null;
   private FabAction currentFabAction;
+  private SnackbarController snackbarController;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +143,8 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     progressBarTitle = (TextView) findViewById(R.id.play_title);
     episodeImage = (ImageView) findViewById(R.id.play_episode_image);
     episodeImage.setOnClickListener(this);
+    snackbarController = new SnackbarController(
+        findViewById(R.id.tabbed_frame), ContextCompat.getColor(this, R.color.background_contrast));
 
     progressBar.setOnTouchListener(new View.OnTouchListener() {
       @Override
@@ -396,37 +399,6 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     );
   }
 
-  private void showSnackbar(@NonNull String text, int duration, @Nullable String action,
-                            @Nullable final Snackbar.Callback callback) {
-    if (snackbar == null || !snackbar.isShownOrQueued()) {
-      // On some devices (e.g. Galaxy TAB 4 7.0) single snackbar instance cannot be showed
-      // multiple times, so reinstantiate it
-      if (snackbar != null) {
-        snackbar.dismiss();
-      }
-      snackbar = Snackbar.make(findViewById(R.id.tabbed_frame), text, duration);
-      snackbar.getView().setBackgroundColor(
-          ContextCompat.getColor(this, R.color.background_contrast));
-    } else {
-      // In genymotion (and therefore probably on some devices) snackbar queue glitches, so update
-      // current snackbar instead of enqueuing it
-      if (snackbarCallback != null) {
-        Log.d(TAG, "Replacing snackbar with " + text + ". Emulating dismiss callback");
-        snackbarCallback.onDismissed(snackbar, Snackbar.Callback.DISMISS_EVENT_TIMEOUT);
-      }
-      snackbar.setText(text);
-      snackbar.setDuration(duration);
-    }
-    snackbar.setAction(action, callback == null ? null : new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        callback.onDismissed(snackbar, Snackbar.Callback.DISMISS_EVENT_ACTION);
-      }
-    });
-    snackbar.setCallback(callback);
-    snackbarCallback = callback;
-    snackbar.show();
-  }
 
   @Override
   public synchronized void onClick(View v) {
@@ -457,7 +429,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           } else {
             Log.w(TAG, "Playlist fragment doesn't exist yet, skipping reload");
           }
-          showSnackbar(newMode.toString(), Snackbar.LENGTH_SHORT, null, null);
+          snackbarController.showSnackbar(newMode.toString(), Snackbar.LENGTH_SHORT, null, null);
           break;
       }
     } else if (v == playButton) {
