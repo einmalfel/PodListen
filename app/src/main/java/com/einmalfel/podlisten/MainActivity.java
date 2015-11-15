@@ -348,7 +348,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     });
   }
 
-  void deleteEpisodeDialog(final long episodeId) {
+  void deleteEpisode(long episodeId) {
     Cursor c = getContentResolver().query(Provider.getUri(Provider.T_EPISODE, episodeId),
                                           new String[]{Provider.K_ENAME, Provider.K_ESTATE},
                                           null, null, null);
@@ -359,28 +359,32 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     if (c.moveToFirst()) {
       final String episodeName = c.getString(c.getColumnIndexOrThrow(Provider.K_ENAME));
       final int prevState = c.getInt(c.getColumnIndexOrThrow(Provider.K_ESTATE));
-      new AlertDialog.Builder(this)
-          .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-              ContentValues cv = new ContentValues(1);
-              cv.put(Provider.K_ESTATE, Provider.ESTATE_LEAVING);
-              getContentResolver().update(
-                  Provider.getUri(Provider.T_EPISODE, episodeId), cv, null, null);
-              deleteEpisodeSnackbar(getString(R.string.episode_deleted, episodeName), prevState);
-            }
-          })
-          .setNegativeButton(R.string.cancel, null)
-          .setTitle(getString(R.string.episode_delete_question))
-          .create()
-          .show();
+      ContentValues cv = new ContentValues(1);
+      cv.put(Provider.K_ESTATE, Provider.ESTATE_LEAVING);
+      getContentResolver().update(
+          Provider.getUri(Provider.T_EPISODE, episodeId), cv, null, null);
+        deleteEpisodeSnackbar(getString(R.string.episode_deleted, episodeName), prevState);
     } else {
       Log.e(TAG, "Trying to delete absent episode " + episodeId);
     }
     c.close();
   }
 
-  void deleteEpisodeSnackbar(String title, final int prevState) {
-    showSnackbar(
+  void deleteEpisodeDialog(final long episodeId) {
+    new AlertDialog.Builder(this)
+        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
+            deleteEpisode(episodeId);
+          }
+        })
+        .setNegativeButton(R.string.cancel, null)
+        .setTitle(getString(R.string.episode_delete_question))
+        .create()
+        .show();
+  }
+
+  private void deleteEpisodeSnackbar(String title, final int prevState) {
+    snackbarController.showSnackbar(
         title,
         Snackbar.LENGTH_LONG,
         getString(R.string.episode_deleted_undo),
