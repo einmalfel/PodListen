@@ -102,7 +102,8 @@ public class Storage {
   @NonNull
   public static Storage getPrimaryStorage() {
     try {
-      return new Storage(Environment.getExternalStorageDirectory());
+      return new Storage(new File(Environment.getExternalStorageDirectory(),
+                                  "Android/data/com.einmalfel.podlisten/files"));
     } catch (IOException exception) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         throw new AssertionError("Cant convert primary storage to canonical form", exception);
