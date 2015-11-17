@@ -1,3 +1,9 @@
+########################## Logging
+-assumenosideeffects class android.util.Log {
+    public static boolean isLoggable(java.lang.String, int);
+    public static int v(...);
+}
+
 ########################## Support Library
 # prevent crashing caused by stripping Preference view constructor
 # https://code.google.com/p/android/issues/detail?id=183261
