@@ -142,7 +142,7 @@ public class Storage {
                                          new File[]{appFilesDir, appDir, dataDir, androidDir}}) {
       if (fileArray != null) {
         for (File file : fileArray) {
-          if (file.exists() && !file.delete()) {
+          if (file.exists() && (!file.isDirectory() || file.list().length == 0) && !file.delete()) {
             Log.e(TAG, "Failed to delete " + file.getAbsolutePath());
           }
         }
