@@ -152,7 +152,9 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
 
       @Override
       public void onTextChanged(CharSequence s, int start, int before, int count) {
-        subscribeButton.setEnabled(URLUtil.isValidUrl(completeUrlString(s)));
+        boolean valid = URLUtil.isValidUrl(completeUrlString(s));
+        subscribeButton.setEnabled(valid);
+        subscribeButton.setAlpha(valid ? 1f : .3f);
       }
 
       @Override
@@ -210,7 +212,12 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
 
   private static final Pattern URL_SCHEME = Pattern.compile(".*://.*");
 
-  private static String completeUrlString(CharSequence sequence) {
-    return (URL_SCHEME.matcher(sequence).matches() ? sequence : "http://" + sequence).toString();
+  @NonNull
+  private static String completeUrlString(@NonNull CharSequence sequence) {
+    if (sequence.toString().trim().isEmpty()) {
+      return "";
+    } else {
+      return (URL_SCHEME.matcher(sequence).matches() ? sequence : "http://" + sequence).toString();
+    }
   }
 }
