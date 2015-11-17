@@ -29,6 +29,7 @@
             android:layout_marginRight="75dp"
             android:minLines="2"
             android:singleLine="true"
+            android:textColor="@color/text_bright"
             android:textSize="15sp"/>
 
         <TextView

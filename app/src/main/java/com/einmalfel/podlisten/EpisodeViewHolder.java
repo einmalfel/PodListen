@@ -112,7 +112,6 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   }
 
   private void setTextColor(int color) {
-    titleText.setTextColor(color);
     feedTitleText.setTextColor(color);
     descriptionText.setTextColor(color);
     timeSizeText.setTextColor(color);
