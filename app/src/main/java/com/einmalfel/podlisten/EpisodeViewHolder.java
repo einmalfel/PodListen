@@ -123,9 +123,17 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
                           String feedTitle, long played, long length, long date, long downloaded,
                           String shortDescr, String errorMessage, PlayerService.State playerState,
                           String url, long downloadId, boolean expanded) {
-    if (id != this.id || expanded != this.expanded) {
-      titleText.setText(errorMessage == null ? title : title + "\n" + errorMessage);
+    if (errorMessage == null) {
       episdoeUrlView.setText(url);
+      episdoeUrlView.setTextColor(ContextCompat.getColor(
+          context, playerState.isStopped() ? R.color.text : R.color.text_bright));
+    } else {
+      episdoeUrlView.setTextColor(ContextCompat.getColor(context, R.color.accent_secondary));
+      episdoeUrlView.setText(errorMessage);
+    }
+
+    if (id != this.id || expanded != this.expanded) {
+      titleText.setText(title);
       if (description == null || description.isEmpty()) {
         dividerBottom.setVisibility(View.GONE);
         descriptionText.setVisibility(View.GONE);
