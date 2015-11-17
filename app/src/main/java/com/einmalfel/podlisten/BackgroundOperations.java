@@ -86,14 +86,21 @@ public class BackgroundOperations extends IntentService {
       return;
     }
     DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+    boolean downloadsStopped = false;
     while (cursor.moveToNext()) {
+      long episodeId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ID));
       // 1. Stop download if any
       long dId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDID));
       if (dId != 0) {
         dm.remove(dId);
+        ContentValues val = new ContentValues(1);
+        val.put(Provider.K_EDID, 0);
+        if (resolver.update(Provider.getUri(Provider.T_EPISODE, episodeId), val, null, null) != 1) {
+          Log.w(TAG, "Failed to reset DID for episode " + episodeId);
+        }
+        downloadsStopped = true;
       }
       // 2. Delete audio and images related to this episode if any
-      long episodeId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ID));
       Storage storage = Preferences.getInstance().getStorage();
       if (storage == null || !storage.isAvailableRW()) {
         Log.w(TAG, "failed to delete episode media: no storage or it isn't writable");
@@ -122,6 +129,9 @@ public class BackgroundOperations extends IntentService {
       }
     }
     cursor.close();
+    if (downloadsStopped) {
+      sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+    }
   }
 
   private void handleDownloads() {
