@@ -68,10 +68,16 @@ public class BackgroundOperations extends IntentService {
 
   private void cleanupEpisodes(int stateFilter) {
     ContentResolver resolver = getContentResolver();
+    String where = Provider.K_ESTATE + " == " + stateFilter;
+    if (stateFilter == Provider.ESTATE_GONE) {
+      // only process ones that aren't included in feed anymore OR have media associated with them
+      where += " AND (" + Provider.K_ETSTAMP + " < " + Provider.K_PTSTAMP + " OR " +
+          Provider.K_EDFIN + " != 0 OR " + Provider.K_EDID + " != 0)";
+    }
     Cursor cursor = resolver.query(
         Provider.episodeJoinPodcastUri,
         new String[]{Provider.K_EID, Provider.K_ETSTAMP, Provider.K_PTSTAMP, Provider.K_EDID},
-        Provider.K_ESTATE + " == " + stateFilter,
+        where,
         null,
         null
     );
