@@ -26,6 +26,7 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
   private final Context context;
   private final View dividerBottom;
   private final CardView cardView;
+  private final ImageButton button;
   private long id = 0;
   private boolean expanded = false;
   private String title;
@@ -41,7 +42,7 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
     statusView = (TextView) layout.findViewById(R.id.podcast_status);
     imageView = (ImageView) layout.findViewById(R.id.podcast_image);
     cardView = (CardView) layout.findViewById(R.id.card);
-    ImageButton button = (ImageButton) layout.findViewById(R.id.podcast_button);
+    button = (ImageButton) layout.findViewById(R.id.podcast_button);
     button.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -80,6 +81,14 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
                                              DateUtils.getRelativeTimeSpanString(timestamp)));
       }
     }
+    if (state == Provider.PSTATE_NEW) {
+      button.setEnabled(false);
+      button.setColorFilter(MainActivity.disabledFilter);
+    } else {
+      button.setEnabled(true);
+      button.setColorFilter(null);
+    }
+
 
     if (description == null || description.isEmpty()) {
       descriptionView.setVisibility(View.GONE);
