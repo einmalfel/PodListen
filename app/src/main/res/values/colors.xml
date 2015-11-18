@@ -9,9 +9,9 @@
     <color name="accent_primary">#ff80cbc4</color>
     <color name="accent_primary_dim">#4080cbc4</color>
     <color name="accent_primary_dim_dim">#2080cbc4</color>
-    <!-- orange 800 -->
-    <color name="accent_secondary">#ffef6c00</color>
-    <color name="accent_secondary_dim">#40ef6c00</color>
+    <!-- amber 800 -->
+    <color name="accent_secondary">#ffff8f00</color>
+    <color name="accent_secondary_dim">#40ff8f00</color>
 
     <color name="text_bright">#ffffffff</color>
     <color name="text">#b3ffffff</color>
