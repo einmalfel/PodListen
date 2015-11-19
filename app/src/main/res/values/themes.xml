@@ -20,6 +20,11 @@
         <item name="colorButtonNormal">@color/background_soft</item>
     </style>
 
+    <style name="PodListenPrefs" parent="PodListenCommon">
+        <item name="android:textAppearanceLarge">@style/TextAppearance.AppCompat.Subhead</item>
+        <item name="android:textAppearanceSmall">@style/TextAppearance.AppCompat.Caption</item>
+    </style>
+
     <style name="PodlistenMain" parent="PodListenCommon">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

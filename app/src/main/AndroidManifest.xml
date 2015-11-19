@@ -91,7 +91,8 @@
         <activity
             android:name=".PreferencesActivity"
             android:launchMode="singleTop"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/PodListenPrefs"/>
 
         <service
             android:name=".support.StubAuthenticatorService">
