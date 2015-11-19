@@ -279,6 +279,44 @@ class SyncWorker implements Runnable {
   private static final Pattern trimEndPattern = Pattern.compile("(\\s|" + BR_TAG + ")*\\Z");
   private static final Pattern brRepeatPattern = Pattern.compile("(\\s*" + BR_TAG + "\\s*)+");
 
+  // patterns from android.utils.Patterns with \s appended to begin and end of pattern to not match
+  // links that are already inside tags. Also, capturing groups replaced with non-capturing
+  private static final String GOOD_IRI_CHAR = "a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF";
+  private static final String IP_ADDRESS =
+      "(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(?:25[0-5]|2[0-4]"
+          + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1]"
+          + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
+          + "|[1-9][0-9]|[0-9]))";
+  private static final String IRI =
+      "[" + GOOD_IRI_CHAR + "](?:[" + GOOD_IRI_CHAR + "\\-]{0,61}[" + GOOD_IRI_CHAR + "])?";
+  private static final String GTLD = "[a-zA-Z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,63}";
+  private static final String HOST_NAME = "(?:" + IRI + "\\.)+" + GTLD;
+  private static final String DOMAIN_NAME = "(?:" + HOST_NAME + "|" + IP_ADDRESS + ")";
+  // last part of number should be longer than 7 symbols, otherwise it will match dates (2015-02-02)
+  private static final Pattern PHONE = Pattern.compile(
+      "(\\A|\\s|<br/>)+" +
+          "((?:\\+[0-9]+[\\- \\.]*)?(?:\\([0-9]+\\)[\\- \\.]*)?(?:[0-9][0-9\\- \\.]{7,}[0-9]))" +
+          "(\\Z|\\s|<br/>)+");
+  private static final Pattern EMAIL_ADDRESS = Pattern.compile(
+      "(\\A|\\s|<br/>)+" +
+          "([a-zA-Z0-9\\+\\._%\\-]{1,256}@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+          "(?:\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}))" +
+          "(\\Z|\\s|<br/>)+"
+  );
+  private static final String IRI_PART = "(?:/(?:(?:[" + GOOD_IRI_CHAR +
+      ";/\\?:@&=#~\\-\\.\\+!\\*'\\(\\),_])|(?:%[a-fA-F0-9]{2}))*)?";
+  private static final Pattern WEB_URL = Pattern.compile(
+      "(\\A|\\s|<br/>)+" +
+          "((?:(?:(?:http|https|Http|Https|rtsp|Rtsp)://(?:(?:[a-zA-Z0-9\\$\\-_\\.\\+!\\*" +
+          "'\\(\\),;\\?&=]|(?:%[a-fA-F0-9]{2})){1,64}(?::(?:[a-zA-Z0-9\\$\\-_" +
+          "\\.\\+!\\*\\(\\),;\\?&=]|(?:%[a-fA-F0-9]{2})){1,25})?@)?)?" +
+          DOMAIN_NAME + "(?::\\d{1,5})?)" + IRI_PART + ")" +
+          "(\\b|$|<br/>)+");
+  private static final Pattern WEB_URL_NO_PROTO = Pattern.compile(
+      "(\\A|\\s|<br/>)+" +
+          "((?:" + DOMAIN_NAME + "(?::\\d{1,5})?)" + IRI_PART + ")" +
+          "(\\b|$|<br/>)+");
+
   @NonNull
   static String simplifyHTML(@NonNull String text) {
     // replace opening <li> tag with bullet symbol. Otherwise <li> will be thrown out by Html.toHtml
@@ -303,6 +341,13 @@ class SyncWorker implements Runnable {
 
     // reduce repeated <br>'s
     text = brRepeatPattern.matcher(text).replaceAll("<br/>");
+
+    // using autoLinks="all" for TextView will highlight links in flat text, but will break <href>'s
+    text = EMAIL_ADDRESS.matcher(text).replaceAll("$1<a href=\"mailto:$2\">$2</a>$3");
+    text = WEB_URL_NO_PROTO.matcher(text).replaceAll("$1<a href=\"http://$2\">$2</a>$3");
+    text = WEB_URL.matcher(text).replaceAll("$1<a href=\"$2\">$2</a>$3");
+    text = PHONE.matcher(text).replaceAll("$1<a href=\"tel:$2\">$2</a>$3");
+
     return text;
   }
 

@@ -129,7 +129,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/description_divider"
-            android:autoLink="all"
             android:linksClickable="true"
             android:textSize="13sp"
             android:singleLine="true"/>

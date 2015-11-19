@@ -47,7 +47,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/pub_date"
             android:layout_marginRight="75dp"
-            android:autoLink="all"
             android:singleLine="true"
             android:textSize="11sp"/>
 
