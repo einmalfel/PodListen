@@ -81,9 +81,12 @@ public class DownloadReceiver extends BroadcastReceiver {
         throw e;
       }
       Log.w(TAG, "DM produced security exception. Downloading to primary storage and copying", e);
-      rq.setDestinationUri(null)
-        .setDestinationInExternalFilesDir(
-            context, Environment.DIRECTORY_PODCASTS, Long.toString(id));
+      target = new File(Storage.getPrimaryStorage().getPodcastDir(), Long.toString(id));
+      if (target.exists() && !target.delete()) {
+        Log.e(TAG, "Failed to delete previous download " + target);
+        return false;
+      }
+      rq.setDestinationUri(Uri.fromFile(target));
       downloadId = dM.enqueue(rq);
     } catch (NullPointerException npe) {
       // By reading DownloadManager code I found that it could throw NPE when requesting download.
