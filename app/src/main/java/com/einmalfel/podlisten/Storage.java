@@ -21,11 +21,15 @@ public class Storage {
       Environment.MEDIA_UNKNOWN : "unknown";
   private final File appFilesDir; // /*/Android/data/com.einmalfel.podlisten/files
 
+  /**@return Ordered and deduplicated list of writable storages. Order: primary first, then dirs
+   * obtained from getExternalDirs, then dirs from environment variables */
   @NonNull
   public static List<Storage> getWritableStorages() {
     List<Storage> result = new LinkedList<>();
-    Set<File> dirs = new LinkedHashSet<>(Arrays.asList(
-        ContextCompat.getExternalFilesDirs(PodListenApp.getContext(), null)));
+    Set<File> dirs = new LinkedHashSet<>();
+    dirs.add(new File(Environment.getExternalStorageDirectory(),
+                      "Android/data/com.einmalfel.podlisten/files"));
+    dirs.addAll(Arrays.asList(ContextCompat.getExternalFilesDirs(PodListenApp.getContext(), null)));
     for (String env : new String[]{"EXTERNAL_STORAGE", "SECONDARY_STORAGE",
                                    "EXTERNAL_SDCARD_STORAGE", "SECOND_VOLUME_STORAGE",
                                    "THIRD_VOLUME_STORAGE"}) {
