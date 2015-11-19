@@ -496,6 +496,13 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   @Override
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     Log.i(TAG, "Preference changed " + key + ", values: " + sharedPreferences.getAll().toString());
-    readPreference(Key.valueOf(key));
+    Key preferenceKey;
+    try {
+      preferenceKey = Key.valueOf(key);
+    } catch (IllegalArgumentException exception) {
+      Log.i(TAG, "Unknown preference " + key + ", skipping..");
+      return;
+    }
+    readPreference(preferenceKey);
   }
 }
