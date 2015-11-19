@@ -1,21 +1,23 @@
 package com.einmalfel.podlisten;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,13 +37,28 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class SubscribeDialog extends AppCompatDialogFragment implements View.OnClickListener {
-  static final String URL_ARG = "com.einmalfel.podlisten.url_arg";
   private static final String TAG = "SDF";
+  private static final String URL_ARG = "com.einmalfel.podlisten.url_arg";
   private static final int SEARCH_REQUEST_ID = 1;
   private static final int FILE_REQUEST_ID = 0;
+  private static final String FRAG_TAG = "subscribe dialog";
 
   private EditText urlText;
   private Provider.RefreshMode refreshMode = Provider.RefreshMode.WEEK;
+
+  static void show(@Nullable Uri uri, @NonNull FragmentManager fm) {
+    AppCompatDialogFragment oldDialog = (AppCompatDialogFragment) fm.findFragmentByTag(FRAG_TAG);
+    if (oldDialog != null) {
+      oldDialog.dismiss();
+    }
+    SubscribeDialog newDialog = new SubscribeDialog();
+    if (uri != null) {
+      Bundle dialogArguments = new Bundle(1);
+      dialogArguments.putString(URL_ARG, uri.toString());
+      newDialog.setArguments(dialogArguments);
+    }
+    newDialog.show(fm, FRAG_TAG);
+  }
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -122,29 +139,16 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     return result;
   }
 
-  @NonNull
+  @Nullable
   @Override
-  public Dialog onCreateDialog(Bundle savedInstanceState) {
-    return new AlertDialog.Builder(getActivity())
-        .setTitle(R.string.subscribe_dialog_title)
-        .setView(R.layout.subscribe_dialog)
-        .create();
-  }
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                           Bundle savedInstanceState) {
+    View result = inflater.inflate(R.layout.subscribe_dialog, container);
 
-  @Override
-  public void onStart() {
-    super.onStart();
-
-    // dialog content layout is inflated during super.onStart(). Therefore there is no better place
-    // to init views. There is Dialog.create() which could be used in onCreate, but it's API 21+
-    if (urlText != null) {
-      return;
-    }
-
-    final Button subscribeButton = (Button) getDialog().findViewById(R.id.subscribe_button);
+    final Button subscribeButton = (Button) result.findViewById(R.id.subscribe_button);
     subscribeButton.setOnClickListener(this);
 
-    urlText = (EditText) getDialog().findViewById(R.id.url_text);
+    urlText = (EditText) result.findViewById(R.id.url_text);
     urlText.addTextChangedListener(new TextWatcher() {
 
       @Override
@@ -164,7 +168,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     urlText.setText(arguments == null ? "" : arguments.getString(URL_ARG, ""));
 
 
-    Button searchButton = (Button) getDialog().findViewById(R.id.search_button);
+    Button searchButton = (Button) result.findViewById(R.id.search_button);
     searchButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -172,7 +176,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
       }
     });
 
-    Button openFileButton = (Button) getDialog().findViewById(R.id.open_file_button);
+    Button openFileButton = (Button) result.findViewById(R.id.open_file_button);
     openFileButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -189,7 +193,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
       }
     });
 
-    Spinner spinner = (Spinner) getDialog().findViewById(R.id.refresh_mode);
+    Spinner spinner = (Spinner) result.findViewById(R.id.refresh_mode);
     spinner.setAdapter(new ArrayAdapter<>(
         getContext(), R.layout.subscribe_spinner_item, Provider.RefreshMode.values()));
     spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -208,6 +212,9 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     spinnerDrawable.setColorFilter(ContextCompat.getColor(getContext(), R.color.accent_primary),
                                    PorterDuff.Mode.SRC_ATOP);
     spinner.setBackground(spinnerDrawable);
+
+    getDialog().setTitle(R.string.subscribe_dialog_title);
+    return result;
   }
 
   private static final Pattern URL_SCHEME = Pattern.compile(".*://.*");
