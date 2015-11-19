@@ -289,7 +289,7 @@ class SyncWorker implements Runnable {
           + "|[1-9][0-9]|[0-9]))";
   private static final String IRI =
       "[" + GOOD_IRI_CHAR + "](?:[" + GOOD_IRI_CHAR + "\\-]{0,61}[" + GOOD_IRI_CHAR + "])?";
-  private static final String GTLD = "[a-zA-Z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,63}";
+  private static final String GTLD = "[a-zA-Z\u00C0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,63}";
   private static final String HOST_NAME = "(?:" + IRI + "\\.)+" + GTLD;
   private static final String DOMAIN_NAME = "(?:" + HOST_NAME + "|" + IP_ADDRESS + ")";
   // last part of number should be longer than 7 symbols, otherwise it will match dates (2015-02-02)
