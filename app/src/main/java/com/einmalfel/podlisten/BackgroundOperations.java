@@ -85,6 +85,7 @@ public class BackgroundOperations extends IntentService {
       Log.wtf(TAG, "Provider query returned null");
       return;
     }
+    Log.i(TAG, "Cleaning up " + cursor.getCount() + " episodes");
     DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
     boolean downloadsStopped = false;
     while (cursor.moveToNext()) {
@@ -163,14 +164,16 @@ public class BackgroundOperations extends IntentService {
       if (dFinished == Provider.EDFIN_MOVING) {
         File tempFile = new File(Storage.getPrimaryStorage().getPodcastDir(), Long.toString(epId));
         try {
-          Log.i(TAG, "Moving file from temporary location to current storage");
+          Log.i(TAG, "Moving file from " + tempFile + " to " + downloadLocation);
           moveFile(tempFile, downloadLocation);
         } catch (IOException exception) {
+          Log.e(TAG, "Failed to move file from temporary storage", exception);
           setDownloadErrorCode(epId, Provider.EDFIN_ERROR, cv);
           continue;
         }
       }
       if (!isDownloadedFileOk(downloadLocation)) {
+        Log.e(TAG, "Bad data received for episode " + epId);
         setDownloadErrorCode(epId, Provider.EDFIN_ERROR, cv);
         continue;
       }
@@ -229,6 +232,7 @@ public class BackgroundOperations extends IntentService {
     try {
       long length = file.length();
       if (length < 1024) {
+        Log.e(TAG, file + " is too small to be an audio file");
         return false; // it's to small to be audio file
       } else if (length < 5 * 1024 * 1024) {
         RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
@@ -249,11 +253,17 @@ public class BackgroundOperations extends IntentService {
           randomAccessFile.seek(offset);
           char lastChar = (char) randomAccessFile.readByte();
           if (!Character.isWhitespace(lastChar)) {
-            return lastChar != '>';
+            if (lastChar == '>') {
+              Log.e(TAG, file + ": XML/HTML downloaded instead of audio");
+              return false;
+            } else {
+              return true;
+            }
           }
         }
 
-        return false; // file consists of whitespaces. It's probably not media
+        Log.e(TAG, file + " consists of whitespaces only");
+        return false;
       } else {
         return true; // file is big enough, it's probably media, not html
       }
@@ -270,12 +280,12 @@ public class BackgroundOperations extends IntentService {
       inChannel = new FileInputStream(source).getChannel();
       outChannel = new FileOutputStream(destination).getChannel();
       inChannel.transferTo(0, inChannel.size(), outChannel);
-      if (!source.delete()) {
-        throw new IOException("Failed to delete " + source);
-      }
     } finally {
       if (inChannel != null)
         inChannel.close();
+      if (!source.delete()) {
+        Log.e(TAG, "Failed to delete source " + source);
+      }
       if (outChannel != null)
         outChannel.close();
     }
