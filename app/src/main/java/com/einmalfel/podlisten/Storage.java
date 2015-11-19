@@ -33,7 +33,8 @@ public class Storage {
       if (!TextUtils.isEmpty(value)) {
         for (String path : value.split(":")) {
           File storageDir = new File(path);
-          if (storageDir.isDirectory()) {
+          // filter legacy out. Download to thais dir fails on CyanogenMod because of perm. problems
+          if (!path.startsWith("/storage/emulated/legacy") && storageDir.isDirectory()) {
             File filesDir = new File(storageDir, "Android/data/com.einmalfel.podlisten/files");
             if (dirs.add(filesDir)) {
               Log.i(TAG, "Found storage via environment variable: " + filesDir);
