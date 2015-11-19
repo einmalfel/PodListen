@@ -25,6 +25,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.nononsenseapps.filepicker.FilePickerActivity;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -180,16 +182,11 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     openFileButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        try {
-          startActivityForResult(Intent.createChooser(
-              intent, getString(R.string.subscribe_dialog_select_opml_prompt)), FILE_REQUEST_ID);
-        } catch (android.content.ActivityNotFoundException ex) {
-          Snackbar.make(v, R.string.subscribe_dialog_install_file_manager, Snackbar.LENGTH_LONG)
-                  .show();
-        }
+        Intent intent = new Intent(getContext(), FilePickerActivity.class);
+        intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+        intent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
+        intent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+        startActivityForResult(intent, FILE_REQUEST_ID);
       }
     });
 

@@ -189,6 +189,12 @@
             android:name=".ForegroundOperations"
             android:exported="false">
         </service>
+
+        <activity
+            android:name="com.nononsenseapps.filepicker.FilePickerActivity"
+            android:theme="@style/FilePickerTheme"
+            android:label="@string/subscribe_dialog_select_opml_prompt">
+        </activity>
     </application>
 
 </manifest>

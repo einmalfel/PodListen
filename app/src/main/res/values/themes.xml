@@ -25,4 +25,6 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="FilePickerTheme" parent="NNF_BaseTheme"/>
+
 </resources>
