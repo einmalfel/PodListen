@@ -75,7 +75,7 @@ class SyncWorker implements Runnable {
         if (pubDate != null) {
           markNew &= timestamp.getTime() - pubDate.getTime() < refreshMode.getMaxAge();
         }
-        if (tryInsertEpisode(episode, id, timestamp, provider, markNew) && markNew) {
+        if (tryInsertEpisode(episode, id, provider, markNew) && markNew) {
           newEpisodesInserted++;
         }
       }
@@ -137,7 +137,7 @@ class SyncWorker implements Runnable {
 
   /** @return true if episode was inserted, false in case of error or if episode was already in DB */
   private boolean tryInsertEpisode(
-      @NonNull Item episode, long subscriptionId, @NonNull Date timestamp,
+      @NonNull Item episode, long subscriptionId,
       @NonNull ContentProviderClient provider, boolean markNew) {
     String title = episode.getTitle();
     if (title == null) {
@@ -160,6 +160,8 @@ class SyncWorker implements Runnable {
       Log.i(TAG, title + " lacks audio, skipped");
       return false;
     }
+
+    Date timestamp = new Date();
 
     // try update episode timestamp. If this fails, episode is not yet in db, insert it
     long id = PodcastHelper.generateId(audioLink);
