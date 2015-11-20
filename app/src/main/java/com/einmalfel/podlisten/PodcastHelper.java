@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
@@ -28,12 +29,23 @@ public class PodcastHelper {
   private static final int TIMEOUT_MS = 15000;
   private static PodcastHelper instance;
   private final Context context = PodListenApp.getContext();
-  private final ContentResolver resolver= context.getContentResolver();
+  private final ContentResolver resolver = context.getContentResolver();
 
   static URLConnection openConnectionWithTO(URL url) throws IOException {
     URLConnection result = url.openConnection();
     result.setConnectTimeout(TIMEOUT_MS);
     result.setReadTimeout(TIMEOUT_MS);
+    if (result instanceof HttpURLConnection) {
+      HttpURLConnection httpURLConnection = (HttpURLConnection) result;
+      httpURLConnection.setInstanceFollowRedirects(true);
+      if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM ||
+          httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
+        httpURLConnection.disconnect();
+        URL newUrl = new URL(url, httpURLConnection.getHeaderField("Location"));
+        Log.d(TAG, "Following redirect from " + url + " to " + newUrl);
+        return openConnectionWithTO(newUrl);
+      }
+    }
     return result;
   }
 
