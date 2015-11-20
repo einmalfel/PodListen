@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,6 +77,13 @@ public class DownloadReceiver extends BroadcastReceiver {
     long downloadId;
     try {
       downloadId = dM.enqueue(rq);
+    } catch (IllegalArgumentException e) {
+      if ("Unknown URL content://downloads/my_downloads".equals(e.getMessage())) {
+        Toast.makeText(context, R.string.enable_download_manager, Toast.LENGTH_LONG).show();
+        return false;
+      } else {
+        throw e;
+      }
     } catch (SecurityException e) {
       if (storage.isPrimaryStorage()) {
         throw e;
