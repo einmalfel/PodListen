@@ -137,4 +137,5 @@
     <string name="tab_new_episodes">Новые эпизоды</string>
     <string name="tab_playlist">Плейлист</string>
     <string name="tab_subscriptions">Подписки</string>
+    <string name="podcast_delete_question_no_title">Отписаться от этого подкаста?</string>
 </resources>
