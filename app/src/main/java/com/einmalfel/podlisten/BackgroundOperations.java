@@ -71,8 +71,8 @@ public class BackgroundOperations extends IntentService {
     String where = Provider.K_ESTATE + " == " + stateFilter;
     if (stateFilter == Provider.ESTATE_GONE) {
       // only process ones that aren't included in feed anymore OR have media associated with them
-      where += " AND (" + Provider.K_ETSTAMP + " < " + Provider.K_PTSTAMP + " OR " +
-          Provider.K_EDFIN + " != 0 OR " + Provider.K_EDID + " != 0)";
+      where += " AND (" + Provider.K_PTSTAMP + " IS NULL OR " + Provider.K_ETSTAMP + " < " +
+          Provider.K_PTSTAMP + " OR " + Provider.K_EDFIN + " != 0 OR " + Provider.K_EDID + " != 0)";
     }
     Cursor cursor = resolver.query(
         Provider.episodeJoinPodcastUri,
@@ -113,8 +113,10 @@ public class BackgroundOperations extends IntentService {
       }
       ImageManager.getInstance().deleteImage(episodeId);
       // 3. Set gone state or completely remove episode from db if it is already absent in the feed
+      // or feed itself is deleted (K_PTSTAMP column will contain null in latter case)
       if (cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ETSTAMP)) <
-          cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_PTSTAMP))) {
+          cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_PTSTAMP)) ||
+          cursor.isNull(cursor.getColumnIndexOrThrow(Provider.K_PTSTAMP))) {
         Log.i(TAG, "Feed doesn't contain episode " + episodeId + " anymore. Deleting from db..");
         if (resolver.delete(Provider.getUri(Provider.T_EPISODE, episodeId), null, null) != 1) {
           Log.w(TAG, "Failed to delete " + episodeId + " from db");
