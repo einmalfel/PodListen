@@ -53,7 +53,7 @@ public class HistoryElementHolder extends RecyclerView.ViewHolder {
 
   public void bind(String title, String description, String shortDescr, String url, long date,
                    int state, long id, boolean expanded) {
-    if (id != this.id || expanded != this.expanded) {
+    if ((id != this.id || expanded != this.expanded) && !TextUtils.isEmpty(description)) {
       if (expanded) {
         descriptionView.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
       } else {
