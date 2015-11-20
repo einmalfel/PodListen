@@ -51,6 +51,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements
       public void onClick(DialogInterface dialog, int id) {
         ImageManager.getInstance().deleteImage(pId);
         activity.getContentResolver().delete(Provider.getUri(Provider.T_PODCAST, pId), null, null);
+        BackgroundOperations.cleanupEpisodes(getContext(), Provider.ESTATE_GONE);
       }
     });
     builder
