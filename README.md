@@ -12,6 +12,13 @@ Android podcast app with simplified navigation and lightweight interface. It's i
 
 <img src="https://cloud.githubusercontent.com/assets/2640813/11317803/e6e65fbe-904c-11e5-9612-c5ee6db88b5b.png" width="30%" hspace="1%"><img src="https://cloud.githubusercontent.com/assets/2640813/11317805/e9300900-904c-11e5-9055-c481350d9b33.png" width="30%" hspace="1%"><img src="https://cloud.githubusercontent.com/assets/2640813/11317806/ebd48118-904c-11e5-97d0-9563e89773a8.png" width="30%" hspace="1%">
 
+### Translation
+
+PodListen is ready for translation. If you are willing to contribute by translating the app to your language just make a pull-request with new or updated res/values-XX/strings.xml file.
+
+Alternatively, you can simply [download latest strings.xml](https://github.com/einmalfel/PodListen/blob/master/app/src/main/res/values/strings.xml), translate it and email it to me.
+
+Currently, PodListen has Russian, English and incomplete French localization.
 
 ### License
 
