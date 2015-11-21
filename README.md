@@ -10,9 +10,8 @@ Android podcast app with simplified navigation and lightweight interface. It's i
 
 ### Screenshots
 
-<img src="https://cloud.githubusercontent.com/assets/2640813/10812196/d8f17806-7e24-11e5-8408-d5632d9f7249.png" width="45%" hspace="1%"><img src="https://cloud.githubusercontent.com/assets/2640813/10812194/d8ee5f36-7e24-11e5-8772-fa44b03c6d82.png" width="45%" hspace="1%">
+<img src="https://cloud.githubusercontent.com/assets/2640813/11317803/e6e65fbe-904c-11e5-9612-c5ee6db88b5b.png" width="30%" hspace="1%"><img src="https://cloud.githubusercontent.com/assets/2640813/11317805/e9300900-904c-11e5-9055-c481350d9b33.png" width="30%" hspace="1%"><img src="https://cloud.githubusercontent.com/assets/2640813/11317806/ebd48118-904c-11e5-97d0-9563e89773a8.png" width="30%" hspace="1%">
 
-<img src="https://cloud.githubusercontent.com/assets/2640813/10812195/d8f0fc8c-7e24-11e5-8653-45ecc11a98f3.png" width="92%" hspace="1%">
 
 ### License
 
