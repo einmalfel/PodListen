@@ -80,7 +80,8 @@ class SyncWorker implements Runnable {
         }
       }
 
-      ContentValues values = new ContentValues(1);
+      ContentValues values = new ContentValues(2);
+      values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
       values.put(Provider.K_PTSTAMP, timestamp.getTime());
       if (provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null) == 1) {
         syncState.signalFeedSuccess(title, newEpisodesInserted);
@@ -249,7 +250,6 @@ class SyncWorker implements Runnable {
       values.put(Provider.K_PDESCR, simplifiedDescription);
       values.put(Provider.K_PSDESCR, getShortDescription(simplifiedDescription));
     }
-    values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
     values.put(Provider.K_PTSTAMP, 0);
     String image = feed.getImageLink();
     if (!ImageManager.getInstance().isDownloaded(id) && image != null) {

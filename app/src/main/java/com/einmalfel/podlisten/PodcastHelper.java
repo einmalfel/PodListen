@@ -126,6 +126,7 @@ public class PodcastHelper {
       values.put(Provider.K_PFURL, url);
       values.put(Provider.K_PRMODE, refreshMode.ordinal());
       values.put(Provider.K_ID, id);
+      values.put(Provider.K_PSTATE, Provider.PSTATE_NEW);
       values.put(Provider.K_PATSTAMP, new Date().getTime());
       if (resolver.insert(Provider.podcastUri, values) == null) {
         throw new SubscriptionNotInsertedException();
