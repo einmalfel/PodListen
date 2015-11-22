@@ -3,6 +3,7 @@ package com.einmalfel.podlisten;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Handler;
@@ -121,17 +122,18 @@ public class CatalogueFragment extends Fragment {
           // optimization: don't sort results if number of terms is big (slow WHERE processing) or
           // all terms are short (i.e. a lots of results)
           int longest = 0;
-          for (String term : terms) {
-            if (term.length() > longest) {
-              longest = term.length();
+          for (int i = 0; i < terms.length; i++) {
+            if (terms[i].length() > longest) {
+              longest = terms[i].length();
             }
+            terms[i] = DatabaseUtils.sqlEscapeString(terms[i] + "*");
           }
           if (longest - (terms.length - 1) >= 3) { // minimal term size for sorting is 3 chars
             query += " ORDER BY length(offsets(" + FTS_NAME + ")) DESC";
           }
         }
 
-        final Cursor c = db.rawQuery(query, new String[]{TextUtils.join("* ", terms) + "*"});
+        final Cursor c = db.rawQuery(query, new String[]{TextUtils.join(" ", terms)});
 
         new Handler(appContext.getMainLooper()).post(new Runnable() {
           @Override
