@@ -16,7 +16,7 @@ Android podcast app with simplified navigation and lightweight interface. It's i
 
 PodListen is ready for translation. If you are willing to contribute by translating the app to your language just make a pull-request with new or updated res/values-XX/strings.xml file.
 
-Alternatively, you can simply [download latest strings.xml](https://github.com/einmalfel/PodListen/blob/master/app/src/main/res/values/strings.xml), translate it and email it to me.
+Alternatively, you can simply [download latest strings.xml](https://raw.githubusercontent.com/einmalfel/PodListen/master/app/src/main/res/values/strings.xml), translate it and email it to me.
 
 Currently, PodListen has Russian, English and incomplete French localization.
 
