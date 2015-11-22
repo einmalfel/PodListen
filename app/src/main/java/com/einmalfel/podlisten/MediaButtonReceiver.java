@@ -54,12 +54,10 @@ public class MediaButtonReceiver extends BroadcastReceiver {
     }
     Log.d(TAG, "Processing media button: " + ev);
     switch (ev.getKeyCode()) {
-      case KeyEvent.KEYCODE_MEDIA_PLAY: // sometimes this event means play/pause pressed during play
+      case KeyEvent.KEYCODE_MEDIA_PAUSE: // play and pause events could mean play_pause
+      case KeyEvent.KEYCODE_MEDIA_PLAY:
       case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
         service.playPauseResume();
-        break;
-      case KeyEvent.KEYCODE_MEDIA_PAUSE:
-        service.pause();
         break;
       case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
       case KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD:
