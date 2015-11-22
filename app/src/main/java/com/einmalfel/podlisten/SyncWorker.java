@@ -80,8 +80,10 @@ class SyncWorker implements Runnable {
         }
       }
 
-      ContentValues values = new ContentValues(2);
+      ContentValues values = new ContentValues(3);
       values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
+      // refresh mode is set for one refresh only, so reset it to default after successful update
+      values.put(Provider.K_PRMODE, Provider.RefreshMode.ALL.ordinal());
       values.put(Provider.K_PTSTAMP, timestamp.getTime());
       if (provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null) == 1) {
         syncState.signalFeedSuccess(title, newEpisodesInserted);
@@ -242,8 +244,6 @@ class SyncWorker implements Runnable {
     values.put(Provider.K_PFURL, link);
     values.put(Provider.K_PURL, feed.getLink());
     values.put(Provider.K_PNAME, title);
-    // refresh mode is set for one refresh only, so always reset it to default value
-    values.put(Provider.K_PRMODE, Provider.RefreshMode.ALL.ordinal());
     String description = feed.getDescription();
     if (description != null) {
       String simplifiedDescription = simplifyHTML(description);
