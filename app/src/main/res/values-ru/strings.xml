@@ -46,7 +46,7 @@
     <string name="player_empty">Плейлист пуст</string>
     <string name="player_episode_does_not_exist">Епизод %d отсутствует</string>
     <string name="player_stopped">Воспроизведение остановлено</string>
-    <string name="podcast_already_subscribed">Подписка %s уже существует</string>
+    <string name="podcast_already_subscribed">Подписка уже существует: %s</string>
     <string name="podcast_button_description">Показать эпизоды этой подписки</string>
     <string name="podcast_delete_question">Отписаться от %s?</string>
     <string name="podcast_image_description">Пиктограмма подкаста</string>
@@ -56,10 +56,10 @@
     <string name="podcast_refresh_time">Обновлен %s</string>
     <string name="podcast_subscribe_failed">Не удалось подписаться</string>
     <string name="preferences_auto_download_ac_summary">Использовать авто-загрузку только при подключенном зарядном устройстве</string>
-    <string name="preferences_auto_download_ac_title">А/З только на зарядке</string>
+    <string name="preferences_auto_download_ac_title">Автозагрузка на зарядке</string>
     <string name="preferences_auto_download_title">Авто-загрузка</string>
-    <string name="preferences_download_network_title">Сеть для А/З</string>
-    <string name="preferences_jump_interval_title">Шаг мгновенной перемотки</string>
+    <string name="preferences_download_network_title">Сеть для автозагрузки</string>
+    <string name="preferences_jump_interval_title">Шаг перемотки</string>
     <string name="preferences_max_downloads_title">Макс. одновременных загрузок</string>
     <string name="preferences_max_downloads_unlimited">Неограничено</string>
     <string name="preferences_network_title">Сеть</string>
@@ -79,7 +79,7 @@
     <string name="preferences_storage_location_title">Хранилище подкастов (очищается при изменении)</string>
     <string name="preferences_title">Настройки</string>
     <string name="refresh_mode_all">Добавить все эпизоды</string>
-    <string name="refresh_mode_last">Добавить последний эпизод</string>
+    <string name="refresh_mode_last">Добавить последний</string>
     <string name="refresh_mode_last_10">Добавить 10 последних</string>
     <string name="refresh_mode_last_100">Добавить 100 последних</string>
     <string name="refresh_mode_last_2">Добавить 2 последних</string>
@@ -88,10 +88,10 @@
     <string name="refresh_mode_last_4">Добавить 4 последних</string>
     <string name="refresh_mode_last_5">Добавить 5 последних</string>
     <string name="refresh_mode_last_50">Добавить 50 последних</string>
-    <string name="refresh_mode_month">Эпизоды за последний месяц</string>
-    <string name="refresh_mode_none">Не добавлять вышедшие эпизоды</string>
-    <string name="refresh_mode_week">Добавить за последнюю неделю</string>
-    <string name="refresh_mode_year">Добавить за последний год</string>
+    <string name="refresh_mode_month">За последний месяц</string>
+    <string name="refresh_mode_none">Не добавлять эпизоды</string>
+    <string name="refresh_mode_week">За последнюю неделю</string>
+    <string name="refresh_mode_year">За последний год</string>
     <string name="refresh_period_12hours">Каждые 12 часов</string>
     <string name="refresh_period_2days">Каждые 2 дня</string>
     <string name="refresh_period_2hours">Каждые 2 часа</string>
