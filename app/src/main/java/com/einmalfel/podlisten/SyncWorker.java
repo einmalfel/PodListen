@@ -160,8 +160,14 @@ class SyncWorker implements Runnable {
       }
     }
     if (audioLink == null) {
-      Log.i(TAG, title + " lacks audio, skipped");
-      return false;
+      String link = episode.getLink();
+      if (link != null && urlPointsToAudio(link)) {
+        Log.d(TAG, "Using <link> tag as audio enclosure " + link);
+        audioLink = link;
+      } else {
+        Log.i(TAG, title + " lacks audio, skipped");
+        return false;
+      }
     }
 
     Date timestamp = new Date();
