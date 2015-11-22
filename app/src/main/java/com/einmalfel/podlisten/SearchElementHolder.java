@@ -1,5 +1,6 @@
 package com.einmalfel.podlisten;
 
+import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -18,6 +19,7 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
   private final TextView frequencyView;
   private final View dividerBottom;
   private final CardView cardView;
+  private final Context context;
 
   private String rss_url;
   private boolean expanded;
@@ -27,6 +29,7 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
                              final SearchAdapter.SearchClickListener listener,
                              final SearchAdapter adapter) {
     super(layout);
+    context = layout.getContext();
     titleView = (TextView) layout.findViewById(R.id.podcast_title);
     urlView = (TextView) layout.findViewById(R.id.podcast_url);
     frequencyView = (TextView) layout.findViewById(R.id.podcast_frequency);
@@ -59,7 +62,7 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
       descriptionView.setText(description);
       urlView.setText(url != null && !url.isEmpty() ? url : rss_url);
       double freq = 30d * 24 * 60 * 60 * 1000 / period;
-      frequencyView.setText(String.format("Frequency: %.1f episodes/month", freq));
+      frequencyView.setText(context.getString(R.string.search_frequency, freq));
       this.rss_url = rss_url;
       this.id = id;
     }

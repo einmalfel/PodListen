@@ -139,4 +139,5 @@
     <string name="tab_subscriptions">Подписки</string>
     <string name="podcast_delete_question_no_title">Отписаться от этого подкаста?</string>
     <string name="enable_download_manager">Podlisten использует системное приложение \'Download manager\' для загрузок. Пожалуйста, включите его (Настройки->Приложения->Все)</string>
+    <string name="search_frequency">Частота: %.1f эпизода в месяц</string>
 </resources>
