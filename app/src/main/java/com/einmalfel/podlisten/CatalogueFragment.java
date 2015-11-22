@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -133,16 +135,29 @@ public class CatalogueFragment extends Fragment {
           }
         }
 
-        final Cursor c = db.rawQuery(query, new String[]{TextUtils.join(" ", terms)});
-
-        new Handler(appContext.getMainLooper()).post(new Runnable() {
-          @Override
-          public void run() {
-            if (listener != null) {
-              listener.onQueryComplete(c);
-            }
+        Cursor c = null;
+        try {
+          c = db.rawQuery(query, new String[]{TextUtils.join(" ", terms)});
+          c.getCount();// need this to trigger SQLiteException if there are problems with this query
+          sendQueryResult(c);
+        } catch (SQLiteException exception) {
+          if (c != null) {
+            c.close();
           }
-        });
+          Log.i(TAG, "User query couldn't be used for MATCH. Returning null");
+          sendQueryResult(null);
+        }
+      }
+    });
+  }
+
+  private void sendQueryResult(@Nullable final Cursor cursor) {
+    new Handler(appContext.getMainLooper()).post(new Runnable() {
+      @Override
+      public void run() {
+        if (listener != null) {
+          listener.onQueryComplete(cursor);
+        }
       }
     });
   }
