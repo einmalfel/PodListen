@@ -6,6 +6,7 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.einmalfel.earl.EarlParser;
@@ -153,8 +154,8 @@ class SyncWorker implements Runnable {
     for (Enclosure enclosure : episode.getEnclosures()) {
       String type = enclosure.getType();
       String link = enclosure.getLink();
-      if ((type != null && AUDIO_PATTERN.matcher(type).matches()) ||
-          (type == null && urlPointsToAudio(link))) {
+      if ((!TextUtils.isEmpty(type) && AUDIO_PATTERN.matcher(type).matches()) ||
+          (TextUtils.isEmpty(type) && urlPointsToAudio(link))) {
         audioLink = link;
         audioSize = enclosure.getLength();
       }
