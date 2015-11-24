@@ -346,7 +346,6 @@ class SyncWorker implements Runnable {
       values.put(Provider.K_PDESCR, simplifiedDescription);
       values.put(Provider.K_PSDESCR, getShortDescription(simplifiedDescription));
     }
-    values.put(Provider.K_PTSTAMP, 0);
     String image = feed.getImageLink();
     if (!ImageManager.getInstance().isDownloaded(id) && image != null) {
       try {
