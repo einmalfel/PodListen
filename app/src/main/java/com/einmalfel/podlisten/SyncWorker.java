@@ -13,6 +13,7 @@ import com.einmalfel.earl.EarlParser;
 import com.einmalfel.earl.Enclosure;
 import com.einmalfel.earl.Feed;
 import com.einmalfel.earl.Item;
+import com.einmalfel.earl.RSSEnclosure;
 
 import org.unbescape.xml.XmlEscape;
 import org.xmlpull.v1.XmlPullParserException;
@@ -139,6 +140,27 @@ class SyncWorker implements Runnable {
     return false;
   }
 
+  @Nullable
+  private Enclosure extractAudioEnclosure(@NonNull Item episode) {
+    for (Enclosure enclosure : episode.getEnclosures()) {
+      String type = enclosure.getType();
+      if ((!TextUtils.isEmpty(type) && AUDIO_PATTERN.matcher(type).matches()) ||
+          (TextUtils.isEmpty(type) && urlPointsToAudio(enclosure.getLink()))) {
+        return enclosure;
+      }
+    }
+    String link = episode.getLink();
+    if (link != null && urlPointsToAudio(link)) {
+      Log.d(TAG, "Using <link> tag as audio enclosure " + link);
+      try {
+        return new RSSEnclosure(new URL(link), 0, "");
+      } catch (MalformedURLException exception) {
+        Log.e(TAG, "Malformed URL in episode link");
+      }
+    }
+    return null;
+  }
+
   /** @return true if episode was inserted, false in case of error or if episode was already in DB */
   private boolean tryInsertEpisode(
       @NonNull Item episode, long subscriptionId,
@@ -149,32 +171,17 @@ class SyncWorker implements Runnable {
     }
 
     // extract audio enclosure or return
-    String audioLink = null;
-    Integer audioSize = null;
-    for (Enclosure enclosure : episode.getEnclosures()) {
-      String type = enclosure.getType();
-      String link = enclosure.getLink();
-      if ((!TextUtils.isEmpty(type) && AUDIO_PATTERN.matcher(type).matches()) ||
-          (TextUtils.isEmpty(type) && urlPointsToAudio(link))) {
-        audioLink = link;
-        audioSize = enclosure.getLength();
-      }
+    Enclosure audioEnclosure = extractAudioEnclosure(episode);
+    if (audioEnclosure == null) {
+      Log.i(TAG, title + " lacks audio, skipped");
+      return false;
     }
-    if (audioLink == null) {
-      String link = episode.getLink();
-      if (link != null && urlPointsToAudio(link)) {
-        Log.d(TAG, "Using <link> tag as audio enclosure " + link);
-        audioLink = link;
-      } else {
-        Log.i(TAG, title + " lacks audio, skipped");
-        return false;
-      }
-    }
+    Integer audioSize = audioEnclosure.getLength();
 
     Date timestamp = new Date();
 
     // try update episode timestamp. If this fails, episode is not yet in db, insert it
-    long id = PodcastHelper.generateId(audioLink);
+    long id = PodcastHelper.generateId(audioEnclosure.getLink());
     try {
       if (updateEpisodeTimestamp(id, provider, timestamp)) {
         return false;
@@ -186,10 +193,12 @@ class SyncWorker implements Runnable {
 
     if (audioSize == null || audioSize < 10 * 1024) {
       try {
-        audioSize = PodcastHelper.openConnectionWithTO(new URL(audioLink)).getContentLength();
+        audioSize = PodcastHelper.openConnectionWithTO(
+            new URL(audioEnclosure.getLink())).getContentLength();
       } catch (MalformedURLException ex) {
         Log.e(TAG,
-              "Episode " + episode.getLink() + " has malformed URL: " + audioLink, ex);
+              "Episode " + episode.getLink() + " has malformed URL: " + audioEnclosure.getLink(),
+              ex);
         return false;
       } catch (IOException ex) {
         Log.e(TAG, "Leaving wrong episode size for " + episode.getLink(), ex);
@@ -199,7 +208,7 @@ class SyncWorker implements Runnable {
     // put episode into DB
     ContentValues values = new ContentValues();
     values.put(Provider.K_ENAME, title);
-    values.put(Provider.K_EAURL, audioLink);
+    values.put(Provider.K_EAURL, audioEnclosure.getLink());
     String description = episode.getDescription();
     if (description != null) {
       String simplifiedDescription = simplifyHTML(description);
