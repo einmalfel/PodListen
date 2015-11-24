@@ -2,6 +2,7 @@ package com.einmalfel.podlisten;
 
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +25,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.DataFormatException;
 
@@ -43,11 +48,11 @@ class SyncWorker implements Runnable {
     PODCAST_EPOCH = calendar.getTime();
   }
 
-  private final long id;
-  private final String link;
   private final SyncState syncState;
   private final ContentProviderClient provider;
   private final Provider.RefreshMode refreshMode;
+  private long id;
+  private String link;
 
   public SyncWorker(long id, @NonNull String link, @NonNull ContentProviderClient provider,
                     @NonNull SyncState syncState, Provider.RefreshMode refreshMode) {
@@ -62,7 +67,28 @@ class SyncWorker implements Runnable {
   public void run() {
     try {
       InputStream inputStream = PodcastHelper.openConnectionWithTO(new URL(link)).getInputStream();
-      Feed feed = EarlParser.parseOrThrow(inputStream, MAX_EPISODES_TO_PARSE);
+      Feed feed = null;
+      try {
+        feed = EarlParser.parseOrThrow(inputStream, MAX_EPISODES_TO_PARSE);
+      } catch (XmlPullParserException parserException) {
+        // link could lead to podcast web-page. Check if it contains RSS links with audio episodes
+        for (String feedCandidate : scanPage(link)) {
+          try {
+            feed = EarlParser.parseOrThrow(
+                PodcastHelper.openConnectionWithTO(new URL(feedCandidate)).getInputStream(),
+                MAX_EPISODES_TO_PARSE);
+            if (feedHasAudioEpisodes(feed)) {
+              switchFeed(feedCandidate);
+              break;
+            }
+          } catch (XmlPullParserException | IOException exception) {
+            Log.i(TAG, feedCandidate + " parsing failed", exception);
+          }
+        }
+        if (feed == null) {
+          throw parserException;
+        }
+      }
 
       String title = updateFeed(id, feed);
 
@@ -108,6 +134,60 @@ class SyncWorker implements Runnable {
       storeFeedError(exception);
       syncState.signalIOError(link);
     }
+  }
+
+  private boolean feedHasAudioEpisodes(@NonNull Feed feed) {
+    for (Item episode : feed.getItems()) {
+      if (extractAudioEnclosure(episode) != null) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void switchFeed(@NonNull String newURL) throws RemoteException {
+    ContentValues cv = new ContentValues(3);
+    long newId = PodcastHelper.generateId(newURL);
+    cv.put(Provider.K_ID, newId);
+    cv.put(Provider.K_PFURL, newURL);
+    cv.put(Provider.K_PRMODE, refreshMode.ordinal());
+    try {
+      provider.update(Provider.getUri(Provider.T_PODCAST, id), cv, null, null);
+    } catch (SQLiteConstraintException exception) {
+      throw new RemoteException(PodListenApp.getContext().getString(
+          R.string.podcast_already_subscribed,
+          newURL));
+    }
+    id = newId;
+    link = newURL;
+  }
+
+
+  // match tags containing xml, rss and feed w/o nested tags and w/ href attribute
+  private static final Pattern hrefPattern = Pattern.compile(
+      "<[^><]*(?=[^><]*(?:gems|Feed|RSS|xml)[^><]*)(?=[^><]*href=\"([^\"]+)\"[^><]*)[^><]*>",
+      Pattern.CASE_INSENSITIVE);
+
+  @NonNull
+  private Set<String> scanPage(@NonNull String link) throws IOException {
+    Set<String> result = new HashSet<>();
+    InputStream stream = null;
+
+    try {
+      stream = new URL(link).openStream();
+      String page = new Scanner(stream, "UTF-8").useDelimiter("\\A").next();
+      Matcher matcher = hrefPattern.matcher(page);
+      while (matcher.find()) {
+        // TODO: handle relative links
+        result.add(matcher.group(1));
+      }
+    } finally {
+      if (stream != null) {
+        stream.close();
+      }
+    }
+
+    return result;
   }
 
   void storeFeedError(@NonNull Exception exception) {

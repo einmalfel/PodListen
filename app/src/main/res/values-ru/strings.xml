@@ -111,7 +111,7 @@
     <string name="sorting_mode_newest_first">Сначала новые</string>
     <string name="sorting_mode_oldest_first">Сначала старые</string>
     <string name="sorting_mode_shortest_first">Сначала короткие</string>
-    <string name="subscribe_dialog_edit_text_hint">Вставьте ссылку на поток</string>
+    <string name="subscribe_dialog_edit_text_hint">Введите ссылку на подкаст</string>
     <string name="subscribe_dialog_import_opml">Импорт из OPML</string>
     <string name="subscribe_dialog_install_file_manager">Пожалуйста, установите файл-менеджер</string>
     <string name="subscribe_dialog_on_first_load_text">Сколько эпизодов добавить изначально:</string>
