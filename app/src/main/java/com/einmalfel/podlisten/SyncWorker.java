@@ -304,7 +304,7 @@ class SyncWorker implements Runnable {
   // last part of number should be longer than 7 symbols, otherwise it will match dates (2015-02-02)
   private static final Pattern PHONE = Pattern.compile(
       "(\\A|\\s|<br/>)+" +
-          "((?:\\+[0-9]+[\\- \\.]*)?(?:\\([0-9]+\\)[\\- \\.]*)?(?:[0-9][0-9\\- \\.]{7,}[0-9]))" +
+          "((?:\\+[0-9]+[\\- \\.]*)?(?:\\([0-9]+\\)[\\- \\.]*)?(?:[0-9][0-9\\- \\.]{9,}[0-9]))" +
           "(\\Z|\\s|<br/>)+");
   private static final Pattern EMAIL_ADDRESS = Pattern.compile(
       "(\\A|\\s|<br/>)+" +
