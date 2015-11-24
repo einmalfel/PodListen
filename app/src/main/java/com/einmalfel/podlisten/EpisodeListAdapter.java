@@ -15,16 +15,17 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
     /**
      * @return true if event was consumed
      */
-    boolean onLongTap(long id);
+    boolean onLongTap(long id, String title, int state, String aURL, int downloaded);
 
-    void onButtonTap(long id);
+    void onButtonTap(long id, String title, int state, String aURL, int downloaded);
   }
 
   private static final String TAG = "ELA";
   static final String[] REQUIRED_DB_COLUMNS = new String[]{
       Provider.K_EID, Provider.K_ENAME, Provider.K_EDESCR, Provider.K_EDFIN, Provider.K_ESIZE,
       Provider.K_ESTATE, Provider.K_PNAME, Provider.K_EPLAYED, Provider.K_ELENGTH, Provider.K_EDATE,
-      Provider.K_EPID, Provider.K_ESDESCR, Provider.K_EERROR, Provider.K_EDID, Provider.K_EURL};
+      Provider.K_EPID, Provider.K_ESDESCR, Provider.K_EERROR, Provider.K_EDID, Provider.K_EURL,
+      Provider.K_EAURL};
   private final ItemClickListener listener;
   private final Set<Long> expandedElements = new HashSet<>(10);
   private long currentPlayingId = 0;
@@ -83,12 +84,13 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
         cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EPLAYED)),
         cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ELENGTH)),
         cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDATE)),
-        cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDFIN)),
+        cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_EDFIN)),
         cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ESDESCR)),
         cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EERROR)),
         currentPlayingId == id ? currentState : PlayerService.State.STOPPED,
         cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EURL)),
         cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDID)),
+        cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EAURL)),
         expandedElements.contains(id));
   }
 

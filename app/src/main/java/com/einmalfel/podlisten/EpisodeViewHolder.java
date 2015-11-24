@@ -47,7 +47,10 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private final TextView episdoeUrlView;
   private long id = 0;
   private boolean expanded = false;
-  private long downloaded = -1;
+  private int downloaded = -1;
+  private int state;
+  private String title;
+  private String aURL;
 
   long getId() {
     return id;
@@ -81,13 +84,17 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
       public boolean onLongClick(View v) {
-        return listener.onLongTap(EpisodeViewHolder.this.id);
+        return listener.onLongTap(
+            EpisodeViewHolder.this.id, EpisodeViewHolder.this.title, EpisodeViewHolder.this.state,
+            EpisodeViewHolder.this.aURL, EpisodeViewHolder.this.downloaded);
       }
     });
     playAddFrame.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        listener.onButtonTap(EpisodeViewHolder.this.id);
+        listener.onButtonTap(
+            EpisodeViewHolder.this.id, EpisodeViewHolder.this.title, EpisodeViewHolder.this.state,
+            EpisodeViewHolder.this.aURL, EpisodeViewHolder.this.downloaded);
       }
     });
 
@@ -119,9 +126,9 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   }
 
   public void bindEpisode(String title, String description, long id, long pid, long size, int state,
-                          String feedTitle, long played, long length, long date, long downloaded,
+                          String feedTitle, long played, long length, long date, int downloaded,
                           String shortDescr, String errorMessage, PlayerService.State playerState,
-                          String url, long downloadId, boolean expanded) {
+                          String url, long downloadId, String aURL, boolean expanded) {
     if (errorMessage == null) {
       episdoeUrlView.setText(url);
       episdoeUrlView.setTextColor(ContextCompat.getColor(
@@ -243,5 +250,8 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     this.id = id;
     this.expanded = expanded;
     this.downloaded = downloaded;
+    this.title = title;
+    this.state = state;
+    this.aURL = aURL;
   }
 }

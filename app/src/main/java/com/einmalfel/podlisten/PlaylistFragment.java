@@ -66,44 +66,30 @@ public class PlaylistFragment extends DebuggableFragment implements
   }
 
   @Override
-  public boolean onLongTap(long id) {
+  public boolean onLongTap(long id, String title, int state, String aURL, int downloaded) {
     activity.deleteEpisodeDialog(id);
     return true;
   }
 
   @Override
-  public void onButtonTap(long id) {
+  public void onButtonTap(long id, String title, int state, String aURL, int downloaded) {
     // episode button in playlist is enabled in two cases:
-    // - episode is downloaded
-    // - episode isn't downloaded, isn't being download (downloadId == 0)
-    Cursor cursor = activity.getContentResolver().query(
-        Provider.getUri(Provider.T_EPISODE, id),
-        new String[]{Provider.K_EAURL, Provider.K_ENAME, Provider.K_EDID, Provider.K_EDFIN},
-        null, null, null);
-    if (cursor != null && cursor.moveToFirst()) {
-      long dId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDID));
-      int downloaded = cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_EDFIN));
-      String aURL = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EAURL));
-      String title = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ENAME));
-      cursor.close();
-      if (dId == 0 && downloaded != Provider.EDFIN_COMPLETE) {
+    // - episode is downloaded, button is used for play/pause
+    // - episode isn't downloaded, isn't being download (downloadId == 0), button stats download
+
+    if (downloaded != Provider.EDFIN_COMPLETE) {
         Intent bi = new Intent(DownloadReceiver.DOWNLOAD_EPISODE_ACTION);
         bi.putExtra(DownloadReceiver.URL_EXTRA_NAME, aURL);
         bi.putExtra(DownloadReceiver.TITLE_EXTRA_NAME, title);
         bi.putExtra(DownloadReceiver.ID_EXTRA_NAME, id);
         PodListenApp.getContext().sendBroadcast(bi);
-        return;
-      }
     } else {
-      Log.e(TAG, "Episode " + id + " is absent in DB");
-      return;
-    }
-
-    if (conn.service != null) {
-      if (id == conn.service.getEpisodeId()) {
-        conn.service.playPauseResume();
-      } else {
-        conn.service.playEpisode(id);
+      if (conn.service != null) {
+        if (id == conn.service.getEpisodeId()) {
+          conn.service.playPauseResume();
+        } else {
+          conn.service.playEpisode(id);
+        }
       }
     }
   }

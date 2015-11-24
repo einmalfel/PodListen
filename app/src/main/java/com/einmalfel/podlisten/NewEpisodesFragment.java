@@ -44,13 +44,13 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
   }
 
   @Override
-  public boolean onLongTap(long id) {
+  public boolean onLongTap(long id, String title, int state, String aURL, int downloaded) {
     activity.deleteEpisodeDialog(id);
     return true;
   }
 
   @Override
-  public void onButtonTap(long id) {
+  public void onButtonTap(long id, String title, int state, String aURL, int downloaded) {
     ContentValues val = new ContentValues(1);
     val.put(Provider.K_ESTATE, Provider.ESTATE_IN_PLAYLIST);
     activity.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), val, null, null);
