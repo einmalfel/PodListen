@@ -130,7 +130,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
                           String shortDescr, String errorMessage, PlayerService.State playerState,
                           String url, long downloadId, String aURL, boolean expanded) {
     if (errorMessage == null) {
-      episdoeUrlView.setText(url);
+      episdoeUrlView.setText(TextUtils.isEmpty(url) ? aURL : url);
       episdoeUrlView.setTextColor(ContextCompat.getColor(
           context, playerState.isStopped() ? R.color.text : R.color.text_bright));
     } else {
