@@ -45,7 +45,7 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
 
   @Override
   public boolean onLongTap(long id, String title, int state, String aURL, int downloaded) {
-    activity.deleteEpisodeDialog(id);
+    activity.deleteEpisodeDialog(id, state, title);
     return true;
   }
 

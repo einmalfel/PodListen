@@ -344,33 +344,18 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     });
   }
 
-  void deleteEpisode(long episodeId) {
-    Cursor c = getContentResolver().query(Provider.getUri(Provider.T_EPISODE, episodeId),
-                                          new String[]{Provider.K_ENAME, Provider.K_ESTATE},
-                                          null, null, null);
-    if (c == null) {
-      Log.wtf(TAG, "Failed to delete " + episodeId + ". Got null from query");
-      return;
-    }
-    if (c.moveToFirst()) {
-      final String episodeName = c.getString(c.getColumnIndexOrThrow(Provider.K_ENAME));
-      final int prevState = c.getInt(c.getColumnIndexOrThrow(Provider.K_ESTATE));
-      ContentValues cv = new ContentValues(1);
-      cv.put(Provider.K_ESTATE, Provider.ESTATE_LEAVING);
-      getContentResolver().update(
-          Provider.getUri(Provider.T_EPISODE, episodeId), cv, null, null);
-        deleteEpisodeSnackbar(getString(R.string.episode_deleted, episodeName), prevState);
-    } else {
-      Log.e(TAG, "Trying to delete absent episode " + episodeId);
-    }
-    c.close();
+  void deleteEpisode(long episodeId, int state, String episodeTitle) {
+    ContentValues cv = new ContentValues(1);
+    cv.put(Provider.K_ESTATE, Provider.ESTATE_LEAVING);
+    getContentResolver().update(Provider.getUri(Provider.T_EPISODE, episodeId), cv, null, null);
+    deleteEpisodeSnackbar(getString(R.string.episode_deleted, episodeTitle), state);
   }
 
-  void deleteEpisodeDialog(final long episodeId) {
+  void deleteEpisodeDialog(final long episodeId, final int state, final String title) {
     new AlertDialog.Builder(this)
         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
-            deleteEpisode(episodeId);
+            deleteEpisode(episodeId, state, title);
           }
         })
         .setNegativeButton(R.string.cancel, null)
