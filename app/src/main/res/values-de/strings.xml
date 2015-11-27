@@ -25,7 +25,7 @@ If you encounter a bug or come up with a feature request, please open an issue o
 
     <string name="ok">OK</string>
     <string name="cancel">Abbrechen</string>
-    <string name="hour_abbreviation">Stdn.</string>
+    <string name="hour_abbreviation">h</string>
     <string name="minute_abbreviation">min</string>
 
     <string name="tab_playlist">Playlist</string>
@@ -57,20 +57,20 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="episode_action_play">Episode abspielen</string>
     <string name="episode_action_pause">Pause</string>
 
-    <string name="refresh_mode_week">Episode der letzten Woche hinzufügen</string>
-    <string name="refresh_mode_month">Episode des letzten Monats hinzufügen</string>
-    <string name="refresh_mode_year">Episode des letzten Jahres hinzufügen</string>
-    <string name="refresh_mode_all">Alle Episoden hinzufügen</string>
-    <string name="refresh_mode_none">Keine alten Episoden hinzufügen</string>
-    <string name="refresh_mode_last">Letzte Episode hinzufügen</string>
-    <string name="refresh_mode_last_2">Die letzten 2 Episoden hinzufügen</string>
-    <string name="refresh_mode_last_3">Die letzten 3 Episoden hinzufügen</string>
-    <string name="refresh_mode_last_4">Die letzten 4 Episoden hinzufügen</string>
-    <string name="refresh_mode_last_5">Die letzten 5 Episoden hinzufügen</string>
-    <string name="refresh_mode_last_10">Die letzten 10 Episoden hinzufügen</string>
-    <string name="refresh_mode_last_20">Die letzten 20 Episoden hinzufügen</string>
-    <string name="refresh_mode_last_50">Die letzten 50 Episoden hinzufügen</string>
-    <string name="refresh_mode_last_100">Die letzten 100 Episoden hinzufügen</string>
+    <string name="refresh_mode_week">Episode der letzten Woche</string>
+    <string name="refresh_mode_month">Episode des letzten Monats</string>
+    <string name="refresh_mode_year">Episode des letzten Jahres</string>
+    <string name="refresh_mode_all">Alle Episoden</string>
+    <string name="refresh_mode_none">Keine alten Episoden</string>
+    <string name="refresh_mode_last">Letzte Episode</string>
+    <string name="refresh_mode_last_2">Die letzten 2 Episoden</string>
+    <string name="refresh_mode_last_3">Die letzten 3 Episoden</string>
+    <string name="refresh_mode_last_4">Die letzten 4 Episoden</string>
+    <string name="refresh_mode_last_5">Die letzten 5 Episoden</string>
+    <string name="refresh_mode_last_10">Die letzten 10 Episoden</string>
+    <string name="refresh_mode_last_20">Die letzten 20 Episoden</string>
+    <string name="refresh_mode_last_50">Die letzten 50 Episoden</string>
+    <string name="refresh_mode_last_100">Die letzten 100 Episoden</string>
 
     <string name="subscribe_dialog_edit_text_hint">Podcast URL hier einfügen</string>
     <string name="subscribe_dialog_on_first_load_text">Anzahl hinzuzufügender Episoden:</string>
@@ -93,9 +93,9 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="preferences_send_bug_report_summary_disabled">Nicht Verfügbar: Sie haben keine E-Mail App installiert.</string>
     <string name="preferences_max_downloads_title">Maximum Paralleler Downloads</string>
     <string name="preferences_max_downloads_unlimited">Unbegrenzt</string>
-    <string name="preferences_storage_location_title">Episoden Zwischenspeicher (wird bei einer Änderung gelöscht)</string>
+    <string name="preferences_storage_location_title">Episoden Zwischenspeicher (wird bei Änderung gelöscht)</string>
     <string name="preferences_auto_download_title">Automatischer Episoden-Download</string>
-    <string name="preferences_auto_download_ac_title">Nur während des Ladens Downloaden</string>
+    <string name="preferences_auto_download_ac_title">Nur beim Laden Downloaden</string>
     <string name="preferences_auto_download_ac_summary">Automatische Downloads nur starten wenn das Telefon gerade geladen wird.</string>
     <string name="preferences_download_network_title">Netzwerke für den Download</string>
     <string name="preferences_opml_export_title">Als OPML Exportieren</string>
@@ -105,7 +105,7 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="preferences_refresh_interval_title">Abonnemente automatisch Aktualisieren</string>
     <string name="preferences_jump_interval_title">Intervall der "Vor\/Zurück Spuhlen" Knöpfe</string>
     <string name="preferences_on_playback_completed_title">Wenn die Wiedergabe beendet wurde</string>
-    <string name="preferences_pause_on_disconnect_title">Wiedergabe pausieren wenn die Kopfhörer ausgesteckt werden</string>
+    <string name="preferences_pause_on_disconnect_title">Pausieren beim Kopfhörer ausstecken</string>
     <string name="preferences_pause_on_disconnect_summary">Unterbricht die Wiedergabe wenn du deine Ohr/Kopfhörer abziehst oder die Verbindung zum Bluetooth-Headset verloren geht.</string>
 
     <string name="opml_dialog_done">Fertig</string>
@@ -127,58 +127,58 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="refresh_period_2weeks">Alle 2 Wochen</string>
     <string name="refresh_period_month">Monatlich</string>
 
-    <string name="sorting_mode_oldest_first">Sorted by date (oldest first)</string>
-    <string name="sorting_mode_newest_first">Sorted by date (newest first)</string>
-    <string name="sorting_mode_by_feed">Sorted by feed</string>
-    <string name="sorting_mode_shortest_first">Sorted by length (shortest first)</string>
-    <string name="sorting_mode_longest_first">Sorted by length (longest first)</string>
+    <string name="sorting_mode_oldest_first">Sortiert nach Datum (alte zuerst)</string>
+    <string name="sorting_mode_newest_first">Sortiert nach Datum (neue zuerst)</string>
+    <string name="sorting_mode_by_feed">Sortiert nach feed</string>
+    <string name="sorting_mode_shortest_first">Sortiert nach länge (kurze zuerst)</string>
+    <string name="sorting_mode_longest_first">Sortiert nach länge (lange zuerst)</string>
 
-    <string name="auto_download_playlist">Episodes added to playlist</string>
-    <string name="auto_download_all_new">All new episodes</string>
-    <string name="auto_download_never">Never</string>
+    <string name="auto_download_playlist">Zur Playlist hinzugefügte Episoden</string>
+    <string name="auto_download_all_new">Alle neuen Episoden</string>
+    <string name="auto_download_never">Nie</string>
 
-    <string name="download_network_wifi">Wi-Fi only</string>
-    <string name="download_network_non_roaming">Wi-Fi and cellular, except for roaming</string>
-    <string name="download_network_any">Use all networks</string>
+    <string name="download_network_wifi">Nur über WLAN</string>
+    <string name="download_network_non_roaming">WLAN und Handynetz (kein Roaming)</string>
+    <string name="download_network_any">Benutze alle Netzwerke</string>
 
-    <string name="playback_complete_do_nothing">Do nothing</string>
-    <string name="playback_complete_delete_do_nothing">Delete played episode and do nothing</string>
-    <string name="playback_complete_play_next">Play next episode in playlist</string>
-    <string name="playback_complete_delete_play_next">Delete played episode and play next</string>
-    <string name="playback_complete_play_first">Play first episode in playlist</string>
-    <string name="playback_complete_delete_play_first">Delete played episode and play first</string>
+    <string name="playback_complete_do_nothing">Nichts tun.</string>
+    <string name="playback_complete_delete_do_nothing">Lösche abgespielte Episode und tue dann nichts</string>
+    <string name="playback_complete_play_next">Spiele die nächste Episode in der Playlist ab</string>
+    <string name="playback_complete_delete_play_next">Lösche abgespielte Episode und spiele die nächste ab</string>
+    <string name="playback_complete_play_first">Spiele die erste Episode in der Playlist ab</string>
+    <string name="playback_complete_delete_play_first">Lösche abgespielte Episode und spiele die erste ab</string>
 
-    <string name="jump_interval_10sec">10 seconds</string>
-    <string name="jump_interval_20sec">20 seconds</string>
-    <string name="jump_interval_30sec">30 seconds</string>
-    <string name="jump_interval_1min">1 minute</string>
-    <string name="jump_interval_5min">5 minutes</string>
+    <string name="jump_interval_10sec">10 Sekunden</string>
+    <string name="jump_interval_20sec">20 Sekunden</string>
+    <string name="jump_interval_30sec">30 Sekunden</string>
+    <string name="jump_interval_1min">1 Minute</string>
+    <string name="jump_interval_5min">5 Minuten</string>
 
-    <string name="crash_dialog_title">PodListen has crashed</string>
-    <string name="crash_dialog_text">An unexpected error occurred forcing PodListen to stop. Please help us fix this by sending us PodListen log and anonymous information about your device. You can edit the message before sending as you wish.</string>
-    <string name="crash_dialog_ok_toast">Thank you!</string>
+    <string name="crash_dialog_title">PodListen ist abgestürzt</string>
+    <string name="crash_dialog_text">Ein unerwarter Fehler zwang PodListen anzuhalten. Bitte hilf uns dieses Problem zu lösen indem du uns anonymisierte Informationen über dein Gerät sendest. Du kannst die Nachricht vor dem Senden bearbeiten wenn du willst.</string>
+    <string name="crash_dialog_ok_toast">Vielen Dank!</string>
 
-    <string name="player_stopped">Press play to start</string>
-    <string name="player_empty">Playlist is empty</string>
-    <string name="player_episode_does_not_exist">Episode %d doesn\'t exist</string>
+    <string name="player_stopped">Drücke Play um die Wiedergabe zu starten</string>
+    <string name="player_empty">Die Playlist ist leer</string>
+    <string name="player_episode_does_not_exist">Die Episode %d existiert nicht</string>
 
-    <string name="sync_database_error">DB error</string>
-    <string name="sync_interrupted_by_system">Refresh interrupted by system</string>
-    <string name="sync_failed">Refresh failed</string>
-    <string name="sync_running">Refreshing PodListen..</string>
-    <string name="sync_new_episodes">New episodes: %s</string>
-    <string name="sync_feeds_synced">Feeds loaded: %d</string>
-    <string name="sync_feeds_failed">Failed to load: %d</string>
-    <string name="sync_finished">Podlisten refreshed</string>
-    <string name="sync_feed_parsing_failed">Parsing failed: %s</string>
-    <string name="sync_feed_db_error">DB error: %s</string>
-    <string name="sync_feed_io_error">IO error: %s</string>
-    <string name="sync_feed_synced">Loaded: %s</string>
+    <string name="sync_database_error">DB Error</string>
+    <string name="sync_interrupted_by_system">Aktualisierung unterbrochen vom System</string>
+    <string name="sync_failed">Aktualisierung fehlgeschlagen</string>
+    <string name="sync_running">Aktualisiere PodListen..</string>
+    <string name="sync_new_episodes">Neue Episoden: %s</string>
+    <string name="sync_feeds_synced">Feeds geladen: %d</string>
+    <string name="sync_feeds_failed">Laden fehlgeschlagen: %d</string>
+    <string name="sync_finished">Podlisten Aktualisiert</string>
+    <string name="sync_feed_parsing_failed">Parsing fehlgeschlagen: %s</string>
+    <string name="sync_feed_db_error">DB Error: %s</string>
+    <string name="sync_feed_io_error">IO Error: %s</string>
+    <string name="sync_feed_synced">Geladen: %s</string>
 
-    <string name="search_title">Search podcasts</string>
-    <string name="search_subscribe_button">Subscribe to this podcast</string>
-    <string name="search_unpacking_db">Preparing podcast database…</string>
-    <string name="search_frequency">Frequency: %.1f episodes/month</string>
+    <string name="search_title">Suche Podcasts</string>
+    <string name="search_subscribe_button">Abonniere diesen Podcast</string>
+    <string name="search_unpacking_db">Podcast-Datenbank wird vorbereitet…</string>
+    <string name="search_frequency">Häufigkeit: %.1f Episoden im Monat</string>
 
     <!--<string name="app_id">GENERATED BY GRADLE</string>-->
 </resources>
