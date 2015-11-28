@@ -57,20 +57,20 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
     <string name="episode_action_play">Reproduciraj ovu epizodu</string>
     <string name="episode_action_pause">Zaustavi</string>
 
-    <string name="refresh_mode_week">Dodaj epizode posljednjeg tjedna</string>
-    <string name="refresh_mode_month">Dodaj epizode posljednjeg mjeseca</string>
-    <string name="refresh_mode_year">Dodaj epizode posljednje godine</string>
-    <string name="refresh_mode_all">Dodaj sve epizode</string>
+    <string name="refresh_mode_week">Epizode posljednjeg tjedna</string>
+    <string name="refresh_mode_month">Epizode posljednjeg mjeseca</string>
+    <string name="refresh_mode_year">Epizode posljednje godine</string>
+    <string name="refresh_mode_all">Sve epizode</string>
     <string name="refresh_mode_none">Nemoj dodati stare epizode</string>
-    <string name="refresh_mode_last">Dodaj posljednju epizodu</string>
-    <string name="refresh_mode_last_2">Dodaj posljednje 2 epizode</string>
-    <string name="refresh_mode_last_3">Dodaj posljednje 3 epizode</string>
-    <string name="refresh_mode_last_4">Dodaj posljednje 4 epizode</string>
-    <string name="refresh_mode_last_5">Dodaj posljednje 5 epizode</string>
-    <string name="refresh_mode_last_10">Dodaj posljednjih 10 epizode</string>
-    <string name="refresh_mode_last_20">Dodaj posljednjih 20 epizode</string>
-    <string name="refresh_mode_last_50">Dodaj posljednjih 50 epizode</string>
-    <string name="refresh_mode_last_100">Dodaj posljednjih 100 epizode</string>
+    <string name="refresh_mode_last">Posljednju epizodu</string>
+    <string name="refresh_mode_last_2">Posljednje 2 epizode</string>
+    <string name="refresh_mode_last_3">Posljednje 3 epizode</string>
+    <string name="refresh_mode_last_4">Posljednje 4 epizode</string>
+    <string name="refresh_mode_last_5">Posljednje 5 epizode</string>
+    <string name="refresh_mode_last_10">Posljednjih 10 epizode</string>
+    <string name="refresh_mode_last_20">Posljednjih 20 epizode</string>
+    <string name="refresh_mode_last_50">Posljednjih 50 epizode</string>
+    <string name="refresh_mode_last_100">Posljednjih 100 epizode</string>
 
     <string name="subscribe_dialog_edit_text_hint">Zalijepi URL podcasta ovdje</string>
     <string name="subscribe_dialog_on_first_load_text">Koliko epizoda dodati:</string>
