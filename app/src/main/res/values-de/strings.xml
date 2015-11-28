@@ -26,7 +26,7 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="ok">OK</string>
     <string name="cancel">Abbrechen</string>
     <string name="hour_abbreviation">h</string>
-    <string name="minute_abbreviation">min</string>
+    <string name="minute_abbreviation">m</string>
 
     <string name="tab_playlist">Playlist</string>
     <string name="tab_new_episodes">Neue Episoden</string>
