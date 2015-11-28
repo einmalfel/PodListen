@@ -1,0 +1,185 @@
+<resources>
+    <string name="app_name">PodListen</string>
+    <string name="enable_download_manager">Podlisten needs \'Download manager\' system app to load episodes. Please, enable it in Settings->Apps->All></string>
+    <string name="google_play_title">PodListen - free podcast app</string>
+    <string name="google_play_short_description">Free and open source podcast player with lightweight interface.</string>
+    <string name="google_play_long_description">Main idea behind this app is to set podcast listening  free from inconvenience of switching between screens and going through menus. Instead, all navigation in PodListen is done by simply swiping between 3 tabs, basic actions are done with single tap.
+
+PodListen is open-source ad-free app, it doesn\'t include analytics services, collect any user data or use strange system permissions.
+
+Besides original interface, it has basic features one can expect from podcatcher app:
+ * searchable podcast database
+ * OPML import and export
+ * feeds auto-refresh and episodes download
+ * subscription by clicking on RSS links in browser
+ * home screen widget
+ * playlist sorting modes
+ * preferences like “download on wi-fi only”, "pause on headphones disconnect" etc.
+
+NB!: as interface of this app was intentionally made simplistic, don\'t expect it to have some features big paid apps have: episode ratings, sharing of anything via social networks, video episodes support, various folders and categories like “recommended”, “favorite”, “downloaded”, “played”, etc.
+
+Podcast search feature is planned for an update.
+
+PodListen source code is available at https://github.com/einmalfel/PodListen under GPL-3.0 license.
+If you encounter a bug or come up with a feature request, please open an issue on github.</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="hour_abbreviation">h</string>
+    <string name="minute_abbreviation">min</string>
+
+    <string name="tab_playlist">Playlist</string>
+    <string name="tab_new_episodes">Neue Episoden</string>
+    <string name="tab_subscriptions">Abonnierte Podcasts</string>
+
+    <string name="podcast_already_subscribed">%s ist schon Abonniert</string>
+    <string name="podcast_subscribe_failed">Abonnieren Fehlgeschlagen</string>
+    <string name="podcast_delete_question">%s entfernen?</string>
+    <string name="podcast_delete_question_no_title">Diesen Podcast entfernen?</string>
+    <string name="podcast_no_title">Keinen Titel</string>
+    <string name="podcast_refresh_failed">Aktualisieren fehlgeschlagen: %s</string>
+    <string name="podcast_not_loaded_yet">Der Feed ist noch nicht geladen</string>
+    <string name="podcast_refresh_time">Aktualisiert %s</string>
+    <string name="podcast_image_description">Bild des Podcasts (wenn vorhanden)</string>
+    <string name="podcast_button_description">Episoden dieses Feeds anzeigen</string>
+
+    <string name="episode_no_title">KEIN TITEL</string>
+    <string name="episode_downloading">Episode %s wird heruntergeladen</string>
+    <string name="episode_delete_question">Episode löschen?</string>
+    <string name="episode_deleted">Episode gelöscht: %s</string>
+    <string name="episode_deleted_undo">Rückgängig machen</string>
+    <string name="episode_image_description">Bild dieser Episode (wenn vorhanden)</string>
+    <string name="episode_deleted_subscription">Gelöschtes Abonnement</string>
+    <string name="episode_published">Veröffentlicht %s</string>
+
+    <string name="episode_action_download">Episode herunterladen</string>
+    <string name="episode_action_add">Diese Episode zur Playlist hinzufügen</string>
+    <string name="episode_action_play">Episode abspielen</string>
+    <string name="episode_action_pause">Pause</string>
+
+    <string name="refresh_mode_week">Episode der letzten Woche</string>
+    <string name="refresh_mode_month">Episode des letzten Monats</string>
+    <string name="refresh_mode_year">Episode des letzten Jahres</string>
+    <string name="refresh_mode_all">Alle Episoden</string>
+    <string name="refresh_mode_none">Keine alten Episoden</string>
+    <string name="refresh_mode_last">Letzte Episode</string>
+    <string name="refresh_mode_last_2">Die letzten 2 Episoden</string>
+    <string name="refresh_mode_last_3">Die letzten 3 Episoden</string>
+    <string name="refresh_mode_last_4">Die letzten 4 Episoden</string>
+    <string name="refresh_mode_last_5">Die letzten 5 Episoden</string>
+    <string name="refresh_mode_last_10">Die letzten 10 Episoden</string>
+    <string name="refresh_mode_last_20">Die letzten 20 Episoden</string>
+    <string name="refresh_mode_last_50">Die letzten 50 Episoden</string>
+    <string name="refresh_mode_last_100">Die letzten 100 Episoden</string>
+
+    <string name="subscribe_dialog_edit_text_hint">Podcast URL hier einfügen</string>
+    <string name="subscribe_dialog_on_first_load_text">Anzahl hinzuzufügender Episoden:</string>
+    <string name="subscribe_dialog_subscribe_button">ABONNIEREN</string>
+    <string name="subscribe_dialog_install_file_manager">Bitte "file manager" installieren um diese Funktion zu benutzen.</string>
+    <string name="subscribe_dialog_opml_failed">Das Abonnieren aller Feeds dieses OPML\'s ist Fehlgeschlagen</string>
+    <string name="subscribe_dialog_opml_subscriptions_added">"Abonnements hinzugefügt: %1$d/%2$d"</string>
+    <string name="subscribe_dialog_opml_empty">Dieses OPML enthält keine Feeds</string>
+    <string name="subscribe_dialog_title">Abonnements hinzufügen</string>
+    <string name="subscribe_dialog_select_opml_prompt">OPML-Datei auswählen</string>
+    <string name="subscribe_dialog_import_opml">OPML Importieren</string>
+    <string name="subscribe_dialog_search_db">Datenbank durchsuchen</string>
+
+    <string name="preferences_title">Einstellungen</string>
+    <string name="preferences_network_title">Netzwerk</string>
+    <string name="preferences_playback_title">Wiedergabe</string>
+    <string name="preferences_other_title">Sonstiges</string>
+    <string name="preferences_send_bug_report_title">Bug-Report senden</string>
+    <string name="preferences_send_bug_report_summary">Dem Entwickler eine E-Mail senden. Log-Datei der App und Informationen über ihr Gerät werden mitgesendet</string>
+    <string name="preferences_send_bug_report_summary_disabled">Nicht Verfügbar: Sie haben keine E-Mail App installiert.</string>
+    <string name="preferences_max_downloads_title">Maximum Paralleler Downloads</string>
+    <string name="preferences_max_downloads_unlimited">Unbegrenzt</string>
+    <string name="preferences_storage_location_title">Episoden Zwischenspeicher (wird bei Änderung gelöscht)</string>
+    <string name="preferences_auto_download_title">Automatischer Episoden-Download</string>
+    <string name="preferences_auto_download_ac_title">Nur beim Laden Downloaden</string>
+    <string name="preferences_auto_download_ac_summary">Automatische Downloads nur starten wenn das Telefon gerade geladen wird.</string>
+    <string name="preferences_download_network_title">Netzwerke für den Download</string>
+    <string name="preferences_opml_export_title">Als OPML Exportieren</string>
+    <string name="preferences_opml_export_summary">Exportiere deine Abonnement-Liste in eine OPML Datei (kann von den meisten Podcast-Apps gelesen werden)</string>
+    <string name="preferences_opml_export_summary_disabled">Nicht verfügbar: Du hast keine Abonnemente</string>
+    <string name="preferences_opml_export_failed">Der OPML-Export ist fehlgeschlagen, entschuldigung..</string>
+    <string name="preferences_refresh_interval_title">Abonnemente automatisch Aktualisieren</string>
+    <string name="preferences_jump_interval_title">Intervall der "Vor\/Zurück Spuhlen" Knöpfe</string>
+    <string name="preferences_on_playback_completed_title">Wenn die Wiedergabe beendet wurde</string>
+    <string name="preferences_pause_on_disconnect_title">Pausieren beim Kopfhörer ausstecken</string>
+    <string name="preferences_pause_on_disconnect_summary">Unterbricht die Wiedergabe wenn du deine Ohr/Kopfhörer abziehst oder die Verbindung zum Bluetooth-Headset verloren geht.</string>
+
+    <string name="opml_dialog_done">Fertig</string>
+    <string name="opml_dialog_message">Deine Abonnemente wurden exportiert nach %s</string>
+    <string name="opml_dialog_send">Senden</string>
+    <string name="opml_dialog_FMapp">Im Dateimanager anzeigen</string>
+    <string name="opml_dialog_title">Erfolgreich exportiert</string>
+    <string name="opml_export_file_name" translatable="false">PodListen_Abonnemente.opml</string>
+
+    <string name="refresh_period_never">Nie</string>
+    <string name="refresh_period_hour">Stündlich</string>
+    <string name="refresh_period_2hours">Alle 2 Stunden</string>
+    <string name="refresh_period_3hours">Alle 3 Stunden</string>
+    <string name="refresh_period_6hours">Alle 6 Stunden</string>
+    <string name="refresh_period_12hours">Alle 12 Stunden</string>
+    <string name="refresh_period_day">Täglich</string>
+    <string name="refresh_period_2days">Alle 2 Tage</string>
+    <string name="refresh_period_week">Wöchentlich</string>
+    <string name="refresh_period_2weeks">Alle 2 Wochen</string>
+    <string name="refresh_period_month">Monatlich</string>
+
+    <string name="sorting_mode_oldest_first">Sortiert nach Datum (alte zuerst)</string>
+    <string name="sorting_mode_newest_first">Sortiert nach Datum (neue zuerst)</string>
+    <string name="sorting_mode_by_feed">Sortiert nach feed</string>
+    <string name="sorting_mode_shortest_first">Sortiert nach länge (kurze zuerst)</string>
+    <string name="sorting_mode_longest_first">Sortiert nach länge (lange zuerst)</string>
+
+    <string name="auto_download_playlist">Zur Playlist hinzugefügte Episoden</string>
+    <string name="auto_download_all_new">Alle neuen Episoden</string>
+    <string name="auto_download_never">Nie</string>
+
+    <string name="download_network_wifi">Nur über WLAN</string>
+    <string name="download_network_non_roaming">WLAN und Handynetz (kein Roaming)</string>
+    <string name="download_network_any">Benutze alle Netzwerke</string>
+
+    <string name="playback_complete_do_nothing">Nichts tun.</string>
+    <string name="playback_complete_delete_do_nothing">Lösche abgespielte Episode und tue dann nichts</string>
+    <string name="playback_complete_play_next">Spiele die nächste Episode in der Playlist ab</string>
+    <string name="playback_complete_delete_play_next">Lösche abgespielte Episode und spiele die nächste ab</string>
+    <string name="playback_complete_play_first">Spiele die erste Episode in der Playlist ab</string>
+    <string name="playback_complete_delete_play_first">Lösche abgespielte Episode und spiele die erste ab</string>
+
+    <string name="jump_interval_10sec">10 Sekunden</string>
+    <string name="jump_interval_20sec">20 Sekunden</string>
+    <string name="jump_interval_30sec">30 Sekunden</string>
+    <string name="jump_interval_1min">1 Minute</string>
+    <string name="jump_interval_5min">5 Minuten</string>
+
+    <string name="crash_dialog_title">PodListen ist abgestürzt</string>
+    <string name="crash_dialog_text">Ein unerwarter Fehler zwang PodListen anzuhalten. Bitte hilf uns dieses Problem zu lösen indem du uns anonymisierte Informationen über dein Gerät sendest. Du kannst die Nachricht vor dem Senden bearbeiten wenn du willst.</string>
+    <string name="crash_dialog_ok_toast">Vielen Dank!</string>
+
+    <string name="player_stopped">Drücke Play um die Wiedergabe zu starten</string>
+    <string name="player_empty">Die Playlist ist leer</string>
+    <string name="player_episode_does_not_exist">Die Episode %d existiert nicht</string>
+
+    <string name="sync_database_error">DB Error</string>
+    <string name="sync_interrupted_by_system">Aktualisierung unterbrochen vom System</string>
+    <string name="sync_failed">Aktualisierung fehlgeschlagen</string>
+    <string name="sync_running">Aktualisiere PodListen..</string>
+    <string name="sync_new_episodes">Neue Episoden: %s</string>
+    <string name="sync_feeds_synced">Feeds geladen: %d</string>
+    <string name="sync_feeds_failed">Laden fehlgeschlagen: %d</string>
+    <string name="sync_finished">Podlisten Aktualisiert</string>
+    <string name="sync_feed_parsing_failed">Parsing fehlgeschlagen: %s</string>
+    <string name="sync_feed_db_error">DB Error: %s</string>
+    <string name="sync_feed_io_error">IO Error: %s</string>
+    <string name="sync_feed_synced">Geladen: %s</string>
+
+    <string name="search_title">Suche Podcasts</string>
+    <string name="search_subscribe_button">Abonniere diesen Podcast</string>
+    <string name="search_unpacking_db">Podcast-Datenbank wird vorbereitet…</string>
+    <string name="search_frequency">Häufigkeit: %.1f Episoden im Monat</string>
+
+    <!--<string name="app_id">GENERATED BY GRADLE</string>-->
+</resources>
+
