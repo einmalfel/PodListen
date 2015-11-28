@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">PodListen</string>
-    <string name="enable_download_manager">Podlisten treba \'Download manager\' sistemsku aplikaciju kako bi učitavao epizode. Molim, omogućite ju u [Postavke->Aplikacije->Sve]></string>
+    <string name="enable_download_manager">Podlisten treba \'Download manager\' sistemsku aplikaciju kako bi učitavao epizode. Molim, omogućite ju u Postavke->Aplikacije->Sve></string>
     <string name="google_play_title">PodListen - slobodna podcast aplikacija</string>
     <string name="google_play_short_description">Besplatan podcast sviraš otvorenog koda s laganim sučeljem.</string>
     <string name="google_play_long_description">Glavna ideja ove aplikacije je omogućavanje slušanja podcasta slobodno od nezgodnog prebacivanja među ekranima i prolaženja po menuima. Umjesto toga, sva navigacija u PodListen-u vrši se jednostavnim povlačenjem između 3 taba, osnovne akcije vrše se pomoću samo jednog dodira.
@@ -12,9 +12,9 @@ Uz originalno sučelje, ima osnovne funkcije koje se očekuju od aplikacije za p
  * OPML uvoz i izvoz
  * automatsko osvježavanje i učitavanje epizoda
  * pretplatu putem RSS poveznica u pretraživaču
- * [widget] za početni ekran
- * načini sortiranja [playlist]a
- * postavke poput “učitaj samo kada ima [wi-fi]ja”, "zaustavi kada se isključe slušalice" etc.
+ * widget za početni ekran
+ * načini sortiranja playlista
+ * postavke poput “učitaj samo kada ima wi-fija”, "zaustavi kada se isključe slušalice" etc.
 
 NB!: pošto je sučelje ove aplikacije namjerno načinjeno jednostavnim, ne očekujte da ima funkcije velikih, plaćenih aplikacija: ocijenjivanje epizoda, dijeljenje bilo čega putem društvenih mreža, potpora za video epizode, razne direktorije i kategorije poput "preporučeno", "najdraže", "učitano", "odslušano" itd.
 
@@ -38,22 +38,22 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
     <string name="podcast_delete_question_no_title">Odjavi pretplatu na ovaj podcast?</string>
     <string name="podcast_no_title">Bez naslova</string>
     <string name="podcast_refresh_failed">Osvježavanje nije uspjelo: %s</string>
-    <string name="podcast_not_loaded_yet">[Feed] još nije učitan</string>
+    <string name="podcast_not_loaded_yet">Feed još nije učitan</string>
     <string name="podcast_refresh_time">Osvježeno %s</string>
     <string name="podcast_image_description">Slika ovog podcasta, ukoliko postoji</string>
-    <string name="podcast_button_description">Pokaži epizode ovog [feed]a</string>
+    <string name="podcast_button_description">Pokaži epizode ovog feeda</string>
 
     <string name="episode_no_title">BEZ NASLOVA</string>
     <string name="episode_downloading">Učitavanje epizode %s</string>
     <string name="episode_delete_question">Obriši epizodu?</string>
     <string name="episode_deleted">Epizoda obrisana: %s</string>
-    <string name="episode_deleted_undo">[Undo]</string>
+    <string name="episode_deleted_undo">Undo</string>
     <string name="episode_image_description">Slika ove epizode, ukoliko postoji</string>
     <string name="episode_deleted_subscription">Obrisana pretplata</string>
     <string name="episode_published">Objavljeno %s</string>
 
     <string name="episode_action_download">Učitaj epizodu/string>
-    <string name="episode_action_add">Dodaj ovu epizodu na [playlist]u</string>
+    <string name="episode_action_add">Dodaj ovu epizodu na playlistu</string>
     <string name="episode_action_play">Reproduciraj ovu epizodu</string>
     <string name="episode_action_pause">Zaustavi</string>
 
@@ -76,9 +76,9 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
     <string name="subscribe_dialog_on_first_load_text">Koliko epizoda dodati:</string>
     <string name="subscribe_dialog_subscribe_button">PRETPLATI SE</string>
     <string name="subscribe_dialog_install_file_manager">Molim instalirajte upravitelj datoteka kako biste koristili ovu funkciju.</string>
-    <string name="subscribe_dialog_opml_failed">Neuspjela pretplata na sve [feed]ove ovog OPML-a</string>
+    <string name="subscribe_dialog_opml_failed">Neuspjela pretplata na sve feedove ovog OPML-a</string>
     <string name="subscribe_dialog_opml_subscriptions_added">"Dodane pretplate: %1$d/%2$d"</string>
-    <string name="subscribe_dialog_opml_empty">Ovaj OPML ne sadrži ni jedan [feed]</string>
+    <string name="subscribe_dialog_opml_empty">Ovaj OPML ne sadrži ni jedan feed</string>
     <string name="subscribe_dialog_title">Dodaj pretplatu</string>
     <string name="subscribe_dialog_select_opml_prompt">Izaberi OPML datoteku</string>
     <string name="subscribe_dialog_import_opml">Uvezi OPML</string>
@@ -129,11 +129,11 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
 
     <string name="sorting_mode_oldest_first">Poredano po datumu (od najstarijeg)</string>
     <string name="sorting_mode_newest_first">Poredano po datumu (od najnovijeg)</string>
-    <string name="sorting_mode_by_feed">Poredano po [feed]u</string>
+    <string name="sorting_mode_by_feed">Poredano po feedu</string>
     <string name="sorting_mode_shortest_first">Poredano po duljini (prvo najkraće)</string>
     <string name="sorting_mode_longest_first">Poredano po duljini (prvo najduže)</string>
 
-    <string name="auto_download_playlist">Epizode dodane na [playlist]u</string>
+    <string name="auto_download_playlist">Epizode dodane na playlistu</string>
     <string name="auto_download_all_new">Sve nove epizode</string>
     <string name="auto_download_never">Nikada</string>
 
@@ -143,9 +143,9 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
 
     <string name="playback_complete_do_nothing">Ne čini ništa</string>
     <string name="playback_complete_delete_do_nothing">Obriši reproduciranu epizodu i ne čini ništa</string>
-    <string name="playback_complete_play_next">Reproduciraj sljedeću epizodu u [playlist]i</string>
+    <string name="playback_complete_play_next">Reproduciraj sljedeću epizodu u playlisti</string>
     <string name="playback_complete_delete_play_next">Obriši reproducirane epizode i reproduciraj sljedeću</string>
-    <string name="playback_complete_play_first">Reproduciraj prvu epizodu u [playlist]i</string>
+    <string name="playback_complete_play_first">Reproduciraj prvu epizodu u playlisti</string>
     <string name="playback_complete_delete_play_first">Obriši reproducirane epizode i reproduciraj prvu</string>
 
     <string name="jump_interval_10sec">10 sekundi</string>
@@ -158,8 +158,8 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
     <string name="crash_dialog_text">Dogodila se neočekivana greška zbog koje je PodListen morao biti zaustavljen. Molim, pomozite riješiti problem tako da nam pošaljete PodListen zapis i anonimne informacije o svojem uređaju. Možete urediti poruku po želji prije no što ju pošaljete.</string>
     <string name="crash_dialog_ok_toast">Hvala!</string>
 
-    <string name="player_stopped">Pritisnite [play] za početak</string>
-    <string name="player_empty">[Playlist]a je prazna</string>
+    <string name="player_stopped">Pritisnite play za početak</string>
+    <string name="player_empty">Playlista je prazna</string>
     <string name="player_episode_does_not_exist">Epizoda %d ne postoji</string>
 
     <string name="sync_database_error">Greška baze podataka</string>
@@ -167,7 +167,7 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
     <string name="sync_failed">Osvježavanje neuspjelo</string>
     <string name="sync_running">Osvježavanje PodListen-a..</string>
     <string name="sync_new_episodes">Nove episode: %s</string>
-    <string name="sync_feeds_synced">Učitani [feed]ovi: %d</string>
+    <string name="sync_feeds_synced">Učitani feedovi: %d</string>
     <string name="sync_feeds_failed">Neuspjelo učitati: %d</string>
     <string name="sync_finished">Podlisten osvježen</string>
     <string name="sync_feed_parsing_failed">Parsiranje neuspjelo: %s</string>
