@@ -52,7 +52,7 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
     <string name="episode_deleted_subscription">Obrisana pretplata</string>
     <string name="episode_published">Objavljeno %s</string>
 
-    <string name="episode_action_download">Učitaj epizodu/string>
+    <string name="episode_action_download">Učitaj epizodu</string>
     <string name="episode_action_add">Dodaj ovu epizodu na playlistu</string>
     <string name="episode_action_play">Reproduciraj ovu epizodu</string>
     <string name="episode_action_pause">Zaustavi</string>
