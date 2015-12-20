@@ -1,6 +1,7 @@
 package com.einmalfel.podlisten;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -52,7 +53,7 @@ public class HistoryElementHolder extends RecyclerView.ViewHolder {
   }
 
   public void bind(String title, String description, String shortDescr, String url, long date,
-                   int state, long id, boolean expanded) {
+                   int state, long played, long id, boolean expanded) {
     if ((id != this.id || expanded != this.expanded) && !TextUtils.isEmpty(description)) {
       if (expanded) {
         descriptionView.setText(Html.fromHtml(description), TextView.BufferType.SPANNABLE);
@@ -69,6 +70,20 @@ public class HistoryElementHolder extends RecyclerView.ViewHolder {
       dateView.setText(
           context.getString(R.string.episode_published, PodcastHelper.shortDateFormat(date)));
       this.id = id;
+    }
+
+    if (played == -1) {
+      titleView.setTextColor(ContextCompat.getColor(context, R.color.text_bright));
+      descriptionView.setTextColor(ContextCompat.getColor(context, R.color.text));
+      dateView.setTextColor(ContextCompat.getColor(context, R.color.text));
+      urlView.setTextColor(ContextCompat.getColor(context, R.color.accent_primary));
+      urlView.setLinkTextColor(ContextCompat.getColor(context, R.color.accent_primary));
+    } else {
+      titleView.setTextColor(ContextCompat.getColor(context, R.color.text));
+      descriptionView.setTextColor(ContextCompat.getColor(context, R.color.text_dim));
+      dateView.setTextColor(ContextCompat.getColor(context, R.color.text_dim));
+      urlView.setTextColor(ContextCompat.getColor(context, R.color.accent_primary_dim));
+      urlView.setLinkTextColor(ContextCompat.getColor(context, R.color.accent_primary_dim));
     }
 
     if (this.state != state) {

@@ -17,7 +17,7 @@ class FeedHistoryAdapter extends CursorRecyclerAdapter {
 
   static final String[] COLUMNS_NEEDED = new String[]{
       Provider.K_ENAME, Provider.K_EURL, Provider.K_EDATE, Provider.K_EDESCR, Provider.K_ESDESCR,
-      Provider.K_ID, Provider.K_ESTATE};
+      Provider.K_ID, Provider.K_ESTATE, Provider.K_EPLAYED};
 
   private final Set<Long> expandedElements = new HashSet<>(10);
   private final HistoryEpisodeListener listener;
@@ -37,6 +37,7 @@ class FeedHistoryAdapter extends CursorRecyclerAdapter {
                  cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EURL)),
                  cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDATE)),
                  cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_ESTATE)),
+                 cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EPLAYED)),
                  id,
                  expandedElements.contains(id));
   }

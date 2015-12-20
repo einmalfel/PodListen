@@ -15,4 +15,5 @@
 
     <color name="text_bright">#ffffffff</color>
     <color name="text">#b3ffffff</color>
+    <color name="text_dim">#4dffffff</color>
 </resources>
