@@ -94,7 +94,7 @@ public class Provider extends ContentProvider {
   public static final String K_EDID = "download_id";
   public static final String K_EPID = "podcast_id";
   public static final String K_ETSTAMP = "episode_timestamp";
-  public static final String K_EPLAYED = "episode_played"; //[ms]
+  public static final String K_EPLAYED = "episode_played"; //[ms], -1 means that ep was never played
   public static final String K_ELENGTH = "episode_length"; //[ms]
   public static final String K_ESIZE = "episode_size"; //[Bytes]
   public static final String K_EERROR = "episode_error"; //string describing download/playback error

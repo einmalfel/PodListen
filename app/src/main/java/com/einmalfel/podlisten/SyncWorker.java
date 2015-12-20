@@ -298,7 +298,7 @@ class SyncWorker implements Runnable {
     values.put(Provider.K_EURL, episode.getLink());
     values.put(Provider.K_ESIZE, audioSize);
     values.put(Provider.K_EERROR, (String) null);
-    values.put(Provider.K_EPLAYED, 0);
+    values.put(Provider.K_EPLAYED, -1);
     values.put(Provider.K_ELENGTH, 0);
     values.put(Provider.K_EDATT, 0);
     values.put(Provider.K_EDTSTAMP, 0);
