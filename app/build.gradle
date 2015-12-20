@@ -48,7 +48,7 @@ dependencies {
     compile 'ch.acra:acra:4.6.2'
     compile 'com.nononsenseapps:filepicker:2.5.0'
     compile 'org.unbescape:unbescape:1.1.1.RELEASE'
-    compile 'com.einmalfel:earl:1.0.0'
+    compile 'com.einmalfel:earl:1.0.1'
     compile 'com.android.support:design:23.1.0'
     compile 'com.android.support:recyclerview-v7:23.1.0'
     compile 'com.android.support:cardview-v7:23.1.0'
