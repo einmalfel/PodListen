@@ -113,7 +113,7 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
     <string name="opml_dialog_send">Pošalji</string>
     <string name="opml_dialog_FMapp">Prikaži u upravitelju datoteku</string>
     <string name="opml_dialog_title">Uspješno izvezeno</string>
-    <string name="opml_export_file_name" translatable="false">PodListen_Pretplate.opml</string>
+    <string name="opml_export_file_name">PodListen_Pretplate.opml</string>
 
     <string name="refresh_period_never">Nikada</string>
     <string name="refresh_period_hour">Svaki sat</string>

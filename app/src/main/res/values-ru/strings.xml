@@ -37,6 +37,7 @@
     <string name="opml_dialog_message">Ваши подписки были сохранены в %s</string>
     <string name="opml_dialog_send">Отправить</string>
     <string name="opml_dialog_title">Подписки сохранены</string>
+    <string name="opml_export_file_name">Подписки_PodListen.opml</string>
     <string name="playback_complete_delete_do_nothing">Удалить проигранный эпизод</string>
     <string name="playback_complete_delete_play_first">Удалить проигранный и играть первый в плейлисте</string>
     <string name="playback_complete_delete_play_next">Удалить проигранный и играть следующий</string>
