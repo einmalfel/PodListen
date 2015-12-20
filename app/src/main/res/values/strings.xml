@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">PodListen</string>
     <string name="enable_download_manager">Podlisten needs \'Download manager\' system app to load episodes. Please, enable it in Settings->Apps->All></string>
+
+    <!--google play doesn't allow title to contain more than 30 symbols-->
     <string name="google_play_title">PodListen - free podcast app</string>
+    <!--short description is limited to 80 symbols-->
     <string name="google_play_short_description">Free and open source podcast player with lightweight interface.</string>
     <string name="google_play_long_description">Main idea behind this app is to set podcast listening  free from inconvenience of switching between screens and going through menus. Instead, all navigation in PodListen is done by simply swiping between 3 tabs, basic actions are done with single tap.
 
@@ -25,6 +28,8 @@ If you encounter a bug or come up with a feature request, please open an issue o
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+
+    <!--only one-letter abbreviations will fit into layout. There is no room for longer ones-->
     <string name="hour_abbreviation">h</string>
     <string name="minute_abbreviation">m</string>
 
@@ -57,6 +62,10 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="episode_action_play">Play this episode</string>
     <string name="episode_action_pause">Pause</string>
 
+    <!--Ideally those strings should fit in single line in spinner widget (20-25 characters).
+    It's still ok if they don't fit, but it doesn't look neat. I'd recommend to exclude "add" word,
+    as it's usually longer in any language than in english. "Add" is already contained is spinner
+    title (see subscribe_dialog_on_first_load_text)-->
     <string name="refresh_mode_week">Add last week episodes</string>
     <string name="refresh_mode_month">Add last month episodes</string>
     <string name="refresh_mode_year">Add last year episodes</string>
@@ -84,6 +93,9 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="subscribe_dialog_import_opml">Import OPML</string>
     <string name="subscribe_dialog_search_db">Search database</string>
 
+    <!--PodListen uses android's "preference support library". It imposes some restrictions:
+    preferences_*_title strings are never wrapped, so entire string should fit in single line (~30
+    characters. preferences_*_summary length ideally should not exceed 100 characters-->
     <string name="preferences_title">Preferences</string>
     <string name="preferences_network_title">Network</string>
     <string name="preferences_playback_title">Playback</string>
