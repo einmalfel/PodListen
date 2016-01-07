@@ -98,6 +98,12 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       }
     });
 
+    // on S galaxy A3 Lollipop ProgressBar skips drawable update on setProgress(0), cause mProgress
+    // doesn't change, it's 0 initially. As drawable is never updated, it doesn't effectively mutate
+    // and shares it's state with other ProgressBar drawables.
+    progressBar.setMax(Integer.MAX_VALUE);
+    progressBar.setProgress(Integer.MAX_VALUE);
+
     if (context == null) {
       context = PodListenApp.getContext();
       loadingFilter = new PorterDuffColorFilter(
