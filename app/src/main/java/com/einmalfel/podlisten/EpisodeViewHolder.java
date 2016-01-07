@@ -186,7 +186,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
         setTextColor(ContextCompat.getColor(context, R.color.text_bright));
       }
       progressBar.setIndeterminate(false);
-      progressBar.setMax((int) length);
+      progressBar.setMax(length < 0 ? 0 : (int) length);
       progressBar.setProgress((int) played);
     } else {
       setTextColor(ContextCompat.getColor(context, R.color.text));
