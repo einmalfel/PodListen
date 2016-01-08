@@ -261,10 +261,19 @@ class SyncWorker implements Runnable {
     Date timestamp = new Date();
 
     // try update episode timestamp. If this fails, episode is not yet in db, insert it
+    // In PodListen 1.3.6, id is a hash of Atom's ID or RSS's GUID. If these fields are absent in
+    // feed or PodListen version is lower than 1.3.6, id is a hash of audio url
     long id = PodcastHelper.generateId(audioEnclosure.getLink());
     try {
       if (updateEpisodeTimestamp(id, provider, timestamp)) {
         return false;
+      }
+      String guid = episode.getId();
+      if (guid != null) {
+        id = PodcastHelper.generateId(guid);
+        if (updateEpisodeTimestamp(id, provider, timestamp)) {
+          return false;
+        }
       }
     } catch (RemoteException exception) {
       Log.e(TAG, "DB failed to timestamp episode " + id + ", skipping, exception: ", exception);
