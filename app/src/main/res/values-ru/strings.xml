@@ -141,4 +141,7 @@
     <string name="podcast_delete_question_no_title">Отписаться от этого подкаста?</string>
     <string name="enable_download_manager">Podlisten использует системное приложение \'Download manager\' для загрузок. Пожалуйста, включите его (Настройки->Приложения->Все)</string>
     <string name="search_frequency">Частота: %.1f эпизода в месяц</string>
+    <string name="preferences_experimental_title">Экспериментальные функции</string>
+    <string name="preferences_fix_skip_ending_title">Исправить пропуск окончания</string>
+    <string name="preferences_fix_skip_ending_summary">Системный медиапроигрыватель на некоторых устройствах пропускает последние секунды аудиодорожки</string>
 </resources>

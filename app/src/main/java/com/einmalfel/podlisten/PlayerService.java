@@ -125,6 +125,10 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
                 lastLength = service.length;
                 lastProgress = service.progress;
               }
+              if (fixingEndingSkip && service.length - service.progress < TRACK_ENDING_THRESHOLD_MS) {
+                Log.i(TAG, "Fixing ending skip: calling onCompletion, pos: " + service.progress);
+                onCompletion(player);
+              }
               break;
           }
         }
@@ -217,6 +221,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   private static final String TAG = "PPS";
   private static final float NO_FOCUS_VOLUME = 0.2f;
   private static final int LOADER_ID = 10;
+  private static final int TRACK_ENDING_THRESHOLD_MS = 500;
 
   private final CallbackThread callbackThread = new CallbackThread(this);
   private final NoisyAudioReceiver noisyAudioReceiver = new NoisyAudioReceiver();
@@ -231,6 +236,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   private float audioVolume = 1f;
   private CursorLoader playableEpisodesLoader;
   private Cursor playableEpisodes;
+  private boolean fixingEndingSkip;
 
   class LocalBinder extends Binder {
     PlayerService getService() {
@@ -304,17 +310,23 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
   }
 
   @Override
-  public void onCompletion(MediaPlayer mp) {
-    if (Preferences.getInstance().getCompleteAction() == Preferences.CompleteAction.DO_NOTHING) {
-      pause();
+  public synchronized void onCompletion(MediaPlayer mp) {
+    if (!fixingEndingSkip && Preferences.getInstance().fixSkipEnding()) {
+      Log.i(TAG, "Fixing ending skip: ignoring onCompletion");
+      fixingEndingSkip = true;
     } else {
-      playNext();
+      if (Preferences.getInstance().getCompleteAction() == Preferences.CompleteAction.DO_NOTHING) {
+        pause();
+      } else {
+        playNext();
+      }
     }
   }
 
   @Override
   public void onSeekComplete(MediaPlayer mp) {
     synchronized (this) {
+      fixingEndingSkip = false;
       progress = mp.getCurrentPosition();
       callbackThread.post(CallbackType.PROGRESS);
       Log.d(TAG, "Seek done. Position " + progress);
@@ -434,6 +446,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         }
       } else {
         Log.d(TAG, "Seeking to " + timeMs);
+        fixingEndingSkip = false;
         player.seekTo(timeMs);
         return true;
       }
@@ -517,6 +530,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       return false;
     }
 
+    fixingEndingSkip = false;
     currentId = id;
     progress = 0;
     state = State.STOPPED_ERROR;

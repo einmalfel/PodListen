@@ -28,6 +28,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     JUMP_INTERVAL,
     CURRENT_ACTIVITY,
     PAUSE_ON_DISCONNECT,
+    FIX_SKIP_ENDING,
   }
 
   enum JumpInterval {
@@ -242,6 +243,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   @Nullable
   private String currentActivity; // current activity class name, for services in separate process
   private boolean pauseOnDisconnect;
+  private boolean fixSkipEnding;
 
   private SharedPreferences sPrefs;
 
@@ -329,6 +331,9 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         break;
       case PAUSE_ON_DISCONNECT:
         pauseOnDisconnect = sPrefs.getBoolean(Key.PAUSE_ON_DISCONNECT.toString(), true);
+        break;
+      case FIX_SKIP_ENDING:
+        fixSkipEnding = sPrefs.getBoolean(Key.FIX_SKIP_ENDING.toString(), false);
         break;
       case AUTO_DOWNLOAD_AC:
         boolean newAutoDownloadAC = sPrefs.getBoolean(Key.AUTO_DOWNLOAD_AC.toString(), false);
@@ -491,6 +496,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
   public boolean getPauseOnDisconnect() {
     return pauseOnDisconnect;
+  }
+
+  public boolean fixSkipEnding() {
+    return fixSkipEnding;
   }
 
   @Override

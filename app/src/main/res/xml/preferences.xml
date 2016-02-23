@@ -43,6 +43,11 @@
             android:title="@string/preferences_pause_on_disconnect_title"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/preferences_experimental_title">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="FIX_SKIP_ENDING"
+            android:summary="@string/preferences_fix_skip_ending_summary"
+            android:title="@string/preferences_fix_skip_ending_title" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/preferences_other_title">

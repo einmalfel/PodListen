@@ -100,6 +100,7 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="preferences_network_title">Network</string>
     <string name="preferences_playback_title">Playback</string>
     <string name="preferences_other_title">Other</string>
+    <string name="preferences_experimental_title">Experimental</string>
     <string name="preferences_send_bug_report_title">Send bug-report</string>
     <string name="preferences_send_bug_report_summary">Send developer a email. App log and device info will be included</string>
     <string name="preferences_send_bug_report_summary_disabled">Disabled: there is no mail app installed</string>
@@ -119,6 +120,8 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="preferences_on_playback_completed_title">On playback complete</string>
     <string name="preferences_pause_on_disconnect_title">Pause on headphones disconnect</string>
     <string name="preferences_pause_on_disconnect_summary">Pauses playback when user unplugs earphones or BT headset loses connection</string>
+    <string name="preferences_fix_skip_ending_title">Workaround ending skip</string>
+    <string name="preferences_fix_skip_ending_summary">Android system media player skips track endings on some devices. This option fixes the issue</string>
 
     <string name="opml_dialog_done">Done</string>
     <string name="opml_dialog_message">Your subscriptions where exported to %s</string>
