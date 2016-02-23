@@ -42,6 +42,8 @@
             android:summary="@string/preferences_pause_on_disconnect_summary"
             android:title="@string/preferences_pause_on_disconnect_title"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/preferences_experimental_title">
+    </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/preferences_other_title">
         <Preference
