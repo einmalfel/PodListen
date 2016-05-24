@@ -297,6 +297,9 @@ public class DownloadReceiver extends BroadcastReceiver {
                                 intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L));
           updateDownloadQueue(context, false);
           break;
+        default:
+          Log.e(TAG, "Unexpected intent received: " + intent);
+          break;
       }
     }
   }

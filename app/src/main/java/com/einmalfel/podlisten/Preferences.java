@@ -417,6 +417,9 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
           }
         }
         break;
+      default:
+        Log.e(TAG, "Unexpected key received: " + key);
+        break;
     }
   }
 

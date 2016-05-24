@@ -103,6 +103,9 @@ public class PreferencesActivity extends AppCompatActivity {
           }
         }
         break;
+      default:
+        Log.e(TAG, "Unexpected intent received: " + intent);
+        break;
     }
   }
 
