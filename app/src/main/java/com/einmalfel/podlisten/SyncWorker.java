@@ -40,6 +40,7 @@ class SyncWorker implements Runnable {
   private static final int MAX_EPISODES_TO_PARSE = 1000;
   private static final Pattern AUDIO_PATTERN = Pattern.compile("\\Aaudio/.*\\Z");
   private static final Date PODCAST_EPOCH;
+  public static final String BR = "<br/>";
 
   // there where no podcasts before year 2000. Earlier pubDate's will be replaced with current time
   static {
@@ -429,13 +430,13 @@ class SyncWorker implements Runnable {
     text = listPattern.matcher(text).replaceAll("\u2022");
 
     // replace \n and </li> with line breaks. Need all LF tokens to be <br> to reduce them later
-    text = brPattern.matcher(text).replaceAll("<br/>");
+    text = brPattern.matcher(text).replaceAll(BR);
 
     // throw out tags not supported by spanned text
     text = Html.toHtml(Html.fromHtml(text));
 
     // toHtml may add some excess <p> tags
-    text = paragraphPattern.matcher(text).replaceAll("<br/>");
+    text = paragraphPattern.matcher(text).replaceAll(BR);
 
     // There is a problem: toHtml returns escaped html, thus making resulting string much longer.
     // The only solution I found is to make use of unbescape library.
@@ -446,7 +447,7 @@ class SyncWorker implements Runnable {
     text = trimStartPattern.matcher(text).replaceAll("");
 
     // reduce repeated <br>'s
-    text = brRepeatPattern.matcher(text).replaceAll("<br/>");
+    text = brRepeatPattern.matcher(text).replaceAll(BR);
 
     // using autoLinks="all" for TextView will highlight links in flat text, but will break <href>'s
     text = EMAIL_ADDRESS.matcher(text).replaceAll("$1<a href=\"mailto:$2\">$2</a>$3");

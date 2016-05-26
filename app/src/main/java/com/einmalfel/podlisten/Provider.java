@@ -76,6 +76,9 @@ public class Provider extends ContentProvider {
     }
   }
 
+  public static final String WRONG_QUERY_URI_MESSAGE = "Wrong query uri %s, code: %d";
+  public static final String TEXT = " TEXT,";
+  public static final String INTEGER = " INTEGER,";
   public static final String T_EPISODE = "episode";
   public static final String T_PODCAST = "podcast";
   public static final String T_E_JOIN_P = "episode_join_podcast";
@@ -149,7 +152,7 @@ public class Provider extends ContentProvider {
   public int delete(Uri uri, String selection, String[] selectionArgs) {
     int code = matcher.match(uri);
     if (code == -1) {
-      Log.e(TAG, "Wrong query uri " + uri + ". Code " + code);
+      Log.e(TAG, String.format(WRONG_QUERY_URI_MESSAGE, uri, code));
       return 0;
     }
     if (code >= TABLES.length) {
@@ -183,7 +186,7 @@ public class Provider extends ContentProvider {
   public Uri insert(Uri uri, ContentValues values) {
     int code = matcher.match(uri);
     if (code < 0 || code >= TABLES.length) {
-      Log.e(TAG, "Wrong insert uri " + uri + ". Code " + code);
+      Log.e(TAG, String.format("Wrong insert uri %s, code: %d", uri, code));
       return null;
     }
     if (code == TABLES.length - 1) {
@@ -229,7 +232,7 @@ public class Provider extends ContentProvider {
                       String[] selectionArgs, String sortOrder) {
     int code = matcher.match(uri);
     if (code == -1) {
-      Log.e(TAG, "Wrong query uri " + uri + ". Code " + code);
+      Log.e(TAG, String.format(WRONG_QUERY_URI_MESSAGE, uri, code));
       return null;
     }
     if (code >= TABLES.length) {
@@ -270,7 +273,7 @@ public class Provider extends ContentProvider {
                     String[] selectionArgs) {
     int code = matcher.match(uri);
     if (code == -1) {
-      Log.e(TAG, "Wrong query uri " + uri + ". Code " + code);
+      Log.e(TAG, String.format(WRONG_QUERY_URI_MESSAGE, uri, code));
       return 0;
     }
     if (code >= TABLES.length) {
@@ -300,36 +303,36 @@ public class Provider extends ContentProvider {
     public void onCreate(SQLiteDatabase db) {
       db.execSQL("CREATE TABLE " + T_PODCAST + " (" +
           K_ID + " INTEGER PRIMARY KEY," +
-          K_PNAME + " TEXT," +
-          K_PDESCR + " TEXT," +
-          K_PSDESCR + " TEXT," +
-          K_PSTATE + " INTEGER," +
-          K_PRMODE + " INTEGER," +
-          K_PATSTAMP + " INTEGER," +
-          K_PURL + " TEXT," +
-          K_PFURL + " TEXT," +
-          K_PERROR + " TEXT," +
+          K_PNAME + TEXT +
+          K_PDESCR + TEXT +
+          K_PSDESCR + TEXT +
+          K_PSTATE + INTEGER +
+          K_PRMODE + INTEGER +
+          K_PATSTAMP + INTEGER +
+          K_PURL + TEXT +
+          K_PFURL + TEXT +
+          K_PERROR + TEXT +
           K_PTSTAMP + " INTEGER" +
           ')');
       db.execSQL("CREATE TABLE " + T_EPISODE + " (" +
           K_ID + " INTEGER PRIMARY KEY," +
-          K_ENAME + " TEXT," +
-          K_EDESCR + " TEXT," +
-          K_ESDESCR + " TEXT," +
-          K_EURL + " TEXT," +
-          K_EAURL + " TEXT," +
-          K_EERROR + " TEXT," +
-          K_EDATE + " INTEGER," +
-          K_EDFIN + " INTEGER," +
-          K_EDATT + " INTEGER," +
-          K_EDID + " INTEGER," +
-          K_ESTATE + " INTEGER," +
-          K_ETSTAMP + " INTEGER," +
-          K_EPLAYED + " INTEGER," +
-          K_ELENGTH + " INTEGER," +
-          K_ESIZE + " INTEGER," +
-          K_EDTSTAMP + " INTEGER," +
-          K_EPID + " INTEGER," +
+          K_ENAME + TEXT +
+          K_EDESCR + TEXT +
+          K_ESDESCR + TEXT +
+          K_EURL + TEXT +
+          K_EAURL + TEXT +
+          K_EERROR + TEXT +
+          K_EDATE + INTEGER +
+          K_EDFIN + INTEGER +
+          K_EDATT + INTEGER +
+          K_EDID + INTEGER +
+          K_ESTATE + INTEGER +
+          K_ETSTAMP + INTEGER +
+          K_EPLAYED + INTEGER +
+          K_ELENGTH + INTEGER +
+          K_ESIZE + INTEGER +
+          K_EDTSTAMP + INTEGER +
+          K_EPID + INTEGER +
           "FOREIGN KEY(" + K_EPID + ") REFERENCES " + T_PODCAST + '(' + K_ID + ')' +
           ')');
     }

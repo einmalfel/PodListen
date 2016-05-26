@@ -19,6 +19,7 @@ public class Storage {
   private static final String TAG = "STR";
   private static final String UNKNOWN_STATE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ?
       Environment.MEDIA_UNKNOWN : "unknown";
+  public static final String ANDROID_DATA_COM_EINMALFEL_PODLISTEN_FILES = "Android/data/com.einmalfel.podlisten/files";
   private final File appFilesDir; // /*/Android/data/com.einmalfel.podlisten/files
 
   /**@return Ordered and deduplicated list of writable storages. Order: primary first, then dirs
@@ -28,7 +29,7 @@ public class Storage {
     List<Storage> result = new LinkedList<>();
     Set<File> dirs = new LinkedHashSet<>();
     dirs.add(new File(Environment.getExternalStorageDirectory(),
-                      "Android/data/com.einmalfel.podlisten/files"));
+            ANDROID_DATA_COM_EINMALFEL_PODLISTEN_FILES));
     dirs.addAll(Arrays.asList(ContextCompat.getExternalFilesDirs(PodListenApp.getContext(), null)));
     for (String env : new String[]{"EXTERNAL_STORAGE", "SECONDARY_STORAGE",
                                    "EXTERNAL_SDCARD_STORAGE", "SECOND_VOLUME_STORAGE",
@@ -39,7 +40,7 @@ public class Storage {
           File storageDir = new File(path);
           // filter legacy out. Download to thais dir fails on CyanogenMod because of perm. problems
           if (!path.startsWith("/storage/emulated/legacy") && storageDir.isDirectory()) {
-            File filesDir = new File(storageDir, "Android/data/com.einmalfel.podlisten/files");
+            File filesDir = new File(storageDir, ANDROID_DATA_COM_EINMALFEL_PODLISTEN_FILES);
             if (dirs.add(filesDir)) {
               Log.i(TAG, "Found storage via environment variable: " + filesDir);
             }
@@ -108,7 +109,7 @@ public class Storage {
   public static Storage getPrimaryStorage() {
     try {
       return new Storage(new File(Environment.getExternalStorageDirectory(),
-                                  "Android/data/com.einmalfel.podlisten/files"));
+              ANDROID_DATA_COM_EINMALFEL_PODLISTEN_FILES));
     } catch (IOException exception) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         throw new AssertionError("Cant convert primary storage to canonical form", exception);

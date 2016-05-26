@@ -28,6 +28,7 @@ public class ImageManager {
   private static final String TAG = "IMG";
   private static final int WIDTH_DP = 70;
   private static final int PAGES_TO_CACHE = 10;
+  public static final String FAILED_TO_CLOSE_STREAM = "Failed to close stream";
   private final int widthPx;
   private static ImageManager instance;
 
@@ -131,14 +132,14 @@ public class ImageManager {
         try {
           lock.release();
         } catch (IOException exception) {
-          Log.wtf(TAG, "Failed to close stream", exception);
+          Log.wtf(TAG, FAILED_TO_CLOSE_STREAM, exception);
         }
       }
       if (stream != null) {
         try {
           stream.close();
         } catch (IOException exception) {
-          Log.wtf(TAG, "Failed to close stream", exception);
+          Log.wtf(TAG, FAILED_TO_CLOSE_STREAM, exception);
         }
       }
     }
@@ -183,14 +184,14 @@ public class ImageManager {
         try {
           lock.release();
         } catch (IOException exception) {
-          Log.wtf(TAG, "Failed to close stream", exception);
+          Log.wtf(TAG, FAILED_TO_CLOSE_STREAM, exception);
         }
       }
       if (stream != null) {
         try {
           stream.close();
         } catch (IOException exception) {
-          Log.wtf(TAG, "Failed to close stream", exception);
+          Log.wtf(TAG, FAILED_TO_CLOSE_STREAM, exception);
         }
       }
     }
