@@ -9,6 +9,10 @@ public class UnitConverter {
   private static UnitConverter instance;
   private final DisplayMetrics displayMetrics;
 
+  private UnitConverter() {
+    displayMetrics = PodListenApp.getContext().getResources().getDisplayMetrics();
+  }
+
   public static UnitConverter getInstance() {
     if (instance == null) {
       synchronized (UnitConverter.class) {
@@ -18,10 +22,6 @@ public class UnitConverter {
       }
     }
     return instance;
-  }
-
-  private UnitConverter() {
-    displayMetrics = PodListenApp.getContext().getResources().getDisplayMetrics();
   }
 
   public int spToPx(int dp) {

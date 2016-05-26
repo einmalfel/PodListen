@@ -90,6 +90,10 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     private PlayerService.State lastState = PlayerService.State.UPDATE_ME;
     private long lastEpisode = -1;
 
+    CallbackThread(PlayerService service) {
+      this.service = service;
+    }
+
     @Override
     public void run() {
       Log.d(TAG, "Starting callback thread");
@@ -137,10 +141,6 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         }
       }
       Log.d(TAG, "Finishing callback thread");
-    }
-
-    CallbackThread(PlayerService service) {
-      this.service = service;
     }
 
     private void sendStateUpdate() {

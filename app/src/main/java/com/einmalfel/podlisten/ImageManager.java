@@ -35,6 +35,18 @@ public class ImageManager {
   private final LruCache<Long, Bitmap> memoryCache;
   private final Context context;
 
+  private ImageManager() {
+    context = PodListenApp.getContext();
+    widthPx = UnitConverter.getInstance().dpToPx(WIDTH_DP);
+    Point displaySize = new Point();
+    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    wm.getDefaultDisplay().getSize(displaySize);
+    // to estimate how many images list page holds, assume images are square and sum of images
+    // heights equals to a half of screen height
+    int imagesPerPage = displaySize.y / 2 / widthPx;
+    memoryCache = new LruCache<>(PAGES_TO_CACHE * imagesPerPage);
+  }
+
   @NonNull
   public static ImageManager getInstance() {
     if (instance == null) {
@@ -203,17 +215,5 @@ public class ImageManager {
       size += b.getByteCount(); // approximate value. TODO use getAllocatedByteCount on 4.4+
     }
     return size;
-  }
-
-  private ImageManager() {
-    context = PodListenApp.getContext();
-    widthPx = UnitConverter.getInstance().dpToPx(WIDTH_DP);
-    Point displaySize = new Point();
-    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    wm.getDefaultDisplay().getSize(displaySize);
-    // to estimate how many images list page holds, assume images are square and sum of images
-    // heights equals to a half of screen height
-    int imagesPerPage = displaySize.y / 2 / widthPx;
-    memoryCache = new LruCache<>(PAGES_TO_CACHE * imagesPerPage);
   }
 }

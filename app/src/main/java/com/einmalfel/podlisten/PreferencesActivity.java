@@ -26,6 +26,16 @@ import java.util.Locale;
 
 public class PreferencesActivity extends AppCompatActivity {
   private static final String TAG = "PAC";
+  private static final SimpleDateFormat RFC822DATEFORMAT
+          = new SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US);
+  private static final String[] directoryMimeTypes = new String[]{
+          "application/x-directory",
+          "resource/folder",
+          "x-directory/normal",
+          "inode/directory",
+          "application/folder",
+          "vnd.android.cursor.item/file"
+  };
   private final Preferences preferences = Preferences.getInstance();
 
   @Override
@@ -109,9 +119,6 @@ public class PreferencesActivity extends AppCompatActivity {
     }
   }
 
-  private static final SimpleDateFormat RFC822DATEFORMAT
-      = new SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US);
-
   private boolean exportToOPML(File file) {
     XmlSerializer serializer = Xml.newSerializer();
     try {
@@ -165,15 +172,6 @@ public class PreferencesActivity extends AppCompatActivity {
       return false;
     }
   }
-
-  static private final String[] directoryMimeTypes = new String[]{
-      "application/x-directory",
-      "resource/folder",
-      "x-directory/normal",
-      "inode/directory",
-      "application/folder",
-      "vnd.android.cursor.item/file"
-  };
 
   private boolean showDirectory(File dir, boolean test) {
     Intent showFolderIntent = new Intent(Intent.ACTION_VIEW);

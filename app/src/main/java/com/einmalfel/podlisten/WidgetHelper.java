@@ -67,6 +67,19 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   private int position;
   private int max;
 
+  private WidgetHelper() {
+    activityIntent.putExtra(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.PLAYLIST.ordinal());
+    rvFull.setOnClickPendingIntent(R.id.next_button, getIntent(context, WidgetAction.NEXT_EPISODE));
+    rvFull.setOnClickPendingIntent(R.id.fb_button, getIntent(context, WidgetAction.SEEK_BACKWARD));
+    rvFull.setOnClickPendingIntent(R.id.ff_button, getIntent(context, WidgetAction.SEEK_FORWARD));
+    rvFull.setOnClickPendingIntent(R.id.play_button, getIntent(context, WidgetAction.PLAY_PAUSE));
+    rvFull.setOnClickPendingIntent(R.id.play_options, getIntent(context, WidgetAction.STOP));
+    rvFull.setImageViewResource(R.id.play_options, R.mipmap.ic_close_white_36dp);
+    builder.setSmallIcon(R.drawable.logo).setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true).setCategory(NotificationCompat.CATEGORY_SERVICE);
+    connection.bind();
+  }
+
   static WidgetHelper getInstance() {
     if (instance == null) {
       synchronized (WidgetHelper.class) {
@@ -84,19 +97,6 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     Intent intent = new Intent(context, WidgetProvider.class);
     intent.setAction(widgetAction.name());
     return PendingIntent.getBroadcast(context, INTENT_ID_BASE + widgetAction.ordinal(), intent, 0);
-  }
-
-  private WidgetHelper() {
-    activityIntent.putExtra(MainActivity.PAGE_LAUNCH_OPTION, MainActivity.Pages.PLAYLIST.ordinal());
-    rvFull.setOnClickPendingIntent(R.id.next_button, getIntent(context, WidgetAction.NEXT_EPISODE));
-    rvFull.setOnClickPendingIntent(R.id.fb_button, getIntent(context, WidgetAction.SEEK_BACKWARD));
-    rvFull.setOnClickPendingIntent(R.id.ff_button, getIntent(context, WidgetAction.SEEK_FORWARD));
-    rvFull.setOnClickPendingIntent(R.id.play_button, getIntent(context, WidgetAction.PLAY_PAUSE));
-    rvFull.setOnClickPendingIntent(R.id.play_options, getIntent(context, WidgetAction.STOP));
-    rvFull.setImageViewResource(R.id.play_options, R.mipmap.ic_close_white_36dp);
-    builder.setSmallIcon(R.drawable.logo).setPriority(NotificationCompat.PRIORITY_LOW)
-           .setOngoing(true).setCategory(NotificationCompat.CATEGORY_SERVICE);
-    connection.bind();
   }
 
   private void rvApplyState(RemoteViews rv) {

@@ -14,6 +14,11 @@ public class PodlistenAccount {
   // cannot derive from Account - instance will be send to sync framework in form of parcel
   private final Account account = new Account(appId, appId);
 
+  private PodlistenAccount() {
+    AccountManager aManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+    aManager.addAccountExplicitly(account, null, null);
+  }
+
   public static PodlistenAccount getInstance() {
     if (instance == null) {
       synchronized (PodlistenAccount.class) {
@@ -23,11 +28,6 @@ public class PodlistenAccount {
       }
     }
     return instance;
-  }
-
-  private PodlistenAccount() {
-    AccountManager aManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
-    aManager.addAccountExplicitly(account, null, null);
   }
 
   /**

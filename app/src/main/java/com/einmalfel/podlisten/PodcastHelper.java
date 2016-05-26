@@ -27,6 +27,7 @@ import java.util.Locale;
 public class PodcastHelper {
   private static final String TAG = "EPM";
   private static final int TIMEOUT_MS = 15000;
+  private static final DateFormat formatYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
   private static PodcastHelper instance;
   private final Context context = PodListenApp.getContext();
   private final ContentResolver resolver = context.getContentResolver();
@@ -64,11 +65,6 @@ public class PodcastHelper {
   public static long generateId(@NonNull String url) {
     return (long) url.hashCode() - Integer.MIN_VALUE;
   }
-
-
-
-
-  private static final DateFormat formatYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
   @NonNull
   public static String shortDateFormat(long date) {

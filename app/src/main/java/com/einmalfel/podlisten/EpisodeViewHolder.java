@@ -52,10 +52,6 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private String title;
   private String aURL;
 
-  long getId() {
-    return id;
-  }
-
   public EpisodeViewHolder(final View layout,
                            final EpisodeListAdapter.ItemClickListener listener,
                            final EpisodeListAdapter adapter) {
@@ -122,6 +118,10 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       loadingButtonDrawable.mutate().setColorFilter(MainActivity.disabledFilter);
       loadButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_file_download_white_36dp);
     }
+  }
+
+  long getId() {
+    return id;
   }
 
   private void setTextColor(int color) {

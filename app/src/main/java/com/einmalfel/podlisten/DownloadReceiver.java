@@ -29,6 +29,13 @@ public class DownloadReceiver extends BroadcastReceiver {
   static final String ID_EXTRA_NAME = "ID";
   private static Boolean charging = null;
 
+  public DownloadReceiver() {
+    super();
+    if (charging == null) {
+      charging = isDeviceCharging();
+    }
+  }
+
   static boolean isDeviceCharging() {
     IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     Intent batteryStatus = PodListenApp.getContext().registerReceiver(null, intentFilter);
@@ -37,13 +44,6 @@ public class DownloadReceiver extends BroadcastReceiver {
     } else {
       int s = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
       return s == BatteryManager.BATTERY_STATUS_CHARGING || s == BatteryManager.BATTERY_STATUS_FULL;
-    }
-  }
-
-  public DownloadReceiver() {
-    super();
-    if (charging == null) {
-      charging = isDeviceCharging();
     }
   }
 

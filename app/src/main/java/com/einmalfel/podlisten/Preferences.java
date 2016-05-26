@@ -249,6 +249,16 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
   private final Context context = PodListenApp.getContext();
 
+  public Preferences() {
+    // TODO make prefs synced between processes via IPC. MULTI_PROCESS is deprecated and unreliable
+    sPrefs = context.getSharedPreferences(context.getPackageName() + "_preferences",
+            Context.MODE_MULTI_PROCESS);
+    sPrefs.registerOnSharedPreferenceChangeListener(this);
+    for (Key key : Key.values()) {
+      readPreference(key);
+    }
+  }
+
   public static Preferences getInstance() {
     if (instance == null) {
       synchronized (Preferences.class) {
@@ -258,16 +268,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
       }
     }
     return instance;
-  }
-
-  public Preferences() {
-    // TODO make prefs synced between processes via IPC. MULTI_PROCESS is deprecated and unreliable
-    sPrefs = context.getSharedPreferences(context.getPackageName() + "_preferences",
-                                          Context.MODE_MULTI_PROCESS);
-    sPrefs.registerOnSharedPreferenceChangeListener(this);
-    for (Key key : Key.values()) {
-      readPreference(key);
-    }
   }
 
   /**

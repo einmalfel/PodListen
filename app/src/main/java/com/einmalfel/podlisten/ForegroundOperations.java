@@ -19,17 +19,17 @@ public class ForegroundOperations extends IntentService {
   private static final String EXTRA_EPISODE_STATE = "com.einmalfel.podlisten.EPISODE_STATE";
   private static final String EXTRA_EPISODE_FILTER = "com.einmalfel.podlisten.EPISODE_FILTER";
 
+  public ForegroundOperations() {
+    super("ForegroundOperations");
+    setIntentRedelivery(true);
+  }
+
   public static void setEpisodesState(@NonNull Context context, int state, int stateFilter) {
     Intent intent = new Intent(context, ForegroundOperations.class);
     intent.setAction(ACTION_SET_STATE);
     intent.putExtra(EXTRA_EPISODE_FILTER, stateFilter);
     intent.putExtra(EXTRA_EPISODE_STATE, state);
     context.startService(intent);
-  }
-
-  public ForegroundOperations() {
-    super("ForegroundOperations");
-    setIntentRedelivery(true);
   }
 
   @Override
