@@ -176,6 +176,9 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
       case STOP:
         connection.service.stop();
         break;
+      default:
+        Log.e(TAG, "Unexpected action received: " + action);
+        break;
     }
   }
 

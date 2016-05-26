@@ -130,6 +130,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
                 onCompletion(player);
               }
               break;
+            default:
+              Log.e(TAG, "Unexpected ct received: " + ct);
+              break;
           }
         }
       }
@@ -684,6 +687,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         break;
       case PAUSED:
         resume();
+        break;
+      default:
+        Log.e(TAG, "Unexpected state received: " + state);
         break;
     }
   }

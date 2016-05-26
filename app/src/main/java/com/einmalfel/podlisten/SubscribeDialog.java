@@ -72,6 +72,9 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
         case SEARCH_REQUEST_ID:
           urlText.setText(data.getStringExtra(SearchActivity.RSS_URL_EXTRA));
           break;
+        default:
+          Log.e(TAG, "Unexpected requestCode received: " + requestCode);
+          break;
       }
     }
   }

@@ -225,6 +225,9 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
       case SUBSCRIPTIONS:
         lerpFAB(FabAction.ADD, FabAction.ADD, 0);
         break;
+      default:
+        Log.e(TAG, "Unexpected fragment received: " + fragment);
+        break;
     }
   }
 
@@ -242,6 +245,9 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           break;
         case CLEAR:
           fab.setImageResource(R.mipmap.ic_clear_all_black_24dp);
+          break;
+        default:
+          Log.e(TAG, "Unexpected action received: " + action);
           break;
       }
       currentFabAction = action;
@@ -415,6 +421,9 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
             Log.w(TAG, "Playlist fragment doesn't exist yet, skipping reload");
           }
           snackbarController.showSnackbar(newMode.toString(), Snackbar.LENGTH_SHORT, null, null);
+          break;
+        default:
+          Log.e(TAG, "Unexpected currentFabAction received: " + currentFabAction);
           break;
       }
     } else if (v == playButton) {
