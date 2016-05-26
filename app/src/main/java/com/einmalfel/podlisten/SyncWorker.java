@@ -42,6 +42,58 @@ class SyncWorker implements Runnable {
   private static final Date PODCAST_EPOCH;
   public static final String BR = "<br/>";
 
+  // use <br[^>]*> instead of <br.*?> because <br.*?><bt.*?> will match <br/><sometag><br/>
+  private static final String BR_TAG = "</?br[^>]*>";
+  private static final Pattern listPattern = Pattern.compile("<li[^>]*>");
+  private static final Pattern brPattern = Pattern.compile("</?img[^>]*>|</?li[^>]*>|\\n");
+  private static final Pattern paragraphPattern = Pattern.compile("</?p[^>]*>");
+  private static final Pattern trimStartPattern = Pattern.compile("\\A(\\s|" + BR_TAG + ")*");
+  private static final Pattern trimEndPattern = Pattern.compile("(\\s|" + BR_TAG + ")*\\Z");
+  private static final Pattern brRepeatPattern = Pattern.compile("(\\s*" + BR_TAG + "\\s*)+");
+
+  // patterns from android.utils.Patterns with \s appended to begin and end of pattern to not match
+  // links that are already inside tags. Also, capturing groups replaced with non-capturing
+  private static final String GOOD_IRI_CHAR = "a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF";
+  private static final String IP_ADDRESS =
+          "(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(?:25[0-5]|2[0-4]"
+                  + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1]"
+                  + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
+                  + "|[1-9][0-9]|[0-9]))";
+  private static final String IRI =
+          "[" + GOOD_IRI_CHAR + "](?:[" + GOOD_IRI_CHAR + "\\-]{0,61}[" + GOOD_IRI_CHAR + "])?";
+  private static final String GTLD = "[a-zA-Z\u00C0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,63}";
+  private static final String HOST_NAME = "(?:" + IRI + "\\.)+" + GTLD;
+  private static final String DOMAIN_NAME = "(?:" + HOST_NAME + "|" + IP_ADDRESS + ")";
+  // last part of number should be longer than 7 symbols, otherwise it will match dates (2015-02-02)
+  private static final Pattern PHONE = Pattern.compile(
+          "(\\A|\\s|<br/>)+" +
+                  "((?:\\+[0-9]+[\\- \\.]*)?(?:\\([0-9]+\\)[\\- \\.]*)?(?:[0-9][0-9\\- \\.]{9,}[0-9]))" +
+                  "(\\Z|\\s|<br/>)+");
+  private static final Pattern EMAIL_ADDRESS = Pattern.compile(
+          "(\\A|\\s|<br/>)+" +
+                  "([a-zA-Z0-9\\+\\._%\\-]{1,256}@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                  "(?:\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}))" +
+                  "(\\Z|\\s|<br/>)+"
+  );
+  private static final String IRI_PART = "(?:/(?:(?:[" + GOOD_IRI_CHAR +
+          ";/\\?:@&=#~\\-\\.\\+!\\*'\\(\\),_])|(?:%[a-fA-F0-9]{2}))*)?";
+  private static final Pattern WEB_URL = Pattern.compile(
+          "(\\A|\\s|<br/>)+" +
+                  "((?:(?:(?:http|https|Http|Https|rtsp|Rtsp)://(?:(?:[a-zA-Z0-9\\$\\-_\\.\\+!\\*" +
+                  "'\\(\\),;\\?&=]|(?:%[a-fA-F0-9]{2})){1,64}(?::(?:[a-zA-Z0-9\\$\\-_" +
+                  "\\.\\+!\\*\\(\\),;\\?&=]|(?:%[a-fA-F0-9]{2})){1,25})?@)?)?" +
+                  DOMAIN_NAME + "(?::\\d{1,5})?)" + IRI_PART + ")" +
+                  "(\\b|$|<br/>)+");
+  private static final Pattern WEB_URL_NO_PROTO = Pattern.compile(
+          "(\\A|\\s|<br/>)+" +
+                  "((?:" + DOMAIN_NAME + "(?::\\d{1,5})?)" + IRI_PART + ")" +
+                  "(\\b|$|<br/>)+");
+
+  // match tags containing xml, rss and feed w/o nested tags and w/ href attribute
+  private static final Pattern hrefPattern = Pattern.compile(
+          "<[^><]*(?=[^><]*(?:gems|Feed|RSS|xml)[^><]*)(?=[^><]*href=\"([^\"]+)\"[^><]*)[^><]*>",
+          Pattern.CASE_INSENSITIVE);
+
   // there where no podcasts before year 2000. Earlier pubDate's will be replaced with current time
   static {
     Calendar calendar = Calendar.getInstance();
@@ -162,12 +214,6 @@ class SyncWorker implements Runnable {
     id = newId;
     link = newURL;
   }
-
-
-  // match tags containing xml, rss and feed w/o nested tags and w/ href attribute
-  private static final Pattern hrefPattern = Pattern.compile(
-      "<[^><]*(?=[^><]*(?:gems|Feed|RSS|xml)[^><]*)(?=[^><]*href=\"([^\"]+)\"[^><]*)[^><]*>",
-      Pattern.CASE_INSENSITIVE);
 
   @NonNull
   private Set<String> scanPage(@NonNull String link) throws IOException {
@@ -376,53 +422,6 @@ class SyncWorker implements Runnable {
     int pL = plain.length();
     return plain.substring(0, pL > Provider.SHORT_DESCR_LENGTH ? Provider.SHORT_DESCR_LENGTH : pL);
   }
-
-  // use <br[^>]*> instead of <br.*?> because <br.*?><bt.*?> will match <br/><sometag><br/>
-  private static final String BR_TAG = "</?br[^>]*>";
-  private static final Pattern listPattern = Pattern.compile("<li[^>]*>");
-  private static final Pattern brPattern = Pattern.compile("</?img[^>]*>|</?li[^>]*>|\\n");
-  private static final Pattern paragraphPattern = Pattern.compile("</?p[^>]*>");
-  private static final Pattern trimStartPattern = Pattern.compile("\\A(\\s|" + BR_TAG + ")*");
-  private static final Pattern trimEndPattern = Pattern.compile("(\\s|" + BR_TAG + ")*\\Z");
-  private static final Pattern brRepeatPattern = Pattern.compile("(\\s*" + BR_TAG + "\\s*)+");
-
-  // patterns from android.utils.Patterns with \s appended to begin and end of pattern to not match
-  // links that are already inside tags. Also, capturing groups replaced with non-capturing
-  private static final String GOOD_IRI_CHAR = "a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF";
-  private static final String IP_ADDRESS =
-      "(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(?:25[0-5]|2[0-4]"
-          + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1]"
-          + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
-          + "|[1-9][0-9]|[0-9]))";
-  private static final String IRI =
-      "[" + GOOD_IRI_CHAR + "](?:[" + GOOD_IRI_CHAR + "\\-]{0,61}[" + GOOD_IRI_CHAR + "])?";
-  private static final String GTLD = "[a-zA-Z\u00C0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,63}";
-  private static final String HOST_NAME = "(?:" + IRI + "\\.)+" + GTLD;
-  private static final String DOMAIN_NAME = "(?:" + HOST_NAME + "|" + IP_ADDRESS + ")";
-  // last part of number should be longer than 7 symbols, otherwise it will match dates (2015-02-02)
-  private static final Pattern PHONE = Pattern.compile(
-      "(\\A|\\s|<br/>)+" +
-          "((?:\\+[0-9]+[\\- \\.]*)?(?:\\([0-9]+\\)[\\- \\.]*)?(?:[0-9][0-9\\- \\.]{9,}[0-9]))" +
-          "(\\Z|\\s|<br/>)+");
-  private static final Pattern EMAIL_ADDRESS = Pattern.compile(
-      "(\\A|\\s|<br/>)+" +
-          "([a-zA-Z0-9\\+\\._%\\-]{1,256}@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
-          "(?:\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}))" +
-          "(\\Z|\\s|<br/>)+"
-  );
-  private static final String IRI_PART = "(?:/(?:(?:[" + GOOD_IRI_CHAR +
-      ";/\\?:@&=#~\\-\\.\\+!\\*'\\(\\),_])|(?:%[a-fA-F0-9]{2}))*)?";
-  private static final Pattern WEB_URL = Pattern.compile(
-      "(\\A|\\s|<br/>)+" +
-          "((?:(?:(?:http|https|Http|Https|rtsp|Rtsp)://(?:(?:[a-zA-Z0-9\\$\\-_\\.\\+!\\*" +
-          "'\\(\\),;\\?&=]|(?:%[a-fA-F0-9]{2})){1,64}(?::(?:[a-zA-Z0-9\\$\\-_" +
-          "\\.\\+!\\*\\(\\),;\\?&=]|(?:%[a-fA-F0-9]{2})){1,25})?@)?)?" +
-          DOMAIN_NAME + "(?::\\d{1,5})?)" + IRI_PART + ")" +
-          "(\\b|$|<br/>)+");
-  private static final Pattern WEB_URL_NO_PROTO = Pattern.compile(
-      "(\\A|\\s|<br/>)+" +
-          "((?:" + DOMAIN_NAME + "(?::\\d{1,5})?)" + IRI_PART + ")" +
-          "(\\b|$|<br/>)+");
 
   @NonNull
   static String simplifyHTML(@NonNull String text) {

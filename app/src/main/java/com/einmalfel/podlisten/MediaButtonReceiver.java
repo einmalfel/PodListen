@@ -17,6 +17,9 @@ public class MediaButtonReceiver extends BroadcastReceiver {
   private static PlayerService service = null;
   private static MediaSessionCompat session = null;
 
+  public MediaButtonReceiver() {
+  }
+
   static synchronized void setService(PlayerService playerService) {
     if (session == null && playerService != null) {
       ComponentName eventReceiver = new ComponentName(playerService.getPackageName(),
@@ -35,9 +38,6 @@ public class MediaButtonReceiver extends BroadcastReceiver {
       session = null;
     }
     service = playerService;
-  }
-
-  public MediaButtonReceiver() {
   }
 
   @Override

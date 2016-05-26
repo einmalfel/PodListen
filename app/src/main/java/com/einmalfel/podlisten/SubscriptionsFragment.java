@@ -23,6 +23,9 @@ public class SubscriptionsFragment extends DebuggableFragment implements
   private static final MainActivity.Pages activityPage = MainActivity.Pages.SUBSCRIPTIONS;
   private static final String TAG = "SSF";
   private final PodcastListAdapter adapter = new PodcastListAdapter(null, this);
+  static final String[] projection = new String[]{
+          Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE,
+          Provider.K_PURL, Provider.K_PTSTAMP, Provider.K_PERROR, Provider.K_PSDESCR};
 
   @Override
   public void onDestroy() {
@@ -69,9 +72,6 @@ public class SubscriptionsFragment extends DebuggableFragment implements
     historyFragment.show(getActivity().getSupportFragmentManager(), "history");
   }
 
-  static final String[] projection = new String[]{
-      Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE,
-      Provider.K_PURL, Provider.K_PTSTAMP, Provider.K_PERROR, Provider.K_PSDESCR};
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(

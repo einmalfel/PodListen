@@ -22,6 +22,14 @@ public class Storage {
   public static final String ANDROID_DATA_COM_EINMALFEL_PODLISTEN_FILES = "Android/data/com.einmalfel.podlisten/files";
   private final File appFilesDir; // /*/Android/data/com.einmalfel.podlisten/files
 
+  /**
+   * @param path directory where audio and image data will be stored
+   * @throws IOException if given path couldn't be converted to canonical form
+   */
+  Storage(@NonNull File path) throws IOException {
+    this.appFilesDir = path.getCanonicalFile();
+  }
+
   /**@return Ordered and deduplicated list of writable storages. Order: primary first, then dirs
    * obtained from getExternalDirs, then dirs from environment variables */
   @NonNull
@@ -117,14 +125,6 @@ public class Storage {
         throw new AssertionError("Cant convert primary storage to canonical form");
       }
     }
-  }
-
-  /**
-   * @param path directory where audio and image data will be stored
-   * @throws IOException if given path couldn't be converted to canonical form
-   */
-  Storage(@NonNull File path) throws IOException {
-    this.appFilesDir = path.getCanonicalFile();
   }
 
   public void createSubdirs() throws IOException {

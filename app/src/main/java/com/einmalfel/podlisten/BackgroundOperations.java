@@ -28,6 +28,11 @@ public class BackgroundOperations extends IntentService {
 
   private static final String EXTRA_EPISODE_STATE = "com.einmalfel.podlisten.EPISODE_STATE";
 
+  public BackgroundOperations() {
+    super("BackgroundOperations");
+    setIntentRedelivery(true);
+  }
+
   public static void handleDownloads(Context context) {
     Intent intent = new Intent(context, BackgroundOperations.class);
     intent.setAction(ACTION_HANDLE_DOWNLOADS);
@@ -40,11 +45,6 @@ public class BackgroundOperations extends IntentService {
     intent.setAction(ACTION_CLEANUP_EPISODES);
     intent.putExtra(EXTRA_EPISODE_STATE, stateFilter);
     context.startService(intent);
-  }
-
-  public BackgroundOperations() {
-    super("BackgroundOperations");
-    setIntentRedelivery(true);
   }
 
   @Override

@@ -44,6 +44,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
   private static final int SEARCH_REQUEST_ID = 1;
   private static final int FILE_REQUEST_ID = 0;
   private static final String FRAG_TAG = "subscribe dialog";
+  private static final Pattern URL_SCHEME = Pattern.compile(".*://.*");
 
   private EditText urlText;
   private Provider.RefreshMode refreshMode = Provider.RefreshMode.WEEK;
@@ -213,8 +214,6 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     getDialog().setTitle(R.string.subscribe_dialog_title);
     return result;
   }
-
-  private static final Pattern URL_SCHEME = Pattern.compile(".*://.*");
 
   @NonNull
   private static String completeUrlString(@NonNull CharSequence sequence) {
