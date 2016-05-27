@@ -412,15 +412,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           PodlistenAccount.getInstance().refresh(0);
           break;
         case SORT:
-          Preferences preferences = Preferences.getInstance();
-          Preferences.SortingMode newMode = preferences.getSortingMode().nextCyclic();
-          preferences.setSortingMode(newMode);
-          if (playlistFragment != null) {
-            playlistFragment.reloadList();
-          } else {
-            Log.w(TAG, "Playlist fragment doesn't exist yet, skipping reload");
-          }
-          snackbarController.showSnackbar(newMode.toString(), Snackbar.LENGTH_SHORT, null, null);
+          currentFabActionSortCase();
           break;
         default:
           Log.e(TAG, "Unexpected currentFabAction received: " + currentFabAction);
@@ -443,6 +435,18 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     } else if (v == optionsButton) {
       startActivity(new Intent(this, PreferencesActivity.class));
     }
+  }
+
+  private void currentFabActionSortCase() {
+    Preferences preferences = Preferences.getInstance();
+    Preferences.SortingMode newMode = preferences.getSortingMode().nextCyclic();
+    preferences.setSortingMode(newMode);
+    if (playlistFragment != null) {
+      playlistFragment.reloadList();
+    } else {
+      Log.w(TAG, "Playlist fragment doesn't exist yet, skipping reload");
+    }
+    snackbarController.showSnackbar(newMode.toString(), Snackbar.LENGTH_SHORT, null, null);
   }
 
   @Override

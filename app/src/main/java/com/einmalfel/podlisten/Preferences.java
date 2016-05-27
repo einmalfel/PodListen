@@ -322,12 +322,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         completeAction = readEnum(Key.COMPLETE_ACTION, DEFAULT_COMPLETE_ACTION);
         break;
       case DOWNLOAD_NETWORK:
-        DownloadNetwork newDLNetwork = readEnum(Key.DOWNLOAD_NETWORK, DEFAULT_DOWNLOAD_NETWORK);
-        if (downloadNetwork != newDLNetwork) {
-          downloadNetwork = newDLNetwork;
-          DownloadReceiver.stopDownloads(null);
-          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
-        }
+        keyDownloadNetworkCase();
         break;
       case PAUSE_ON_DISCONNECT:
         pauseOnDisconnect = sPrefs.getBoolean(Key.PAUSE_ON_DISCONNECT.toString(), true);
@@ -336,15 +331,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         fixSkipEnding = sPrefs.getBoolean(Key.FIX_SKIP_ENDING.toString(), false);
         break;
       case AUTO_DOWNLOAD_AC:
-        boolean newAutoDownloadAC = sPrefs.getBoolean(Key.AUTO_DOWNLOAD_AC.toString(), false);
-        if (newAutoDownloadAC != autoDownloadACOnly) {
-          autoDownloadACOnly = newAutoDownloadAC;
-          if (!autoDownloadACOnly) {
-            context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
-          } else if (!DownloadReceiver.isDeviceCharging()) {
-            DownloadReceiver.stopDownloads(null);
-          }
-        }
+        keyAutoDownloadAcCase();
         break;
       case PLAYER_FOREGROUND:
         playerForeground = sPrefs.getBoolean(Key.PLAYER_FOREGROUND.toString(), false);
@@ -354,72 +341,109 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         Log.e(TAG, "read " + currentActivity);
         break;
       case AUTO_DOWNLOAD:
-        AutoDownloadMode newM = readEnum(Key.AUTO_DOWNLOAD, DEFAULT_DOWNLOAD_MODE);
-        if (newM != autoDownloadMode) {
-          if (newM == AutoDownloadMode.PLAYLIST && autoDownloadMode == AutoDownloadMode.ALL_NEW) {
-            DownloadReceiver.stopDownloads(
-                Provider.K_ESTATE + " != " + Provider.ESTATE_IN_PLAYLIST);
-          } else if (newM == AutoDownloadMode.NEVER) {
-            DownloadReceiver.stopDownloads(null);
-          }
-          autoDownloadMode = newM;
-          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
-        }
+        keyAutoDownloadCase();
         break;
       case SORTING_MODE:
         sortingMode = readEnum(Key.SORTING_MODE, DEFAULT_SORTING_MODE);
         break;
       case MAX_DOWNLOADS:
-        MaxDownloadsOption newMaxDL = readEnum(Key.MAX_DOWNLOADS, DEFAULT_MAX_DOWNLOADS);
-        if (newMaxDL != maxDownloads) {
-          maxDownloads = newMaxDL;
-          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
-        }
+        keyMaxDownloadsCase();
         break;
       case REFRESH_INTERVAL:
-        RefreshIntervalOption newRI = readEnum(Key.REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
-        if (newRI != refreshInterval) {
-          refreshInterval = newRI;
-          PodlistenAccount.getInstance().setupSync(refreshInterval.periodSeconds);
-        }
+        keyRefreshIntervalCase();
         break;
       case STORAGE_PATH:
-        String storagePreferenceString = sPrefs.getString(Key.STORAGE_PATH.toString(), "");
-        if (storagePreferenceString.isEmpty()) {
-          // by default, if there are removable storages use first removable, otherwise use last one
-          List<Storage> storages = Storage.getWritableStorages();
-          storage = Storage.getPrimaryStorage();
-          for (Storage storageOption : storages) {
-            storage = storageOption;
-            if (storageOption.isRemovable()) {
-              break;
-            }
-          }
-          try {
-            storage.createSubdirs();
-            sPrefs.edit().putString(Key.STORAGE_PATH.toString(), storage.toString()).commit();
-          } catch (IOException exception) {
-            Log.wtf(TAG, "Failed to init storage known to be writable " + storage, exception);
-          }
-        } else {
-          try {
-            Storage newStorage = new Storage(new File(storagePreferenceString));
-            newStorage.createSubdirs();
-            if (storage != null && !storage.equals(newStorage)) {
-              clearStorage();
-            }
-            storage = newStorage;
-          } catch (IOException e) {
-            Log.wtf(
-                TAG, "Failed to set storage " + storagePreferenceString + ". Reverting to prev", e);
-            sPrefs.edit().putString(
-                Key.STORAGE_PATH.toString(), storage == null ? "" : storage.toString()).commit();
-          }
-        }
+        keyStoragePathCase();
         break;
       default:
         Log.e(TAG, "Unexpected key received: " + key);
         break;
+    }
+  }
+
+  private void keyStoragePathCase() {
+    String storagePreferenceString = sPrefs.getString(Key.STORAGE_PATH.toString(), "");
+    if (storagePreferenceString.isEmpty()) {
+      // by default, if there are removable storages use first removable, otherwise use last one
+      List<Storage> storages = Storage.getWritableStorages();
+      storage = Storage.getPrimaryStorage();
+      for (Storage storageOption : storages) {
+        storage = storageOption;
+        if (storageOption.isRemovable()) {
+          break;
+        }
+      }
+      try {
+        storage.createSubdirs();
+        sPrefs.edit().putString(Key.STORAGE_PATH.toString(), storage.toString()).commit();
+      } catch (IOException exception) {
+        Log.wtf(TAG, "Failed to init storage known to be writable " + storage, exception);
+      }
+    } else {
+      try {
+        Storage newStorage = new Storage(new File(storagePreferenceString));
+        newStorage.createSubdirs();
+        if (storage != null && !storage.equals(newStorage)) {
+          clearStorage();
+        }
+        storage = newStorage;
+      } catch (IOException e) {
+        Log.wtf(
+            TAG, "Failed to set storage " + storagePreferenceString + ". Reverting to prev", e);
+        sPrefs.edit().putString(
+            Key.STORAGE_PATH.toString(), storage == null ? "" : storage.toString()).commit();
+      }
+    }
+  }
+
+  private void keyRefreshIntervalCase() {
+    RefreshIntervalOption newRI = readEnum(Key.REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
+    if (newRI != refreshInterval) {
+      refreshInterval = newRI;
+      PodlistenAccount.getInstance().setupSync(refreshInterval.periodSeconds);
+    }
+  }
+
+  private void keyMaxDownloadsCase() {
+    MaxDownloadsOption newMaxDL = readEnum(Key.MAX_DOWNLOADS, DEFAULT_MAX_DOWNLOADS);
+    if (newMaxDL != maxDownloads) {
+      maxDownloads = newMaxDL;
+      context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+    }
+  }
+
+  private void keyAutoDownloadCase() {
+    AutoDownloadMode newM = readEnum(Key.AUTO_DOWNLOAD, DEFAULT_DOWNLOAD_MODE);
+    if (newM != autoDownloadMode) {
+      if (newM == AutoDownloadMode.PLAYLIST && autoDownloadMode == AutoDownloadMode.ALL_NEW) {
+        DownloadReceiver.stopDownloads(
+                Provider.K_ESTATE + " != " + Provider.ESTATE_IN_PLAYLIST);
+      } else if (newM == AutoDownloadMode.NEVER) {
+        DownloadReceiver.stopDownloads(null);
+      }
+      autoDownloadMode = newM;
+      context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+    }
+  }
+
+  private void keyAutoDownloadAcCase() {
+    boolean newAutoDownloadAC = sPrefs.getBoolean(Key.AUTO_DOWNLOAD_AC.toString(), false);
+    if (newAutoDownloadAC != autoDownloadACOnly) {
+      autoDownloadACOnly = newAutoDownloadAC;
+      if (!autoDownloadACOnly) {
+        context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+      } else if (!DownloadReceiver.isDeviceCharging()) {
+        DownloadReceiver.stopDownloads(null);
+      }
+    }
+  }
+
+  private void keyDownloadNetworkCase() {
+    DownloadNetwork newDLNetwork = readEnum(Key.DOWNLOAD_NETWORK, DEFAULT_DOWNLOAD_NETWORK);
+    if (downloadNetwork != newDLNetwork) {
+      downloadNetwork = newDLNetwork;
+      DownloadReceiver.stopDownloads(null);
+      context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
     }
   }
 

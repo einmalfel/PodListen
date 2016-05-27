@@ -117,22 +117,10 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         synchronized (service) {
           switch (ct) {
             case STATE:
-              if (lastState != service.getState() || lastEpisode != currentId) {
-                sendStateUpdate();
-                lastState = service.state;
-                lastEpisode = currentId;
-              }
+              ctStateCase();
               break;
             case PROGRESS:
-              if (lastLength != service.length || lastProgress != service.getProgress()) {
-                sendProgressUpdate();
-                lastLength = service.length;
-                lastProgress = service.progress;
-              }
-              if (fixingEndingSkip && service.length - service.progress < TRACK_ENDING_THRESHOLD_MS) {
-                Log.i(TAG, "Fixing ending skip: calling onCompletion, pos: " + service.progress);
-                onCompletion(player);
-              }
+              ctProgressCase();
               break;
             default:
               Log.e(TAG, "Unexpected ct received: " + ct);
@@ -141,6 +129,26 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         }
       }
       Log.d(TAG, "Finishing callback thread");
+    }
+
+    private void ctProgressCase() {
+      if (lastLength != service.length || lastProgress != service.getProgress()) {
+        sendProgressUpdate();
+        lastLength = service.length;
+        lastProgress = service.progress;
+      }
+      if (fixingEndingSkip && service.length - service.progress < TRACK_ENDING_THRESHOLD_MS) {
+        Log.i(TAG, "Fixing ending skip: calling onCompletion, pos: " + service.progress);
+        onCompletion(player);
+      }
+    }
+
+    private void ctStateCase() {
+      if (lastState != service.getState() || lastEpisode != currentId) {
+        sendStateUpdate();
+        lastState = service.state;
+        lastEpisode = currentId;
+      }
     }
 
     private void sendStateUpdate() {
@@ -367,11 +375,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     Log.i(TAG, "Audio focus chagned from " + focusMode + " to " + focusChange);
     switch (focusChange) {
       case AudioManager.AUDIOFOCUS_GAIN:
-        if (focusMode == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-          setVolume(1f);
-        } else if (focusMode == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT && state == State.PLAYING) {
-          resume();
-        }
+        focusChangeAudioFocusGainCase();
         break;
       case AudioManager.AUDIOFOCUS_LOSS:
         stop();
@@ -386,6 +390,14 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
         Log.w(TAG, "Unhandled audio focus change: " + focusChange);
     }
     focusMode = focusChange;
+  }
+
+  private void focusChangeAudioFocusGainCase() {
+    if (focusMode == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+      setVolume(1f);
+    } else if (focusMode == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT && state == State.PLAYING) {
+      resume();
+    }
   }
 
   public synchronized void addListener(PlayerStateListener listener) {
@@ -676,11 +688,7 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       case STOPPED:
       case STOPPED_ERROR:
       case STOPPED_EMPTY:
-        if (currentId != 0) {
-          playEpisode(currentId);
-        } else {
-          playNext();
-        }
+        stateStoppedEmptyCase();
         break;
       case PLAYING:
         pause();
@@ -691,6 +699,14 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       default:
         Log.e(TAG, "Unexpected state received: " + state);
         break;
+    }
+  }
+
+  private void stateStoppedEmptyCase() {
+    if (currentId != 0) {
+      playEpisode(currentId);
+    } else {
+      playNext();
     }
   }
 
