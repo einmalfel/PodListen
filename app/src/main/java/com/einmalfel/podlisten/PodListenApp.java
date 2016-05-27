@@ -27,7 +27,7 @@ import org.acra.annotation.ReportsCrashes;
     resDialogOkToast = R.string.crash_dialog_ok_toast
 )
 public class PodListenApp extends DebuggableApp implements Application.ActivityLifecycleCallbacks {
-  private static PodListenApp instance;
+  private static volatile PodListenApp instance;
 
   public static PodListenApp getInstance() {
     return instance;

@@ -134,7 +134,7 @@ public class Provider extends ContentProvider {
   private static final String[] TABLES = {T_EPISODE, T_PODCAST, T_E_JOIN_P};
   private static final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
   private static final String TAG = "PLP";
-  private static HelperV1 helper;
+  private static volatile HelperV1 helper;
   private ContentResolver resolver;
 
   public static Uri getUri(String table, Long id) {
