@@ -89,12 +89,15 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     try {
       workersDone = executorService.awaitTermination(SYNC_TIMEOUT, TimeUnit.SECONDS);
     } catch (InterruptedException interrupt) {
+      Thread.currentThread().interrupt();
       syncState.error(getContext().getString(R.string.sync_interrupted_by_system));
       // sync cancelled. Discard queue, try to interrupt workers and wait for them again
       executorService.shutdownNow();
       try {
         workersDone = executorService.awaitTermination(SYNC_TIMEOUT, TimeUnit.SECONDS);
-      } catch (InterruptedException ignored) {}
+      } catch (InterruptedException ignored) {
+        Thread.currentThread().interrupt();
+      }
     }
     if (!workersDone) {
       Log.e(TAG, "Some of workers hanged during sync");
