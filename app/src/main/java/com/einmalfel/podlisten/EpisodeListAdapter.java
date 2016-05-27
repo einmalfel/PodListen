@@ -7,10 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder> {
+public class EpisodeListAdapter extends BaseCursorRecyclerAdapter<EpisodeViewHolder> {
   public interface ItemClickListener {
     /**
      * @return true if event was consumed
@@ -27,7 +24,6 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
       Provider.K_EPID, Provider.K_ESDESCR, Provider.K_EERROR, Provider.K_EDID, Provider.K_EURL,
       Provider.K_EAURL};
   private final ItemClickListener listener;
-  private final Set<Long> expandedElements = new HashSet<>(10);
   private long currentPlayingId = 0;
   private PlayerService.State currentState = PlayerService.State.STOPPED;
 
@@ -45,26 +41,6 @@ public class EpisodeListAdapter extends CursorRecyclerAdapter<EpisodeViewHolder>
         @Override
         public void run() {
           notifyDataSetChanged();
-        }
-      });
-    }
-  }
-
-  void setExpanded(long id, boolean expanded, final int position) {
-    if (!expandedElements.contains(id) && expanded) {
-      expandedElements.add(id);
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() {
-          notifyItemChanged(position);
-        }
-      });
-    } else if (expandedElements.contains(id) && !expanded) {
-      expandedElements.remove(id);
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() {
-          notifyItemChanged(position);
         }
       });
     }

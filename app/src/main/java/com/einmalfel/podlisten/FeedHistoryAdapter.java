@@ -1,16 +1,11 @@
 package com.einmalfel.podlisten;
 
 import android.database.Cursor;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import java.util.HashSet;
-import java.util.Set;
-
-class FeedHistoryAdapter extends CursorRecyclerAdapter {
+class FeedHistoryAdapter extends BaseCursorRecyclerAdapter {
   public interface HistoryEpisodeListener {
     void onEpisodeButtonTap(long id, int state);
   }
@@ -19,7 +14,6 @@ class FeedHistoryAdapter extends CursorRecyclerAdapter {
       Provider.K_ENAME, Provider.K_EURL, Provider.K_EDATE, Provider.K_EDESCR, Provider.K_ESDESCR,
       Provider.K_ID, Provider.K_ESTATE, Provider.K_EPLAYED};
 
-  private final Set<Long> expandedElements = new HashSet<>(10);
   private final HistoryEpisodeListener listener;
 
   public FeedHistoryAdapter(HistoryEpisodeListener listener) {
@@ -47,25 +41,5 @@ class FeedHistoryAdapter extends CursorRecyclerAdapter {
     ViewGroup v = (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(
         R.layout.history_list_element, parent, false);
     return new HistoryElementHolder(v, listener, this);
-  }
-
-  void setExpanded(long id, boolean expanded, final int position) {
-    if (!expandedElements.contains(id) && expanded) {
-      expandedElements.add(id);
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() {
-          notifyItemChanged(position);
-        }
-      });
-    } else if (expandedElements.contains(id) && !expanded) {
-      expandedElements.remove(id);
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() {
-          notifyItemChanged(position);
-        }
-      });
-    }
   }
 }
