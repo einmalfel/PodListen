@@ -1,21 +1,15 @@
 package com.einmalfel.podlisten;
 
 import android.database.Cursor;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import java.util.HashSet;
-import java.util.Set;
-
-class SearchAdapter extends CursorRecyclerAdapter {
+class SearchAdapter extends BaseCursorRecyclerAdapter {
   public interface SearchClickListener {
     void onPodcastButtonTap(String rss_url);
   }
 
-  private final Set<Long> expandedElements = new HashSet<>(10);
   private final SearchClickListener listener;
 
   public SearchAdapter(SearchClickListener listener) {
@@ -41,25 +35,5 @@ class SearchAdapter extends CursorRecyclerAdapter {
     ViewGroup v = (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(
         R.layout.search_list_element, parent, false);
     return new SearchElementHolder(v, listener, this);
-  }
-
-  void setExpanded(long id, boolean expanded, final int position) {
-    if (!expandedElements.contains(id) && expanded) {
-      expandedElements.add(id);
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() {
-          notifyItemChanged(position);
-        }
-      });
-    } else if (expandedElements.contains(id) && !expanded) {
-      expandedElements.remove(id);
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() {
-          notifyItemChanged(position);
-        }
-      });
-    }
   }
 }

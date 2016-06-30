@@ -2,16 +2,11 @@ package com.einmalfel.podlisten;
 
 
 import android.database.Cursor;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class PodcastListAdapter extends CursorRecyclerAdapter<PodcastViewHolder> {
+public class PodcastListAdapter extends BaseCursorRecyclerAdapter<PodcastViewHolder> {
   public interface ItemClickListener {
     /**
      * @return true if event was consumed
@@ -23,32 +18,11 @@ public class PodcastListAdapter extends CursorRecyclerAdapter<PodcastViewHolder>
 
   private static final String TAG = "PLA";
   private final ItemClickListener listener;
-  private final Set<Long> expandedElements = new HashSet<>(5);
 
   public PodcastListAdapter(Cursor cursor, ItemClickListener listener) {
     super(cursor);
     setHasStableIds(true);
     this.listener = listener;
-  }
-
-  void setExpanded(long id, boolean expanded, final int position) {
-    if (!expandedElements.contains(id) && expanded) {
-      expandedElements.add(id);
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() {
-          notifyItemChanged(position);
-        }
-      });
-    } else if (expandedElements.contains(id) && !expanded) {
-      expandedElements.remove(id);
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-        @Override
-        public void run() {
-          notifyItemChanged(position);
-        }
-      });
-    }
   }
 
   @Override
