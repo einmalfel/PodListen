@@ -66,56 +66,60 @@ public class PreferencesActivity extends AppCompatActivity {
         PodListenApp.sendLogs();
         break;
       case "com.einmalfel.podlisten.OPML_EXPORT":
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_UNKNOWN.equals(state)) {
-          final File dir;
-          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-          } else {
-            dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS);
-          }
-          if (!dir.exists() && !dir.mkdirs()) {
-            Log.e(TAG, "Directory for OPML export doesn't exist " + dir);
-          }
-          final File target = new File(dir, getString(R.string.opml_export_file_name));
-          if (exportToOPML(target)) {
-            AlertDialog.Builder b = new AlertDialog.Builder(this);
-            b.setTitle(getString(R.string.opml_dialog_title))
-             .setMessage(String.format(getString(R.string.opml_dialog_message), target))
-             .setNegativeButton(R.string.opml_dialog_done, null);
-
-            final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.setType("file/*");
-            sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(target));
-            if (sendIntent.resolveActivity(getPackageManager()) != null) {
-              b.setPositiveButton(R.string.opml_dialog_send, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                  startActivity(sendIntent);
-                }
-              });
-            }
-
-            if (showDirectory(dir, true)) {
-              b.setNeutralButton(R.string.opml_dialog_FMapp, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                  showDirectory(dir, false);
-                }
-              });
-            }
-
-            b.show();
-          } else {
-            Snackbar.make(findViewById(android.R.id.content),
-                          R.string.preferences_opml_export_failed,
-                          Snackbar.LENGTH_LONG).show();
-          }
-        }
+        intentOPMLExportCase();
         break;
       default:
         Log.e(TAG, "Unexpected intent received: " + intent);
         break;
+    }
+  }
+
+  private void intentOPMLExportCase() {
+    String state = Environment.getExternalStorageState();
+    if (Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_UNKNOWN.equals(state)) {
+      final File dir;
+      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+        dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+      } else {
+        dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS);
+      }
+      if (!dir.exists() && !dir.mkdirs()) {
+        Log.e(TAG, "Directory for OPML export doesn't exist " + dir);
+      }
+      final File target = new File(dir, getString(R.string.opml_export_file_name));
+      if (exportToOPML(target)) {
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle(getString(R.string.opml_dialog_title))
+         .setMessage(String.format(getString(R.string.opml_dialog_message), target))
+         .setNegativeButton(R.string.opml_dialog_done, null);
+
+        final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.setType("file/*");
+        sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(target));
+        if (sendIntent.resolveActivity(getPackageManager()) != null) {
+          b.setPositiveButton(R.string.opml_dialog_send, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              startActivity(sendIntent);
+            }
+          });
+        }
+
+        if (showDirectory(dir, true)) {
+          b.setNeutralButton(R.string.opml_dialog_FMapp, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              showDirectory(dir, false);
+            }
+          });
+        }
+
+        b.show();
+      } else {
+        Snackbar.make(findViewById(android.R.id.content),
+                R.string.preferences_opml_export_failed,
+                Snackbar.LENGTH_LONG).show();
+      }
     }
   }
 
