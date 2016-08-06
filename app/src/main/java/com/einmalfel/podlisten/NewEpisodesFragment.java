@@ -66,7 +66,7 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
         EpisodeListAdapter.REQUIRED_DB_COLUMNS,
         Provider.K_ESTATE + " = " + Provider.ESTATE_NEW,
         null,
-        Provider.K_EDATE);
+        Provider.K_EDATE + " DESC");
   }
 
   @Override
