@@ -59,7 +59,7 @@ public class Provider extends ContentProvider {
   public static final int PSTATE_SEEN_ONCE = 1;
   public static final int PSTATE_LAST_REFRESH_FAILED = 2;
 
-  public static final String authorityBase = "com.einmalfel.podlisten";
+  public static final String authorityBase = BuildConfig.APPLICATION_ID;
   public static final String commonUriString = ContentResolver.SCHEME_CONTENT + "://" + authorityBase;
   public static final Uri baseUri = Uri.parse(commonUriString);
   public static final Uri podcastUri = Uri.parse(commonUriString + '/' + T_PODCAST);
