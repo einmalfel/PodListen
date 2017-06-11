@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.acra.ACRA;
-import org.acra.ACRAConfigurationException;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
@@ -76,12 +75,17 @@ public class PodListenApp extends DebuggableApp implements Application.ActivityL
   // when user decides to send report on his own, disable reporting via crash dialog, send report,
   // re-enable crash dialog
   static void sendLogs() {
+    ACRA.getACRASharedPreferences()
+        .edit()
+        .putBoolean(ACRA.PREF_ALWAYS_ACCEPT, Boolean.TRUE)
+        .apply();
     try {
-      ACRA.getConfig().setMode(ReportingInteractionMode.SILENT);
       ACRA.getErrorReporter().handleException(null, false);
-      ACRA.getConfig().setMode(ReportingInteractionMode.DIALOG);
-    } catch (ACRAConfigurationException ex) {
-      ACRA.getErrorReporter().uncaughtException(Thread.currentThread(), ex);
+    } finally {
+      ACRA.getACRASharedPreferences()
+          .edit()
+          .putBoolean(ACRA.PREF_ALWAYS_ACCEPT, Boolean.FALSE)
+          .commit();
     }
   }
 }
