@@ -95,7 +95,7 @@ If you encounter a bug or come up with a feature request, please open an issue o
 
     <!--PodListen uses android's "preference support library". It imposes some restrictions:
     preferences_*_title strings are never wrapped, so entire string should fit in single line (~30
-    characters. preferences_*_summary length ideally should not exceed 100 characters-->
+    characters). preferences_*_summary length ideally should not exceed 100 characters-->
     <string name="preferences_title">Preferences</string>
     <string name="preferences_network_title">Network</string>
     <string name="preferences_playback_title">Playback</string>

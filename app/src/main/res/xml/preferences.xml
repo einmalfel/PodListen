@@ -47,7 +47,7 @@
             android:defaultValue="false"
             android:key="FIX_SKIP_ENDING"
             android:summary="@string/preferences_fix_skip_ending_summary"
-            android:title="@string/preferences_fix_skip_ending_title" />
+            android:title="@string/preferences_fix_skip_ending_title"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/preferences_other_title">

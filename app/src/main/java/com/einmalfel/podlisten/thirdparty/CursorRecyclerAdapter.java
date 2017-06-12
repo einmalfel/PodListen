@@ -45,7 +45,7 @@ public abstract class CursorRecyclerAdapter<VH
   private CursorFilter mCursorFilter;
   private FilterQueryProvider mFilterQueryProvider;
 
-  public CursorRecyclerAdapter( Cursor cursor) {
+  public CursorRecyclerAdapter(Cursor cursor) {
     init(cursor);
   }
 
@@ -59,8 +59,10 @@ public abstract class CursorRecyclerAdapter<VH
     mDataSetObserver = new MyDataSetObserver();
 
     if (cursorPresent) {
-      if (mChangeObserver != null) c.registerContentObserver(mChangeObserver);
-      if (mDataSetObserver != null) c.registerDataSetObserver(mDataSetObserver);
+      if (mChangeObserver != null)
+        c.registerContentObserver(mChangeObserver);
+      if (mDataSetObserver != null)
+        c.registerDataSetObserver(mDataSetObserver);
     }
   }
 
@@ -73,7 +75,7 @@ public abstract class CursorRecyclerAdapter<VH
    * @param i {@inheritDoc}
    */
   @Override
-  public void onBindViewHolder(VH holder, int i){
+  public void onBindViewHolder(VH holder, int i) {
     if (!mDataValid) {
       throw new IllegalStateException("this should only be called when the cursor is valid");
     }
@@ -119,7 +121,7 @@ public abstract class CursorRecyclerAdapter<VH
     }
   }
 
-  public Cursor getCursor(){
+  public Cursor getCursor() {
     return mCursor;
   }
 
@@ -152,13 +154,17 @@ public abstract class CursorRecyclerAdapter<VH
     }
     Cursor oldCursor = mCursor;
     if (oldCursor != null) {
-      if (mChangeObserver != null) oldCursor.unregisterContentObserver(mChangeObserver);
-      if (mDataSetObserver != null) oldCursor.unregisterDataSetObserver(mDataSetObserver);
+      if (mChangeObserver != null)
+        oldCursor.unregisterContentObserver(mChangeObserver);
+      if (mDataSetObserver != null)
+        oldCursor.unregisterDataSetObserver(mDataSetObserver);
     }
     mCursor = newCursor;
     if (newCursor != null) {
-      if (mChangeObserver != null) newCursor.registerContentObserver(mChangeObserver);
-      if (mDataSetObserver != null) newCursor.registerDataSetObserver(mDataSetObserver);
+      if (mChangeObserver != null)
+        newCursor.registerContentObserver(mChangeObserver);
+      if (mDataSetObserver != null)
+        newCursor.registerDataSetObserver(mDataSetObserver);
       mRowIDColumn = newCursor.getColumnIndexOrThrow("_ID");
       mDataValid = true;
       // notify the observers about the new cursor
@@ -311,8 +317,11 @@ class CursorFilter extends Filter {
 
   interface CursorFilterClient {
     CharSequence convertToString(Cursor cursor);
+
     Cursor runQueryOnBackgroundThread(CharSequence constraint);
+
     Cursor getCursor();
+
     void changeCursor(Cursor cursor);
   }
 

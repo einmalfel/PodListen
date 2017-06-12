@@ -66,8 +66,7 @@
             android:layout_below="@+id/textView2"
             android:layout_centerInParent="true"
             android:layout_marginBottom="24dp"
-            android:spinnerMode="dropdown"
-            />
+            android:spinnerMode="dropdown"/>
 
         <Button
             android:id="@+id/subscribe_button"

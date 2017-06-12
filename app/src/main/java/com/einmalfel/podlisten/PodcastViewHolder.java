@@ -74,7 +74,7 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
       statusView.setTextColor(ContextCompat.getColor(context, R.color.accent_secondary));
     } else {
       statusView.setTextColor(ContextCompat.getColor(context, R.color.text));
-      if (state == Provider.PSTATE_NEW ) {
+      if (state == Provider.PSTATE_NEW) {
         statusView.setText(R.string.podcast_not_loaded_yet);
       } else {
         statusView.setText(context.getString(R.string.podcast_refresh_time,

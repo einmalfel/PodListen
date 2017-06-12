@@ -377,7 +377,6 @@ class SyncWorker implements Runnable {
       return false;
     }
 
-    // notify DownloadReceiver about new episode
     if (markNew) {
       Log.d(TAG, "New episode! " + title);
       String image = episode.getImageLink();

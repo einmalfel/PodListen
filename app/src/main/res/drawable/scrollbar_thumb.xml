@@ -2,8 +2,8 @@
     <gradient
         android:endColor="@color/accent_primary_dim"
         android:centerColor="@color/accent_primary"
-        android:startColor="@color/accent_primary_dim" />
+        android:startColor="@color/accent_primary_dim"/>
 
-    <corners android:radius="8dp" />
+    <corners android:radius="8dp"/>
     <size android:width="4dp"/>
 </shape>
