@@ -103,12 +103,12 @@ class SyncWorker implements Runnable {
 
   private final SyncState syncState;
   private final ContentProviderClient provider;
-  private final Provider.RefreshMode refreshMode;
+  private final RefreshMode refreshMode;
   private long id;
   private String link;
 
   public SyncWorker(long id, @NonNull String link, @NonNull ContentProviderClient provider,
-                    @NonNull SyncState syncState, Provider.RefreshMode refreshMode) {
+                    @NonNull SyncState syncState, RefreshMode refreshMode) {
     this.id = id;
     this.link = link;
     this.provider = provider;
@@ -164,7 +164,7 @@ class SyncWorker implements Runnable {
       ContentValues values = new ContentValues(3);
       values.put(Provider.K_PSTATE, Provider.PSTATE_SEEN_ONCE);
       // refresh mode is set for one refresh only, so reset it to default after successful update
-      values.put(Provider.K_PRMODE, Provider.RefreshMode.ALL.ordinal());
+      values.put(Provider.K_PRMODE, RefreshMode.ALL.ordinal());
       values.put(Provider.K_PTSTAMP, timestamp.getTime());
       if (provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null) == 1) {
         syncState.signalFeedSuccess(title, newEpisodesInserted);

@@ -68,7 +68,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       long id = c.getLong(c.getColumnIndexOrThrow(Provider.K_ID));
       String url = c.getString(c.getColumnIndexOrThrow(Provider.K_PFURL));
       long feedTimestamp = c.getLong(c.getColumnIndexOrThrow(Provider.K_PTSTAMP));
-      Provider.RefreshMode refreshMode = Provider.RefreshMode.values()[c.getInt(
+      RefreshMode refreshMode = RefreshMode.values()[c.getInt(
           c.getColumnIndexOrThrow(Provider.K_PRMODE))];
 
       // If auto-sync is invoked more often then once in sync interval, it's sync retry and sync
