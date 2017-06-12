@@ -20,6 +20,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
+            applicationIdSuffix '.debug'
+            resValue "string", "app_id", defaultConfig.applicationId + applicationIdSuffix
             debuggable true
             jniDebuggable false
             renderscriptDebuggable false
