@@ -136,7 +136,7 @@ public class Storage {
 
   public void cleanup() {
     File[] podcasts = getPodcastDir().listFiles();
-    File[] images = getPodcastDir().listFiles();
+    File[] images = getImagesDir().listFiles();
     File[] dirs = appFilesDir.listFiles();
     File appDir = appFilesDir.getParentFile();
     // if there no other data in */Android/data, try to rm it too
