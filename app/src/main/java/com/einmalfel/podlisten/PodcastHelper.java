@@ -109,7 +109,7 @@ public class PodcastHelper {
    * @return ID of podcast or zero if already subscribed
    * @throws SubscriptionNotInsertedException if failed to insert subscription into db
    */
-  public long addSubscription(String url, @NonNull Provider.RefreshMode refreshMode)
+  public long addSubscription(String url, @NonNull RefreshMode refreshMode)
       throws SubscriptionNotInsertedException {
     if (!url.toLowerCase().matches("^\\w+://.*")) {
       url = "http://" + url;
@@ -138,7 +138,7 @@ public class PodcastHelper {
   }
 
   long trySubscribe(@NonNull String url, @Nullable View container,
-                    @NonNull Provider.RefreshMode refreshMode) {
+                    @NonNull RefreshMode refreshMode) {
     try {
       long result = addSubscription(url, refreshMode);
       if (result == 0 && container != null) {

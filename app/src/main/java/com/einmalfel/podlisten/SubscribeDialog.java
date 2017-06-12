@@ -46,7 +46,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
   private static final String FRAG_TAG = "subscribe dialog";
 
   private EditText urlText;
-  private Provider.RefreshMode refreshMode = Provider.RefreshMode.WEEK;
+  private RefreshMode refreshMode = RefreshMode.WEEK;
 
   static void show(@Nullable Uri uri, @NonNull FragmentManager fm) {
     AppCompatDialogFragment oldDialog = (AppCompatDialogFragment) fm.findFragmentByTag(FRAG_TAG);
@@ -192,11 +192,11 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
 
     Spinner spinner = (Spinner) result.findViewById(R.id.refresh_mode);
     spinner.setAdapter(new ArrayAdapter<>(
-        getContext(), R.layout.subscribe_spinner_item, Provider.RefreshMode.values()));
+        getContext(), R.layout.subscribe_spinner_item, RefreshMode.values()));
     spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
       @Override
       public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        refreshMode = (Provider.RefreshMode) parent.getItemAtPosition(position);
+        refreshMode = (RefreshMode) parent.getItemAtPosition(position);
       }
 
       @Override
