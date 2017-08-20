@@ -67,4 +67,5 @@ task checkstyle(group: 'verification', type: Checkstyle) {
     include '**/*.java'
     exclude '**/thirdparty/**'
     classpath = files()
+    project.tasks.check.dependsOn 'checkstyle'
 }
