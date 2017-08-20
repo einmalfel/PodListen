@@ -17,6 +17,8 @@ import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
+import java.util.Locale;
+
 public class CatalogueFragment extends Fragment {
   interface CatalogueListener {
     void onLoadProgress(int progress);
@@ -189,14 +191,14 @@ public class CatalogueFragment extends Fragment {
             reportProgress(catalogue.getPosition() / recordsPerPercent);
           }
           cv.put(K_DOCID, catalogue.getLong(idId));
-          cv.put(K_TITLE, catalogue.getString(titleId).toLowerCase());
+          cv.put(K_TITLE, catalogue.getString(titleId).toLowerCase(Locale.getDefault()));
           String description = catalogue.getString(descriptionId);
           if (description != null) {
-            cv.put(K_DESCRIPTION, description.toLowerCase());
+            cv.put(K_DESCRIPTION, description.toLowerCase(Locale.getDefault()));
           }
           String webUrl = catalogue.getString(webId);
           if (webUrl != null) {
-            cv.put(K_WEB, webUrl.toLowerCase());
+            cv.put(K_WEB, webUrl.toLowerCase(Locale.ROOT));
           }
           db.insert(FTS_NAME, null, cv);
         }

@@ -95,7 +95,7 @@ public class PodcastHelper {
     }
     int exp = (int) (Math.log(bytes) / Math.log(unit));
     String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
-    return String.format("%d%sB", (int) (bytes / Math.pow(unit, exp)), pre);
+    return String.format(Locale.getDefault(),"%d%sB", (int) (bytes / Math.pow(unit, exp)), pre);
   }
 
   public class SubscriptionNotInsertedException extends Throwable {
@@ -110,7 +110,7 @@ public class PodcastHelper {
    */
   public long addSubscription(String url, @NonNull RefreshMode refreshMode)
       throws SubscriptionNotInsertedException {
-    if (!url.toLowerCase().matches("^\\w+://.*")) {
+    if (!url.toLowerCase(Locale.ROOT).matches("^\\w+://.*")) {
       url = "http://" + url;
       Log.w(TAG, "Feed download protocol defaults to http, new url: " + url);
     }
