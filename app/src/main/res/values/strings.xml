@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">PodListen</string>
     <string name="enable_download_manager">Podlisten needs \'Download manager\' system app to load episodes. Please, enable it in Settings->Apps->All></string>
 
@@ -175,7 +175,7 @@ If you encounter a bug or come up with a feature request, please open an issue o
 
     <string name="player_stopped">Press play to start</string>
     <string name="player_empty">Playlist is empty</string>
-    <string name="player_episode_does_not_exist">Episode %d doesn\'t exist</string>
+    <string name="player_episode_does_not_exist" tools:ignore="PluralsCandidate">Episode %d doesn\'t exist</string>
 
     <string name="sync_database_error">DB error</string>
     <string name="sync_interrupted_by_system">Refresh interrupted by system</string>
