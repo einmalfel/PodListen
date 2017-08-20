@@ -88,6 +88,7 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
     <string name="preferences_network_title">Mreža</string>
     <string name="preferences_playback_title">Reprodukcija</string>
     <string name="preferences_other_title">Drugo</string>
+    <string name="preferences_experimental_title">Experimental</string>
     <string name="preferences_send_bug_report_title">Prijavi grešku</string>
     <string name="preferences_send_bug_report_summary">Pošalji razvijatelju e-mail. Uključuje zapis aplikacije i informacije o uređaju</string>
     <string name="preferences_send_bug_report_summary_disabled">Onemogućeno: aplikacija za e-mail nije instalirana</string>
@@ -107,6 +108,8 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
     <string name="preferences_on_playback_completed_title">On playback complete</string>
     <string name="preferences_pause_on_disconnect_title">Zaustavi kada se isključe slušalice</string>
     <string name="preferences_pause_on_disconnect_summary">Zaustavlja reprodukciju kada korisnik isključi slušalice ili se izgubi BT veza</string>
+    <string name="preferences_fix_skip_ending_title">Workaround ending skip</string>
+    <string name="preferences_fix_skip_ending_summary">Android system media player skips track endings on some devices. This option fixes the issue</string>
 
     <string name="opml_dialog_done">Gotovo</string>
     <string name="opml_dialog_message">Vaše pretplate izvezene su u %s</string>

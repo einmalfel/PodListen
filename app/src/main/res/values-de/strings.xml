@@ -88,6 +88,7 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="preferences_network_title">Netzwerk</string>
     <string name="preferences_playback_title">Wiedergabe</string>
     <string name="preferences_other_title">Sonstiges</string>
+    <string name="preferences_experimental_title">Experimental</string>
     <string name="preferences_send_bug_report_title">Bug-Report senden</string>
     <string name="preferences_send_bug_report_summary">Dem Entwickler eine E-Mail senden. Log-Datei der App und Informationen über ihr Gerät werden mitgesendet</string>
     <string name="preferences_send_bug_report_summary_disabled">Nicht Verfügbar: Sie haben keine E-Mail App installiert.</string>
@@ -107,6 +108,8 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="preferences_on_playback_completed_title">Wenn die Wiedergabe beendet wurde</string>
     <string name="preferences_pause_on_disconnect_title">Pausieren beim Kopfhörer ausstecken</string>
     <string name="preferences_pause_on_disconnect_summary">Unterbricht die Wiedergabe wenn du deine Ohr/Kopfhörer abziehst oder die Verbindung zum Bluetooth-Headset verloren geht.</string>
+    <string name="preferences_fix_skip_ending_title">Workaround ending skip</string>
+    <string name="preferences_fix_skip_ending_summary">Android system media player skips track endings on some devices. This option fixes the issue</string>
 
     <string name="opml_dialog_done">Fertig</string>
     <string name="opml_dialog_message">Deine Abonnemente wurden exportiert nach %s</string>

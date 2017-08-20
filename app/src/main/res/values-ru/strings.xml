@@ -3,6 +3,7 @@
     <string name="auto_download_all_new">Все эпизоды</string>
     <string name="auto_download_never">Выкл.</string>
     <string name="auto_download_playlist">Только добавленные в плейлист</string>
+    <string name="ok">OK</string>
     <string name="cancel">Отмена</string>
     <string name="crash_dialog_ok_toast">Спасибо!</string>
     <string name="crash_dialog_text">В приложении PodListen произошла ошибка. Пожалуйста, помогите исправить ее, отправив анонимный отчет разработчику. Отчет включает журнал приложения и информацию об устройстве. Перед отправкой Вы можете отредактировать его как вам заблагорассудится.</string>

@@ -40,7 +40,6 @@ android {
     }
     lintOptions {
         warningsAsErrors true
-        disable 'MissingTranslation'
     }
 }
 
