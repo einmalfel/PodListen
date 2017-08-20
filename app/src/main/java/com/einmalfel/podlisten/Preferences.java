@@ -314,7 +314,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     } catch (ClassCastException | ArrayIndexOutOfBoundsException | NumberFormatException ex) {
       Log.e(TAG, "Illegal enum value, reverting to default: " + defaultValue.toString(), ex);
       sharedPrefs.edit().putString(key.toString(), Integer.toString(defaultValue.ordinal()))
-                 .commit();
+                 .apply();
       return defaultValue;
     }
   }
@@ -403,7 +403,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
           }
           try {
             storage.createSubdirs();
-            sharedPrefs.edit().putString(Key.STORAGE_PATH.toString(), storage.toString()).commit();
+            sharedPrefs.edit().putString(Key.STORAGE_PATH.toString(), storage.toString()).apply();
           } catch (IOException exception) {
             Log.wtf(TAG, "Failed to init storage known to be writable " + storage, exception);
           }
@@ -421,7 +421,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
                 "Failed to set storage " + storagePreferenceString + ". Reverting to prev",
                 ioException);
             sharedPrefs.edit().putString(
-                Key.STORAGE_PATH.toString(), storage == null ? "" : storage.toString()).commit();
+                Key.STORAGE_PATH.toString(), storage == null ? "" : storage.toString()).apply();
           }
         }
         break;
@@ -457,7 +457,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   }
 
   public void setPlayerForeground(boolean playerServicePlaying) {
-    sharedPrefs.edit().putBoolean(Key.PLAYER_FOREGROUND.toString(), playerServicePlaying).commit();
+    sharedPrefs.edit().putBoolean(Key.PLAYER_FOREGROUND.toString(), playerServicePlaying).apply();
   }
 
   public boolean getPlayerForeground() {
@@ -465,7 +465,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   }
 
   public void setCurrentActivity(@Nullable String currentActivity) {
-    sharedPrefs.edit().putString(Key.CURRENT_ACTIVITY.toString(), currentActivity).commit();
+    sharedPrefs.edit().putString(Key.CURRENT_ACTIVITY.toString(), currentActivity).apply();
   }
 
   @Nullable
