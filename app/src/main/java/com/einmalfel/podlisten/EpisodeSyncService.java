@@ -10,10 +10,8 @@ public class EpisodeSyncService extends DebuggableService {
   @Override
   public void onCreate() {
     super.onCreate();
-    synchronized (getClass()) {
-      if (adapter == null) {
-        adapter = new EpisodesSyncAdapter(getApplicationContext(), true);
-      }
+    if (adapter == null) {
+      adapter = new EpisodesSyncAdapter(getApplicationContext(), true);
     }
   }
 
