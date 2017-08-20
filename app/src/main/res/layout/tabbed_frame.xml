@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/background_contrast"
-            android:elevation="4dp"/>
+            app:elevation="4dp"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
