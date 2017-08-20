@@ -39,6 +39,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
     lintOptions {
+        warningsAsErrors true
         disable 'MissingTranslation'
     }
 }
