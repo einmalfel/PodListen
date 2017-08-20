@@ -121,7 +121,7 @@
             android:name=".Provider"
             android:authorities="@string/app_id"
             android:enabled="true"
-            android:exported="true"
+            android:exported="false"
             android:syncable="true">
         </provider>
 
