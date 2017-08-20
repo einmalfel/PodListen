@@ -26,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_marginEnd="75dp"
             android:layout_marginRight="75dp"
             android:minLines="2"
             android:singleLine="true"
@@ -37,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_title"
+            android:layout_marginEnd="75dp"
             android:layout_marginRight="75dp"
             android:singleLine="true"
             android:textSize="11sp"/>
@@ -46,6 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_frequency"
+            android:layout_marginEnd="75dp"
             android:layout_marginRight="75dp"
             android:autoLink="all"
             android:singleLine="true"
@@ -56,6 +59,7 @@
             android:layout_width="55dp"
             android:layout_height="match_parent"
             android:layout_alignBottom="@id/podcast_url"
+            android:layout_alignParentEnd="true"
             android:layout_alignTop="@+id/podcast_title"
             android:layout_alignParentRight="true"
             android:background="@drawable/clickable_list_element"
@@ -76,11 +80,14 @@
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:layout_marginBottom="-3dp"
-            android:layout_marginLeft="2dp"
             android:layout_alignBottom="@id/podcast_url"
+            android:layout_alignParentEnd="true"
             android:layout_alignTop="@id/podcast_title"
             android:layout_alignParentRight="true"
+            android:layout_marginEnd="57dp"
+            android:layout_marginLeft="2dp"
             android:layout_marginRight="57dp"
+            android:layout_marginStart="2dp"
             android:background="@color/background_contrast"/>
 
         <com.einmalfel.podlisten.support.PatchedTextView

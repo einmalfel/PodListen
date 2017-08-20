@@ -17,6 +17,7 @@
         android:id="@+id/progress_frame"
         android:layout_width="match_parent"
         android:layout_height="30dp"
+        android:layout_toEndOf="@id/play_episode_image"
         android:layout_toRightOf="@id/play_episode_image">
 
         <ProgressBar
@@ -25,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="2dp"
+            android:layout_marginStart="2dp"
             android:progressDrawable="@drawable/playback_progress"/>
 
         <TextView
@@ -42,6 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/progress_frame"
+        android:layout_toEndOf="@id/play_episode_image"
         android:layout_toRightOf="@id/play_episode_image"
         android:orientation="horizontal">
 
