@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">PodListen</string>
-    <string name="enable_download_manager">Podlisten a besoin de l'application système \'Download manager\' afin de pouvoir télécharger les podcasts. Veuillez l\'activer dans Paramètres->Applications->Toutes les applications</string>
+    <string name="enable_download_manager">Podlisten a besoin de l\'application système \'Download manager\' afin de pouvoir télécharger les podcasts. Veuillez l\'activer dans Paramètres->Applications->Toutes les applications</string>
 
     <!--google play doesn't allow title to contain more than 30 symbols-->
     <string name="google_play_title">PodListen - Application libre de lecture de podcasts</string>
@@ -103,10 +103,10 @@ Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formul
     <string name="preferences_experimental_title">Expérimental</string>
     <string name="preferences_send_bug_report_title">Envoyer un rapport de bug</string>
     <string name="preferences_send_bug_report_summary">Envoyer un email au développeur. Les journaux de l\'application et de l\'appareil seront inclus.</string>
-    <string name="preferences_send_bug_report_summary_disabled">Annuler : il n\'y a pas d'application de email installée.</string>
+    <string name="preferences_send_bug_report_summary_disabled">Annuler : il n\'y a pas d\'application de email installée.</string>
     <string name="preferences_max_downloads_title">Nombre maximum de téléchargements en parallèle</string>
     <string name="preferences_max_downloads_unlimited">Pas de limitation</string>
-    <string name="preferences_storage_location_title">Cache d'épisode (effacé au changement)</string>
+    <string name="preferences_storage_location_title">Cache d\'épisode (effacé au changement)</string>
     <string name="preferences_auto_download_title">Épisode en auto-téléchargement</string>
     <string name="preferences_auto_download_ac_title">Téléchargement uniquement en charge</string>
     <string name="preferences_auto_download_ac_summary">Le téléchargement automatique ne se lance que lorsque que le chargeur est branché.</string>
@@ -158,8 +158,8 @@ Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formul
 
     <string name="playback_complete_do_nothing">Ne rien faire</string>
     <string name="playback_complete_delete_do_nothing">Effacer l\'épisode joué et ne rien faire</string>
-    <string name="playback_complete_play_next">Jouer l'épisode suivant de la playlist</string>
-    <string name="playback_complete_delete_play_next">Effacer l'épisode joué et lire le suivant</string>
+    <string name="playback_complete_play_next">Jouer l\'épisode suivant de la playlist</string>
+    <string name="playback_complete_delete_play_next">Effacer l\'épisode joué et lire le suivant</string>
     <string name="playback_complete_play_first">Jouer le premier épisode de la playlist</string>
     <string name="playback_complete_delete_play_first">Effacer l\'épisode joué et lire le premier</string>
 
