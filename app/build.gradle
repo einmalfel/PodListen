@@ -65,5 +65,6 @@ task checkstyle(group: 'verification', type: Checkstyle) {
     configFile project.file("checkstyle_config.xml")
     source fileTree('src')
     include '**/*.java'
+    exclude '**/thirdparty/**'
     classpath = files()
 }

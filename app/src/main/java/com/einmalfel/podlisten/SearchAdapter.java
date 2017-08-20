@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.einmalfel.podlisten.thirdparty.CursorRecyclerAdapter;
+
 import java.util.HashSet;
 import java.util.Set;
 

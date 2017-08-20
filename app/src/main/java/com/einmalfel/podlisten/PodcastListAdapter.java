@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.einmalfel.podlisten.thirdparty.CursorRecyclerAdapter;
+
 import java.util.HashSet;
 import java.util.Set;
 
