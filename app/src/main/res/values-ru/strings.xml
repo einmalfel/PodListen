@@ -24,6 +24,7 @@
     <string name="podcast_refresh_failed">Не удалось обновить: %s</string>
     <string name="podcast_not_loaded_yet">Подкаст еще не загружен</string>
     <string name="podcast_refresh_time">Обновлен %s</string>
+    <!--description values used by accessibility services -->
     <string name="podcast_button_description">Показать эпизоды этой подписки</string>
     <string name="podcast_image_description">Пиктограмма подкаста</string>
 
@@ -34,7 +35,9 @@
     <string name="episode_downloading">Загрузка эпизода %s</string>
     <string name="episode_no_title">НЕТ ЗАГОЛОВКА</string>
     <string name="episode_published">Опубликован %s</string>
+    <!--description values used by accessibility services -->
     <string name="episode_image_description">Пиктограмма эпизода</string>
+    <string name="episode_button_description">Добавление, загрузка или воспроизведени эпизода</string>
 
     <string name="episode_action_add">Добавить этот эпизод в плейлист</string>
     <string name="episode_action_download">Загрузить эпизод</string>
@@ -148,6 +151,13 @@
     <string name="player_empty">Плейлист пуст</string>
     <string name="player_episode_does_not_exist">Епизод %d отсутствует</string>
     <string name="player_stopped">Воспроизведение остановлено</string>
+    <!--description values used by accessibility services -->
+    <string name="player_episode_image_description">@string/episode_image_description</string>
+    <string name="player_preferences_button_description">@string/preferences_title</string>
+    <string name="player_rewind_button_description">Перемотка назад</string>
+    <string name="player_forward_button_description">Перемотка вперед</string>
+    <string name="player_play_button_description">Воспроизведение или пауза</string>
+    <string name="player_next_button_description">@string/playback_complete_play_next</string>
 
     <string name="sync_database_error">Ошибка БД</string>
     <string name="sync_failed">Не удалось обновить</string>

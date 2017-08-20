@@ -45,6 +45,7 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="podcast_refresh_failed">Refresh failed: %s</string>
     <string name="podcast_not_loaded_yet">Feed isn\'t loaded yet</string>
     <string name="podcast_refresh_time">Refreshed %s</string>
+    <!--description values used by accessibility services -->
     <string name="podcast_image_description">Image of this podcast if any</string>
     <string name="podcast_button_description">Show episodes of this feed</string>
 
@@ -53,9 +54,11 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="episode_delete_question">Delete episode?</string>
     <string name="episode_deleted">Episode deleted: %s</string>
     <string name="episode_deleted_undo">Undo</string>
-    <string name="episode_image_description">Image of this episode if any</string>
     <string name="episode_deleted_subscription">Deleted subscription</string>
     <string name="episode_published">Published %s</string>
+    <!--description values used by accessibility services -->
+    <string name="episode_image_description">Image of this episode if any</string>
+    <string name="episode_button_description">Add, download or play episode</string>
 
     <string name="episode_action_download">Download episode</string>
     <string name="episode_action_add">Add this episode to playlist</string>
@@ -176,6 +179,13 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="player_stopped">Press play to start</string>
     <string name="player_empty">Playlist is empty</string>
     <string name="player_episode_does_not_exist" tools:ignore="PluralsCandidate">Episode %d doesn\'t exist</string>
+    <!--description values used by accessibility services -->
+    <string name="player_episode_image_description">@string/episode_image_description</string>
+    <string name="player_preferences_button_description">@string/preferences_title</string>
+    <string name="player_rewind_button_description">Rewind</string>
+    <string name="player_forward_button_description">Skip fragment</string>
+    <string name="player_play_button_description">Play or pause</string>
+    <string name="player_next_button_description">@string/playback_complete_play_next</string>
 
     <string name="sync_database_error">DB error</string>
     <string name="sync_interrupted_by_system">Refresh interrupted by system</string>
