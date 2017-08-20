@@ -38,7 +38,7 @@
             android:linksClickable="false"
             android:singleLine="true"
             android:textColor="@color/text"
-            android:textSize="@dimen/abc_text_size_medium_material"/>
+            android:textSize="18sp"/>
     </FrameLayout>
 
     <LinearLayout
