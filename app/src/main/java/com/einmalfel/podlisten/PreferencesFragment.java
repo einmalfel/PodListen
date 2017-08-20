@@ -13,11 +13,11 @@ import java.util.List;
 
 public class PreferencesFragment extends PreferenceFragmentCompat {
   @Override
-  public void onCreatePreferences(Bundle bundle, String s) {
+  public void onCreatePreferences(Bundle bundle, String screenKey) {
     addPreferencesFromResource(R.xml.preferences);
   }
 
-  private static <T extends Enum<T>> void bindEnumToList(@NonNull ListPreference lP,
+  private static <T extends Enum<T>> void bindEnumToList(@NonNull ListPreference preference,
                                                          @NonNull Class<T> enumType) {
     int length = enumType.getEnumConstants().length;
     String[] entries = new String[length];
@@ -27,47 +27,47 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
       entries[ordinal] = value.toString();
       entryValues[ordinal] = Integer.toString(ordinal);
     }
-    lP.setEntries(entries);
-    lP.setEntryValues(entryValues);
+    preference.setEntries(entries);
+    preference.setEntryValues(entryValues);
   }
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    ListPreference storageLP = (ListPreference) findPreference(
+    ListPreference storageListPref = (ListPreference) findPreference(
         Preferences.Key.STORAGE_PATH.toString());
     List<Storage> storageOptions = Storage.getWritableStorages();
     String[] optionStrings = new String[storageOptions.size()];
     for (int i = 0; i < storageOptions.size(); i++) {
       optionStrings[i] = storageOptions.get(i).toString();
     }
-    storageLP.setEntries(optionStrings);
-    storageLP.setEntryValues(optionStrings);
+    storageListPref.setEntries(optionStrings);
+    storageListPref.setEntryValues(optionStrings);
 
-    ListPreference refreshIntervalLP = (ListPreference) findPreference(
+    ListPreference refreshIntervalListPref = (ListPreference) findPreference(
         Preferences.Key.REFRESH_INTERVAL.toString());
-    bindEnumToList(refreshIntervalLP, Preferences.RefreshIntervalOption.class);
+    bindEnumToList(refreshIntervalListPref, Preferences.RefreshIntervalOption.class);
 
-    ListPreference maxDownloadsLP = (ListPreference) findPreference(
+    ListPreference maxDownloadsListPref = (ListPreference) findPreference(
         Preferences.Key.MAX_DOWNLOADS.toString());
-    bindEnumToList(maxDownloadsLP, Preferences.MaxDownloadsOption.class);
+    bindEnumToList(maxDownloadsListPref, Preferences.MaxDownloadsOption.class);
 
-    ListPreference autoDownloadLP = (ListPreference) findPreference(
+    ListPreference autoDownloadListPref = (ListPreference) findPreference(
         Preferences.Key.AUTO_DOWNLOAD.toString());
-    bindEnumToList(autoDownloadLP, Preferences.AutoDownloadMode.class);
+    bindEnumToList(autoDownloadListPref, Preferences.AutoDownloadMode.class);
 
-    ListPreference downloadNetworkLP = (ListPreference) findPreference(
+    ListPreference downloadNetworkListPref = (ListPreference) findPreference(
         Preferences.Key.DOWNLOAD_NETWORK.toString());
-    bindEnumToList(downloadNetworkLP, Preferences.DownloadNetwork.class);
+    bindEnumToList(downloadNetworkListPref, Preferences.DownloadNetwork.class);
 
-    ListPreference onCompleteLP = (ListPreference) findPreference(
+    ListPreference onCompleteListPref = (ListPreference) findPreference(
         Preferences.Key.COMPLETE_ACTION.toString());
-    bindEnumToList(onCompleteLP, Preferences.CompleteAction.class);
+    bindEnumToList(onCompleteListPref, Preferences.CompleteAction.class);
 
-    ListPreference jumpIntervalLP = (ListPreference) findPreference(
+    ListPreference jumpIntervalListPref = (ListPreference) findPreference(
         Preferences.Key.JUMP_INTERVAL.toString());
-    bindEnumToList(jumpIntervalLP, Preferences.JumpInterval.class);
+    bindEnumToList(jumpIntervalListPref, Preferences.JumpInterval.class);
 
     // if there is no mail app installed, disable send bug-report option
     Intent testEmailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "", null));

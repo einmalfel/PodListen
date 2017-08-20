@@ -45,20 +45,20 @@ public class PodcastViewHolder extends RecyclerView.ViewHolder {
     button = (ImageButton) layout.findViewById(R.id.podcast_button);
     button.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
+      public void onClick(View view) {
         listener.onButtonTap(id, title);
       }
     });
     RelativeLayout relativeLayout = (RelativeLayout) layout.findViewById(R.id.card_layout);
     relativeLayout.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
+      public void onClick(View view) {
         adapter.setExpanded(id, !expanded, getAdapterPosition());
       }
     });
     relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
-      public boolean onLongClick(View v) {
+      public boolean onLongClick(View view) {
         return listener.onLongTap(id, title);
       }
     });

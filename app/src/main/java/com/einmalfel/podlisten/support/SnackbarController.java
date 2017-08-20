@@ -41,7 +41,7 @@ public class SnackbarController {
     }
     snackbar.setAction(action, callback == null ? null : new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
+      public void onClick(View view) {
         callback.onDismissed(snackbar, Snackbar.Callback.DISMISS_EVENT_ACTION);
       }
     });

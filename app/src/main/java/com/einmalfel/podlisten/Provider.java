@@ -60,11 +60,11 @@ public class Provider extends ContentProvider {
   public static final int PSTATE_LAST_REFRESH_FAILED = 2;
 
   public static final String authorityBase = BuildConfig.APPLICATION_ID;
-  public static final String commonUriString = ContentResolver.SCHEME_CONTENT + "://" + authorityBase;
-  public static final Uri baseUri = Uri.parse(commonUriString);
-  public static final Uri podcastUri = Uri.parse(commonUriString + '/' + T_PODCAST);
-  public static final Uri episodeUri = Uri.parse(commonUriString + '/' + T_EPISODE);
-  public static final Uri episodeJoinPodcastUri = Uri.parse(commonUriString + '/' + T_E_JOIN_P);
+  public static final String baseUriString = ContentResolver.SCHEME_CONTENT + "://" + authorityBase;
+  public static final Uri baseUri = Uri.parse(baseUriString);
+  public static final Uri podcastUri = Uri.parse(baseUriString + '/' + T_PODCAST);
+  public static final Uri episodeUri = Uri.parse(baseUriString + '/' + T_EPISODE);
+  public static final Uri episodeJoinPodcastUri = Uri.parse(baseUriString + '/' + T_E_JOIN_P);
   public static final int SHORT_DESCR_LENGTH = 200;
   private static final String[] TABLES = {T_EPISODE, T_PODCAST, T_E_JOIN_P};
   private static final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -177,16 +177,16 @@ public class Provider extends ContentProvider {
         builder.append(selection).append(" AND ");
       }
       builder.append(TABLES[code].equals(T_E_JOIN_P) ? K_EID : K_ID)
-          .append(" == ")
-          .append(uri.getLastPathSegment());
+             .append(" == ")
+             .append(uri.getLastPathSegment());
       selection = builder.toString();
     }
     SQLiteDatabase db = helper.getReadableDatabase();
     if (code == TABLES.length - 1) {
       // Using left join here to include episodes from deleted subscriptions
-      String raw = "SELECT " + (projection == null ? "*" : joinStrings(projection, ", ")) +
-          " FROM " + T_EPISODE + " LEFT JOIN " + T_PODCAST +
-          " ON " + T_EPISODE + '.' + K_EPID + " == " + K_PID;
+      String raw = "SELECT " + (projection == null ? "*" : joinStrings(projection, ", "))
+          + " FROM " + T_EPISODE + " LEFT JOIN " + T_PODCAST
+          + " ON " + T_EPISODE + '.' + K_EPID + " == " + K_PID;
       if (selection != null) {
         raw += " WHERE " + selection;
       }
@@ -197,7 +197,8 @@ public class Provider extends ContentProvider {
       result.setNotificationUri(resolver, baseUri);
       return result;
     }
-    Cursor result = db.query(TABLES[code], projection, selection, selectionArgs, null, null, sortOrder);
+    Cursor result = db.query(
+        TABLES[code], projection, selection, selectionArgs, null, null, sortOrder);
     result.setNotificationUri(resolver, uri);
     return result;
   }
@@ -236,40 +237,40 @@ public class Provider extends ContentProvider {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-      db.execSQL("CREATE TABLE " + T_PODCAST + " (" +
-          K_ID + " INTEGER PRIMARY KEY," +
-          K_PNAME + " TEXT," +
-          K_PDESCR + " TEXT," +
-          K_PSDESCR + " TEXT," +
-          K_PSTATE + " INTEGER," +
-          K_PRMODE + " INTEGER," +
-          K_PATSTAMP + " INTEGER," +
-          K_PURL + " TEXT," +
-          K_PFURL + " TEXT," +
-          K_PERROR + " TEXT," +
-          K_PTSTAMP + " INTEGER" +
-          ')');
-      db.execSQL("CREATE TABLE " + T_EPISODE + " (" +
-          K_ID + " INTEGER PRIMARY KEY," +
-          K_ENAME + " TEXT," +
-          K_EDESCR + " TEXT," +
-          K_ESDESCR + " TEXT," +
-          K_EURL + " TEXT," +
-          K_EAURL + " TEXT," +
-          K_EERROR + " TEXT," +
-          K_EDATE + " INTEGER," +
-          K_EDFIN + " INTEGER," +
-          K_EDATT + " INTEGER," +
-          K_EDID + " INTEGER," +
-          K_ESTATE + " INTEGER," +
-          K_ETSTAMP + " INTEGER," +
-          K_EPLAYED + " INTEGER," +
-          K_ELENGTH + " INTEGER," +
-          K_ESIZE + " INTEGER," +
-          K_EDTSTAMP + " INTEGER," +
-          K_EPID + " INTEGER," +
-          "FOREIGN KEY(" + K_EPID + ") REFERENCES " + T_PODCAST + '(' + K_ID + ')' +
-          ')');
+      db.execSQL("CREATE TABLE " + T_PODCAST + " ("
+                     + K_ID + " INTEGER PRIMARY KEY,"
+                     + K_PNAME + " TEXT,"
+                     + K_PDESCR + " TEXT,"
+                     + K_PSDESCR + " TEXT,"
+                     + K_PSTATE + " INTEGER,"
+                     + K_PRMODE + " INTEGER,"
+                     + K_PATSTAMP + " INTEGER,"
+                     + K_PURL + " TEXT,"
+                     + K_PFURL + " TEXT,"
+                     + K_PERROR + " TEXT,"
+                     + K_PTSTAMP + " INTEGER"
+                     + ')');
+      db.execSQL("CREATE TABLE " + T_EPISODE + " ("
+                     + K_ID + " INTEGER PRIMARY KEY,"
+                     + K_ENAME + " TEXT,"
+                     + K_EDESCR + " TEXT,"
+                     + K_ESDESCR + " TEXT,"
+                     + K_EURL + " TEXT,"
+                     + K_EAURL + " TEXT,"
+                     + K_EERROR + " TEXT,"
+                     + K_EDATE + " INTEGER,"
+                     + K_EDFIN + " INTEGER,"
+                     + K_EDATT + " INTEGER,"
+                     + K_EDID + " INTEGER,"
+                     + K_ESTATE + " INTEGER,"
+                     + K_ETSTAMP + " INTEGER,"
+                     + K_EPLAYED + " INTEGER,"
+                     + K_ELENGTH + " INTEGER,"
+                     + K_ESIZE + " INTEGER,"
+                     + K_EDTSTAMP + " INTEGER,"
+                     + K_EPID + " INTEGER,"
+                     + "FOREIGN KEY(" + K_EPID + ") REFERENCES " + T_PODCAST + '(' + K_ID + ')'
+                     + ')');
     }
 
     @Override

@@ -31,19 +31,19 @@ public class PodcastHelper {
   private final Context context = PodListenApp.getContext();
   private final ContentResolver resolver = context.getContentResolver();
 
-  static URLConnection openConnectionWithTO(URL url) throws IOException {
+  static URLConnection openConnectionWithTimeout(URL url) throws IOException {
     URLConnection result = url.openConnection();
     result.setConnectTimeout(TIMEOUT_MS);
     result.setReadTimeout(TIMEOUT_MS);
     if (result instanceof HttpURLConnection) {
-      HttpURLConnection httpURLConnection = (HttpURLConnection) result;
-      httpURLConnection.setInstanceFollowRedirects(true);
-      if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM ||
-          httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
-        httpURLConnection.disconnect();
-        URL newUrl = new URL(url, httpURLConnection.getHeaderField("Location"));
+      HttpURLConnection httpUrlConnection = (HttpURLConnection) result;
+      httpUrlConnection.setInstanceFollowRedirects(true);
+      if (httpUrlConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM
+          || httpUrlConnection.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP) {
+        httpUrlConnection.disconnect();
+        URL newUrl = new URL(url, httpUrlConnection.getHeaderField("Location"));
         Log.d(TAG, "Following redirect from " + url + " to " + newUrl);
-        return openConnectionWithTO(newUrl);
+        return openConnectionWithTimeout(newUrl);
       }
     }
     return result;
@@ -66,8 +66,6 @@ public class PodcastHelper {
   }
 
 
-
-
   private static final DateFormat formatYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
   @NonNull
@@ -83,8 +81,8 @@ public class PodcastHelper {
   public String shortFormatDurationMs(long milliseconds) {
     long minutes = milliseconds / 60 / 1000;
     long hours = minutes / 60;
-    return (hours > 0 ? hours + context.getString(R.string.hour_abbreviation) : "") +
-        minutes % 60 + context.getString(R.string.minute_abbreviation);
+    return (hours > 0 ? hours + context.getString(R.string.hour_abbreviation) : "")
+        + minutes % 60 + context.getString(R.string.minute_abbreviation);
   }
 
   /**
@@ -92,8 +90,9 @@ public class PodcastHelper {
    */
   public static String humanReadableByteCount(long bytes, boolean si) {
     int unit = si ? 1000 : 1024;
-    if (bytes < unit)
+    if (bytes < unit) {
       return bytes + "B";
+    }
     int exp = (int) (Math.log(bytes) / Math.log(unit));
     String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
     return String.format("%d%sB", (int) (bytes / Math.pow(unit, exp)), pre);
@@ -116,9 +115,10 @@ public class PodcastHelper {
       Log.w(TAG, "Feed download protocol defaults to http, new url: " + url);
     }
     long id = generateId(url);
-    Cursor c = resolver.query(Provider.getUri(Provider.T_PODCAST, id), null, null, null, null);
-    int count = c.getCount();
-    c.close();
+    Cursor cursor = resolver.query(
+        Provider.getUri(Provider.T_PODCAST, id), null, null, null, null);
+    int count = cursor.getCount();
+    cursor.close();
     if (count == 1) {
       return 0;
     } else {

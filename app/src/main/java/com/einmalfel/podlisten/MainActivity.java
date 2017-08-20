@@ -36,7 +36,9 @@ import java.util.TimerTask;
 
 public class MainActivity extends FragmentActivity implements PlayerService.PlayerStateListener,
     View.OnClickListener {
-  enum Pages {PLAYLIST, NEW_EPISODES, SUBSCRIPTIONS}
+  enum Pages {
+    PLAYLIST, NEW_EPISODES, SUBSCRIPTIONS
+  }
 
   static final String PAGE_LAUNCH_OPTION = "Page";
   static final String EPISODE_ID_OPTION = "Episode";
@@ -55,7 +57,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
 
     @Override
     public CharSequence getPageTitle(int position) {
-      return TAB_NAMES[position];
+      return tabNames[position];
     }
 
     @Override
@@ -92,7 +94,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
    */
   long pendingScrollId;
 
-  private String[] TAB_NAMES;
+  private String[] tabNames;
   PlayerLocalConnection connection;
   private int newEpisodesNumber = 0;
   private ViewPager pager;
@@ -117,9 +119,11 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    TAB_NAMES = new String[]{getString(R.string.tab_playlist),
-                             getString(R.string.tab_new_episodes),
-                             getString(R.string.tab_subscriptions)};
+    tabNames = new String[]{
+        getString(R.string.tab_playlist),
+        getString(R.string.tab_new_episodes),
+        getString(R.string.tab_subscriptions)
+    };
 
     fab = (FloatingActionButton) findViewById(R.id.fab);
     playButton = (ImageButton) findViewById(R.id.play_button);
@@ -144,7 +148,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
 
     progressBar.setOnTouchListener(new View.OnTouchListener() {
       @Override
-      public boolean onTouch(View v, MotionEvent event) {
+      public boolean onTouch(View view, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
           float newPositionMs = progressBar.getMax() * event.getX() / progressBar.getWidth();
           Log.d(TAG, "progress bar tapped, seeking to " + newPositionMs);
@@ -165,7 +169,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
       @Override
       public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        updateFAB(Pages.values()[position], positionOffset);
+        updateFab(Pages.values()[position], positionOffset);
       }
 
       @Override
@@ -173,7 +177,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         if (position < 0 || position >= Pages.values().length) {
           Log.e(TAG, "Unexpected pager position " + position, new IndexOutOfBoundsException());
         } else {
-          updateFAB(Pages.values()[position], 0f);
+          updateFab(Pages.values()[position], 0f);
         }
       }
 
@@ -196,35 +200,39 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
   }
 
 
-  enum FabAction {SORT, REFRESH, CLEAR, ADD}
+  enum FabAction {
+    SORT, REFRESH, CLEAR, ADD
+  }
 
-  void updateFAB(int newEpisodesUpdate) {
+  void updateFab(int newEpisodesUpdate) {
     boolean stateChanged =
-        (newEpisodesNumber == 0 && newEpisodesUpdate != 0) ||
-        (newEpisodesNumber != 0 && newEpisodesUpdate == 0);
+        (newEpisodesNumber == 0 && newEpisodesUpdate != 0)
+            || (newEpisodesNumber != 0 && newEpisodesUpdate == 0);
     newEpisodesNumber = newEpisodesUpdate;
     if (stateChanged && pager.getCurrentItem() == Pages.NEW_EPISODES.ordinal()) {
-      updateFAB();
+      updateFab();
     }
   }
 
-  void updateFAB() {
-    updateFAB(Pages.values()[pager.getCurrentItem()], 0);
+  void updateFab() {
+    updateFab(Pages.values()[pager.getCurrentItem()], 0);
   }
 
-  void updateFAB(Pages fragment, float positionOffset) {
+  void updateFab(Pages fragment, float positionOffset) {
     fab.show();
     FabAction newEpisodesAction = newEpisodesNumber == 0 ? FabAction.REFRESH : FabAction.CLEAR;
     switch (fragment) {
       case PLAYLIST:
-        lerpFAB(FabAction.SORT, newEpisodesAction, positionOffset);
+        lerpFab(FabAction.SORT, newEpisodesAction, positionOffset);
         break;
       case NEW_EPISODES:
-        lerpFAB(newEpisodesAction, FabAction.ADD, positionOffset);
+        lerpFab(newEpisodesAction, FabAction.ADD, positionOffset);
         break;
       case SUBSCRIPTIONS:
-        lerpFAB(FabAction.ADD, FabAction.ADD, 0);
+        lerpFab(FabAction.ADD, FabAction.ADD, 0);
         break;
+      default:
+        throw new AssertionError("Unknown page " + fragment);
     }
   }
 
@@ -243,12 +251,14 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         case CLEAR:
           fab.setImageResource(R.mipmap.ic_clear_all_black_24dp);
           break;
+        default:
+          throw new AssertionError("Unknown action: " + action);
       }
       currentFabAction = action;
     }
   }
 
-  void lerpFAB(@NonNull FabAction prevAction, @NonNull FabAction nextAction, float offset) {
+  void lerpFab(@NonNull FabAction prevAction, @NonNull FabAction nextAction, float offset) {
     fab.setAlpha(0.5f + Math.abs(offset - 0.5f));
     fab.setScaleX(2f * Math.abs(offset - 0.5f));
     setFabAction(offset > 0.5f ? nextAction : prevAction);
@@ -311,24 +321,26 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
         String title = null;
         Bitmap img = null;
         if (episodeId == 0) {
-          title = getString(state == PlayerService.State.STOPPED_EMPTY ?
-                                R.string.player_empty : R.string.player_stopped);
+          title = getString(state == PlayerService.State.STOPPED_EMPTY
+                                ? R.string.player_empty : R.string.player_stopped);
         } else {
-          Cursor c = getContentResolver().query(Provider.getUri(Provider.T_EPISODE, episodeId),
-                                                new String[]{Provider.K_ENAME, Provider.K_EPID},
-                                                null, null, null);
-          if (c != null) {
-            if (c.moveToFirst()) {
-              title = c.getString(c.getColumnIndexOrThrow(Provider.K_ENAME));
+          Cursor cursor = getContentResolver().query(Provider.getUri(Provider.T_EPISODE, episodeId),
+                                                     new String[]{Provider.K_ENAME,
+                                                                  Provider.K_EPID},
+                                                     null, null, null);
+          if (cursor != null) {
+            if (cursor.moveToFirst()) {
+              title = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ENAME));
               img = ImageManager.getInstance().getImage(episodeId);
               if (img == null) {
                 img = ImageManager.getInstance()
-                                  .getImage(c.getLong(c.getColumnIndexOrThrow(Provider.K_EPID)));
+                                  .getImage(cursor.getLong(
+                                      cursor.getColumnIndexOrThrow(Provider.K_EPID)));
               }
             } else {
               title = getString(R.string.player_episode_does_not_exist, episodeId);
             }
-            c.close();
+            cursor.close();
           } else {
             Log.wtf(TAG, "Unexpectedly got null cursor from content provider",
                     new AssertionError());
@@ -374,29 +386,29 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           public void onDismissed(Snackbar snackbar, int event) {
             Log.d(TAG, "Snackbar dismissed, event: " + event);
             if (event == DISMISS_EVENT_ACTION) {
-              ForegroundOperations.setEpisodesState(
+              ForegroundOperations.startSetEpisodesState(
                   MainActivity.this, prevState, Provider.ESTATE_LEAVING);
             } else {
-              BackgroundOperations.cleanupEpisodes(MainActivity.this, Provider.ESTATE_LEAVING);
+              BackgroundOperations.startCleanupEpisodes(MainActivity.this, Provider.ESTATE_LEAVING);
             }
           }
         }
     );
   }
 
-
   @Override
-  public synchronized void onClick(View v) {
+  public synchronized void onClick(View view) {
     if (connection.service == null) {
       // skip tap if not bound to player yet. This is quite unlikely
       Log.e(TAG, "Skipping player action. Service is not ready yet");
       return;
     }
 
-    if (v == fab) {
+    if (view == fab) {
       switch (currentFabAction) {
         case CLEAR:
-          ForegroundOperations.setEpisodesState(this, Provider.ESTATE_LEAVING, Provider.ESTATE_NEW);
+          ForegroundOperations.startSetEpisodesState(
+              this, Provider.ESTATE_LEAVING, Provider.ESTATE_NEW);
           deleteEpisodeSnackbar("New episodes cleaned", Provider.ESTATE_NEW);
           break;
         case ADD:
@@ -416,22 +428,24 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           }
           snackbarController.showSnackbar(newMode.toString(), Snackbar.LENGTH_SHORT, null, null);
           break;
+        default:
+          throw new AssertionError("Unknown action " + currentFabAction);
       }
-    } else if (v == playButton) {
+    } else if (view == playButton) {
       connection.service.playPauseResume();
-    } else if (v == nextButton) {
+    } else if (view == nextButton) {
       connection.service.playNext();
-    } else if (v == ffButton) {
+    } else if (view == ffButton) {
       connection.service.jumpForward();
-    } else if (v == fbButton) {
+    } else if (view == fbButton) {
       connection.service.jumpBackward();
-    } else if (v == episodeImage) {
+    } else if (view == episodeImage) {
       pendingScrollId = connection.service.getEpisodeId();
       if (playlistFragment != null) {
         playlistFragment.reloadList();
       }
       pager.setCurrentItem(Pages.PLAYLIST.ordinal());
-    } else if (v == optionsButton) {
+    } else if (view == optionsButton) {
       startActivity(new Intent(this, PreferencesActivity.class));
     }
   }

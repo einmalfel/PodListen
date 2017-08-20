@@ -26,8 +26,8 @@ import android.widget.TextView;
 import com.einmalfel.podlisten.support.PredictiveAnimatiedLayoutManager;
 import com.einmalfel.podlisten.support.UnitConverter;
 
-public class FeedHistoryFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor>,
-    FeedHistoryAdapter.HistoryEpisodeListener {
+public class FeedHistoryFragment extends DialogFragment implements
+    LoaderManager.LoaderCallbacks<Cursor>, FeedHistoryAdapter.HistoryEpisodeListener {
   private static final String TAG = "FHF";
   private static final String ARG_PODCAST_ID = "Podcast_ID";
   private static final String ARG_PODCAST_TITLE = "Podcast_Title";
@@ -100,7 +100,7 @@ public class FeedHistoryFragment extends DialogFragment implements LoaderManager
       cv.put(Provider.K_ESTATE, Provider.ESTATE_GONE);
       getContext().getContentResolver().update(
           Provider.getUri(Provider.T_EPISODE, id), cv, null, null);
-      BackgroundOperations.cleanupEpisodes(getContext(), Provider.ESTATE_GONE);
+      BackgroundOperations.startCleanupEpisodes(getContext(), Provider.ESTATE_GONE);
     } else {
       ContentValues cv = new ContentValues(1);
       cv.put(Provider.K_ESTATE, Provider.ESTATE_IN_PLAYLIST);

@@ -41,35 +41,35 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
     syncResult.tooManyRetries = extras.getBoolean(ContentResolver.SYNC_EXTRAS_DO_NOT_RETRY, false);
     SyncState syncState = new SyncState(getContext(), syncResult);
 
-    Cursor c = null;
+    Cursor cursor = null;
     try {
-      c = provider.query(
+      cursor = provider.query(
           requestedId == 0 ? Provider.podcastUri : Provider.getUri(Provider.T_PODCAST, requestedId),
           queryColumns,
           null, null, null);
     } catch (RemoteException exception) {
       Log.e(TAG, "Failed to query podcast db", exception);
     }
-    if (c == null) {
+    if (cursor == null) {
       syncResult.databaseError = true;
       syncState.error(getContext().getString(R.string.sync_database_error));
       return;
     }
-    if (c.getCount() == 0) {
+    if (cursor.getCount() == 0) {
       Log.i(TAG, "No subscriptions, skipping sync");
-      c.close();
+      cursor.close();
       return;
     }
 
-    syncState.start(c.getCount());
+    syncState.start(cursor.getCount());
 
     ExecutorService executorService = Executors.newFixedThreadPool(WORKERS_NUMBER);
-    while (c.moveToNext()) {
-      long id = c.getLong(c.getColumnIndexOrThrow(Provider.K_ID));
-      String url = c.getString(c.getColumnIndexOrThrow(Provider.K_PFURL));
-      long feedTimestamp = c.getLong(c.getColumnIndexOrThrow(Provider.K_PTSTAMP));
-      RefreshMode refreshMode = RefreshMode.values()[c.getInt(
-          c.getColumnIndexOrThrow(Provider.K_PRMODE))];
+    while (cursor.moveToNext()) {
+      long id = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ID));
+      String url = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_PFURL));
+      long feedTimestamp = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_PTSTAMP));
+      RefreshMode refreshMode = RefreshMode.values()[cursor.getInt(
+          cursor.getColumnIndexOrThrow(Provider.K_PRMODE))];
 
       // If auto-sync is invoked more often then once in sync interval, it's sync retry and sync
       // adapter should process only feeds that failed to refresh on previous run.
@@ -82,7 +82,7 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
 
       executorService.execute(new SyncWorker(id, url, provider, syncState, refreshMode));
     }
-    c.close();
+    cursor.close();
 
     executorService.shutdown();
     boolean workersDone = false;
@@ -94,7 +94,9 @@ public class EpisodesSyncAdapter extends AbstractThreadedSyncAdapter {
       executorService.shutdownNow();
       try {
         workersDone = executorService.awaitTermination(SYNC_TIMEOUT, TimeUnit.SECONDS);
-      } catch (InterruptedException ignored) {}
+      } catch (InterruptedException ignored) {
+        Log.e(TAG, "Failed to interrupt workers");
+      }
     }
     if (!workersDone) {
       Log.e(TAG, "Some of workers hanged during sync");

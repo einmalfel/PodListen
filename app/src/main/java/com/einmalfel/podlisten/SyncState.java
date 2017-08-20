@@ -111,7 +111,7 @@ public class SyncState {
     stopped = true;
   }
 
-  synchronized private void updateProgress(String message) {
+  private synchronized void updateProgress(String message) {
     nb.setProgress(maxFeeds, errors + parsed, false);
     nb.setContentText(message);
     updateNotification();
@@ -124,13 +124,13 @@ public class SyncState {
     updateProgress(context.getString(R.string.sync_feed_parsing_failed, feedTitle));
   }
 
-  synchronized void signalDBError(String feedTitle) {
+  synchronized void signalDbError(String feedTitle) {
     syncResult.databaseError = true;
     errors++;
     updateProgress(context.getString(R.string.sync_feed_db_error, feedTitle));
   }
 
-  synchronized void signalIOError(String feedTitle) {
+  synchronized void signalIoError(String feedTitle) {
     syncResult.stats.numIoExceptions++;
     errors++;
     updateProgress(context.getString(R.string.sync_feed_io_error, feedTitle));
@@ -145,7 +145,7 @@ public class SyncState {
     }
   }
 
-  synchronized private void updateNotification() {
+  private synchronized void updateNotification() {
     if (!stopped) {
       nm.notify(NOTIFICATION_ID, nb.build());
     }
