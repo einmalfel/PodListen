@@ -1,6 +1,5 @@
 package com.einmalfel.podlisten;
 
-
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -35,7 +34,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements
       savedInstanceState) {
     View layout = inflater.inflate(R.layout.common_list, container, false);
     RecyclerView rv = (RecyclerView) layout.findViewById(R.id.recycler_view);
-    activity = (MainActivity)getActivity();
+    activity = (MainActivity) getActivity();
     rv.setLayoutManager(new PredictiveAnimatiedLayoutManager(activity));
     rv.setItemAnimator(new DefaultItemAnimator());
     rv.setAdapter(adapter);
@@ -44,14 +43,16 @@ public class SubscriptionsFragment extends DebuggableFragment implements
   }
 
   @Override
-  public boolean onLongTap(final long pId, String title) {
+  public boolean onLongTap(final long podcatId, String title) {
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int id) {
-        ImageManager.getInstance().deleteImage(pId);
-        activity.getContentResolver().delete(Provider.getUri(Provider.T_PODCAST, pId), null, null);
-        BackgroundOperations.cleanupEpisodes(getContext(), Provider.ESTATE_GONE);
+        ImageManager.getInstance().deleteImage(podcatId);
+        activity.getContentResolver().delete(Provider.getUri(Provider.T_PODCAST, podcatId),
+                                             null,
+                                             null);
+        BackgroundOperations.startCleanupEpisodes(getContext(), Provider.ESTATE_GONE);
       }
     });
     builder
@@ -72,6 +73,7 @@ public class SubscriptionsFragment extends DebuggableFragment implements
   static final String[] projection = new String[]{
       Provider.K_ID, Provider.K_PNAME, Provider.K_PDESCR, Provider.K_PFURL, Provider.K_PSTATE,
       Provider.K_PURL, Provider.K_PTSTAMP, Provider.K_PERROR, Provider.K_PSDESCR};
+
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(

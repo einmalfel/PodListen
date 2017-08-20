@@ -12,7 +12,9 @@ import android.view.View;
 public class ScrollTrackingBehaviour extends FloatingActionButton.Behavior {
   private static final String TAG = "STB";
 
-  /** Need this constructor to reference ScrollTrackingBehaviour from xml */
+  /**
+   * Need this constructor to reference ScrollTrackingBehaviour from xml
+   */
   public ScrollTrackingBehaviour(Context context, AttributeSet attrs) {
     super();
   }
@@ -44,7 +46,9 @@ public class ScrollTrackingBehaviour extends FloatingActionButton.Behavior {
     }
   }
 
-  /** @return approximated equivalent of scrollPosition divided by scrollRange */
+  /**
+   * @return approximated equivalent of scrollPosition divided by scrollRange
+   */
   float approximatedVerticalScrollRatio(RecyclerView recyclerView) {
     LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
     int count = linearLayoutManager.getItemCount();

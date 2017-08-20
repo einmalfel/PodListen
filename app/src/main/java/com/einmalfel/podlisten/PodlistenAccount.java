@@ -26,8 +26,8 @@ public class PodlistenAccount {
   }
 
   private PodlistenAccount() {
-    AccountManager aManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
-    aManager.addAccountExplicitly(account, null, null);
+    AccountManager accManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+    accManager.addAccountExplicitly(account, null, null);
   }
 
   /**
@@ -46,7 +46,9 @@ public class PodlistenAccount {
     ContentResolver.cancelSync(account, appId);
   }
 
-  /** @param pollPeriod sync interval in seconds. Pass zero to disable periodic sync */
+  /**
+   * @param pollPeriod sync interval in seconds. Pass zero to disable periodic sync
+   */
   void setupSync(int pollPeriod) {
     if (pollPeriod == 0) {
       ContentResolver.removePeriodicSync(account, appId, Bundle.EMPTY);

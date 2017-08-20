@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * TODO: extract into separate library
  */
 public class RotationLayout extends ViewGroup {
-  private final ArrayList<View> mMatchParentChildren = new ArrayList<>(1);
+  private final ArrayList<View> matchParentChildren = new ArrayList<>(1);
 
   public RotationLayout(Context context) {
     super(context);
@@ -37,83 +37,86 @@ public class RotationLayout extends ViewGroup {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     boolean measureMatchParentChildren =
-        MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.EXACTLY ||
-            MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.EXACTLY;
-    mMatchParentChildren.clear();
-    int hPadding = getPaddingLeft() + getPaddingRight();
-    int vPadding = getPaddingTop() + getPaddingBottom();
+        MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.EXACTLY
+            || MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.EXACTLY;
+    matchParentChildren.clear();
+    int horizontalPadding = getPaddingLeft() + getPaddingRight();
+    int verticalPadding = getPaddingTop() + getPaddingBottom();
     int maxHeight = 0;
     int maxWidth = 0;
-    int cState = 0;
+    int childState = 0;
 
     for (int i = 0; i < getChildCount(); i++) {
       View child = getChildAt(i);
       if (child.getVisibility() != GONE) {
         LayoutParams lp = (LayoutParams) child.getLayoutParams();
-        if (lp.layout_rotation == 90 || lp.layout_rotation == 270) {
+        if (lp.layoutRotation == 90 || lp.layoutRotation == 270) {
           child.measure(
-              getChildMeasureSpec(heightMeasureSpec, vPadding, lp.width),
-              getChildMeasureSpec(widthMeasureSpec, hPadding, lp.height));
+              getChildMeasureSpec(heightMeasureSpec, verticalPadding, lp.width),
+              getChildMeasureSpec(widthMeasureSpec, horizontalPadding, lp.height));
           maxHeight = Math.max(maxHeight, child.getMeasuredWidth());
           maxWidth = Math.max(maxWidth, child.getMeasuredHeight());
         } else {
           child.measure(
-              getChildMeasureSpec(widthMeasureSpec, hPadding, lp.width),
-              getChildMeasureSpec(heightMeasureSpec, vPadding, lp.height));
+              getChildMeasureSpec(widthMeasureSpec, horizontalPadding, lp.width),
+              getChildMeasureSpec(heightMeasureSpec, verticalPadding, lp.height));
           maxWidth = Math.max(maxWidth, child.getMeasuredWidth());
           maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
         }
-        cState = combineMeasuredStates(cState, child.getMeasuredState());
+        childState = combineMeasuredStates(childState, child.getMeasuredState());
         if (measureMatchParentChildren) {
           if (lp.width == LayoutParams.MATCH_PARENT || lp.height == LayoutParams.MATCH_PARENT) {
-            mMatchParentChildren.add(child);
+            matchParentChildren.add(child);
           }
         }
 
         child.setPivotY(0);
         child.setPivotX(0);
-        child.setRotation(lp.layout_rotation);
-        if (lp.layout_rotation == 90) {
+        child.setRotation(lp.layoutRotation);
+        if (lp.layoutRotation == 90) {
           child.setX(getPaddingLeft() + child.getMeasuredHeight());
-        } else if (lp.layout_rotation == 180) {
+        } else if (lp.layoutRotation == 180) {
           child.setX(getPaddingLeft() + child.getMeasuredWidth());
           child.setY(getPaddingTop() + child.getMeasuredHeight());
-        } else if (lp.layout_rotation == 270) {
+        } else if (lp.layoutRotation == 270) {
           child.setY(getPaddingTop() + child.getMeasuredWidth());
         }
       }
     }
 
     // Account for padding too
-    maxWidth += hPadding;
-    maxHeight += vPadding;
+    maxWidth += horizontalPadding;
+    maxHeight += verticalPadding;
 
     // Check against our minimum height and width
     maxHeight = Math.max(maxHeight, getSuggestedMinimumHeight());
     maxWidth = Math.max(maxWidth, getSuggestedMinimumWidth());
 
     setMeasuredDimension(
-        resolveSizeAndState(maxWidth, widthMeasureSpec, cState),
-        resolveSizeAndState(maxHeight, heightMeasureSpec, cState << MEASURED_HEIGHT_STATE_SHIFT));
+        resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
+        resolveSizeAndState(maxHeight, heightMeasureSpec,
+                            childState << MEASURED_HEIGHT_STATE_SHIFT));
 
     // in case our layout didn't had exact size initially (wrap_content) and some of children don't
     // have it neither (match_parent), we need to remeasure those children now, when the layout
     // has already obtained its dimensions
-    if (mMatchParentChildren.size() > 1) {
-      for (int i = 0; i < mMatchParentChildren.size(); i++) {
-        View child = mMatchParentChildren.get(i);
+    if (matchParentChildren.size() > 1) {
+      for (int i = 0; i < matchParentChildren.size(); i++) {
+        View child = matchParentChildren.get(i);
         LayoutParams lp = (LayoutParams) child.getLayoutParams();
         int childW;
         int childH;
         if (lp.width == LayoutParams.MATCH_PARENT) {
-          childW = MeasureSpec.makeMeasureSpec(getMeasuredWidth() - hPadding, MeasureSpec.EXACTLY);
+          childW = MeasureSpec
+              .makeMeasureSpec(getMeasuredWidth() - horizontalPadding, MeasureSpec.EXACTLY);
         } else {
-          childW = getChildMeasureSpec(widthMeasureSpec, hPadding, lp.width);
+          childW = getChildMeasureSpec(widthMeasureSpec, horizontalPadding, lp.width);
         }
         if (lp.height == LayoutParams.MATCH_PARENT) {
-          childH = MeasureSpec.makeMeasureSpec(getMeasuredHeight() - vPadding, MeasureSpec.EXACTLY);
+          childH = MeasureSpec
+              .makeMeasureSpec(getMeasuredHeight() - verticalPadding, MeasureSpec.EXACTLY);
         } else {
-          childH = getChildMeasureSpec(heightMeasureSpec, vPadding, lp.height);
+          childH = getChildMeasureSpec(heightMeasureSpec, verticalPadding, lp.height);
         }
         child.measure(childW, childH);
       }
@@ -135,7 +138,7 @@ public class RotationLayout extends ViewGroup {
   }
 
   public static class LayoutParams extends ViewGroup.LayoutParams {
-    public final int layout_rotation;
+    public final int layoutRotation;
 
     public LayoutParams(int width, int height, int rotation) {
       this(new ViewGroup.LayoutParams(width, height), rotation);
@@ -146,11 +149,11 @@ public class RotationLayout extends ViewGroup {
       if (rotation != 0 && rotation != 90 && rotation != 180 && rotation != 270) {
         // layout inflater may suppress the exception, so scream in log
         String message =
-            "Invalid layout_rotation value (" + rotation + "). Available values: 0, 90, 180, 270.";
+            "Invalid layoutRotation value (" + rotation + "). Available values: 0, 90, 180, 270.";
         Log.e("RotationLayout", message);
         throw new IllegalArgumentException(message);
       }
-      layout_rotation = rotation;
+      layoutRotation = rotation;
     }
   }
 
@@ -166,7 +169,7 @@ public class RotationLayout extends ViewGroup {
     return new LayoutParams(new ViewGroup.LayoutParams(getContext(), attrs), rotation);
   }
 
-  protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
-    return p instanceof LayoutParams;
+  protected boolean checkLayoutParams(ViewGroup.LayoutParams params) {
+    return params instanceof LayoutParams;
   }
 }

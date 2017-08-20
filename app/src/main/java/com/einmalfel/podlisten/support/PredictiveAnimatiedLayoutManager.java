@@ -1,6 +1,5 @@
 package com.einmalfel.podlisten.support;
 
-
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 

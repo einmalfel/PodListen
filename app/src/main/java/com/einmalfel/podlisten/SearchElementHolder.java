@@ -21,7 +21,7 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
   private final CardView cardView;
   private final Context context;
 
-  private String rss_url;
+  private String rssUrl;
   private boolean expanded;
   private long id = -1;
 
@@ -39,31 +39,31 @@ class SearchElementHolder extends RecyclerView.ViewHolder {
     ImageButton addButton = (ImageButton) layout.findViewById(R.id.podcast_button);
     addButton.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
-        listener.onPodcastButtonTap(rss_url);
+      public void onClick(View view) {
+        listener.onPodcastButtonTap(rssUrl);
       }
     });
     View relativeLayout = layout.findViewById(R.id.card_layout);
     relativeLayout.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
+      public void onClick(View view) {
         adapter.setExpanded(id, !expanded, getAdapterPosition());
       }
     });
 
   }
 
-  void bind(String title, String description, String rss_url, String url, long period, long id,
+  void bind(String title, String description, String rssUrl, String url, long period, long id,
             boolean expanded) {
     if (this.id != id) {
       titleView.setText(title);
       descriptionView.setVisibility(TextUtils.isEmpty(description) ? View.GONE : View.VISIBLE);
       dividerBottom.setVisibility(TextUtils.isEmpty(description) ? View.GONE : View.VISIBLE);
       descriptionView.setText(description);
-      urlView.setText(url != null && !url.isEmpty() ? url : rss_url);
+      urlView.setText(url != null && !url.isEmpty() ? url : rssUrl);
       double freq = 30d * 24 * 60 * 60 * 1000 / period;
       frequencyView.setText(context.getString(R.string.search_frequency, freq));
-      this.rss_url = rss_url;
+      this.rssUrl = rssUrl;
       this.id = id;
     }
 

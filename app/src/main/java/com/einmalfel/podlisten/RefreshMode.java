@@ -33,7 +33,9 @@ public enum RefreshMode {
     return context.getResources().getString(stringId);
   }
 
-  /** @return new episodes quantity limit */
+  /**
+   * @return new episodes quantity limit
+   */
   public int getCount() {
     switch (this) {
       case LAST_10:
@@ -49,7 +51,9 @@ public enum RefreshMode {
     }
   }
 
-  /** @return maximum age of new episode in milliseconds */
+  /**
+   * @return maximum age of new episode in milliseconds
+   */
   public long getMaxAge() {
     final long dayMilliseconds = 1000 * 60 * 60 * 24L;
     switch (this) {

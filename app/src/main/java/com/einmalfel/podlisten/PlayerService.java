@@ -44,7 +44,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     }
   }
 
-  private enum CallbackType {PROGRESS, STATE}
+  private enum CallbackType {
+    PROGRESS, STATE
+  }
 
   interface PlayerStateListener {
     void progressUpdate(int position, int max);
@@ -73,8 +75,8 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
 
     @Override
     public void onReceive(Context context, Intent intent) {
-      if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction()) &&
-          Preferences.getInstance().getPauseOnDisconnect() && !getState().isStopped()) {
+      if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())
+          && Preferences.getInstance().getPauseOnDisconnect() && !getState().isStopped()) {
         Log.i(TAG, "Lost audio device connection, pausing playback.");
         pause();
       }
@@ -125,11 +127,14 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
                 lastLength = service.length;
                 lastProgress = service.progress;
               }
-              if (fixingEndingSkip && service.length - service.progress < TRACK_ENDING_THRESHOLD_MS) {
+              if (fixingEndingSkip
+                  && service.length - service.progress < TRACK_ENDING_THRESHOLD_MS) {
                 Log.i(TAG, "Fixing ending skip: calling onCompletion, pos: " + service.progress);
                 onCompletion(player);
               }
               break;
+            default:
+              throw new AssertionError("Unknown callback type " + ct);
           }
         }
       }
@@ -258,8 +263,8 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     playableEpisodesLoader = new CursorLoader(
         this,
         Provider.episodeUri, new String[]{Provider.K_ID},
-        Provider.K_ESTATE + " == " + Provider.ESTATE_IN_PLAYLIST + " AND " +
-            Provider.K_EDFIN + " == " + Provider.EDFIN_COMPLETE,
+        Provider.K_ESTATE + " == " + Provider.ESTATE_IN_PLAYLIST + " AND "
+            + Provider.K_EDFIN + " == " + Provider.EDFIN_COMPLETE,
         null,
         Preferences.getInstance().getSortingMode().toSql());
     playableEpisodesLoader.registerListener(LOADER_ID, this);
@@ -286,8 +291,8 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     callbackThread.interrupt();
     try {
       callbackThread.join();
-    } catch (InterruptedException e) {
-      Log.e(TAG, "unexpected interrupt ", e);
+    } catch (InterruptedException exception) {
+      Log.e(TAG, "unexpected interrupt ", exception);
       Thread.currentThread().interrupt();
     }
     super.onDestroy();
@@ -548,8 +553,8 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
             player.setDataSource(this, Uri.fromFile(source));
             state = State.PLAYING;
             WidgetHelper.getInstance(); // ensure widget helper is up to handle player notification
-          } catch (IOException e) {
-            Log.e(TAG, "set source produced an exception, playback stopped: ", e);
+          } catch (IOException exception) {
+            Log.e(TAG, "set source produced an exception, playback stopped: ", exception);
           }
         } else {
           Log.e(TAG, "Failed to play ep " + id + ", storage is not available for read: " + storage);
@@ -568,22 +573,22 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       preparing = true;
       player.prepareAsync();
       // while playback is being prepared, check if episode was previously played to some position
-      Cursor c = resolver.query(Provider.getUri(Provider.T_EPISODE, id),
+      Cursor cursor = resolver.query(Provider.getUri(Provider.T_EPISODE, id),
                                 new String[]{Provider.K_EPLAYED, Provider.K_ELENGTH},
                                 null, null, null);
-      if (c == null) {
+      if (cursor == null) {
         throw new AssertionError("Unexpectedly got null from query");
       }
-      if (c.moveToFirst()) {
-        startSeek = c.getInt(c.getColumnIndexOrThrow(Provider.K_EPLAYED));
-        length = c.getInt(c.getColumnIndexOrThrow(Provider.K_ELENGTH));
+      if (cursor.moveToFirst()) {
+        startSeek = cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_EPLAYED));
+        length = cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_ELENGTH));
         if (startSeek > length - 5000) { // if starting at the end of ep (with tolerance)
           startSeek = 0;
         }
         progress = startSeek;
       }
 
-      c.close();
+      cursor.close();
     }
     callbackThread.post(CallbackType.STATE);
     callbackThread.post(CallbackType.PROGRESS);
@@ -594,7 +599,9 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     return state == State.PLAYING;
   }
 
-  /** @return next ep. id according to complete action preference or 0 if there are no more eps */
+  /**
+   * @return next ep. id according to complete action preference or 0 if there are no more eps
+   */
   private static long getNext(@NonNull Cursor playableEpisodes, long currentId, boolean first) {
     long result = 0;
 
@@ -642,16 +649,16 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
     // run getNext before deletion, cause we need to loop over playlist to find episode following
     // the current one
     long nextId = getNext(
-        playableEpisodes, currentId, completeAction == Preferences.CompleteAction.PLAY_FIRST ||
-            completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST);
+        playableEpisodes, currentId, completeAction == Preferences.CompleteAction.PLAY_FIRST
+            || completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST);
 
-    if (completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST ||
-        completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT ||
-        completeAction == Preferences.CompleteAction.DELETE_DO_NOTHING) {
+    if (completeAction == Preferences.CompleteAction.DELETE_PLAY_FIRST
+        || completeAction == Preferences.CompleteAction.DELETE_PLAY_NEXT
+        || completeAction == Preferences.CompleteAction.DELETE_DO_NOTHING) {
       ContentValues cv = new ContentValues(1);
       cv.put(Provider.K_ESTATE, Provider.ESTATE_GONE);
       getContentResolver().update(Provider.getUri(Provider.T_EPISODE, currentId), cv, null, null);
-      BackgroundOperations.cleanupEpisodes(this, Provider.ESTATE_GONE);
+      BackgroundOperations.startCleanupEpisodes(this, Provider.ESTATE_GONE);
     }
 
     if (nextId == 0 || completeAction == Preferences.CompleteAction.DELETE_DO_NOTHING) {
@@ -685,6 +692,8 @@ public class PlayerService extends DebuggableService implements MediaPlayer.OnSe
       case PAUSED:
         resume();
         break;
+      default:
+        throw new AssertionError("Unknown state");
     }
   }
 

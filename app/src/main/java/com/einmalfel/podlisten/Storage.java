@@ -18,12 +18,14 @@ import java.util.Set;
 public class Storage {
   private static final String TAG = "STR";
   private static final String APP_FILES = "Android/data/" + BuildConfig.APPLICATION_ID + "/files";
-  private static final String UNKNOWN_STATE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ?
-      Environment.MEDIA_UNKNOWN : "unknown";
+  private static final String UNKNOWN_STATE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+      ? Environment.MEDIA_UNKNOWN : "unknown";
   private final File appFilesDir; // /*/Android/data/com.einmalfel.podlisten/files
 
-  /**@return Ordered and deduplicated list of writable storages. Order: primary first, then dirs
-   * obtained from getExternalDirs, then dirs from environment variables */
+  /**
+   * @return Ordered and deduplicated list of writable storages. Order: primary first, then dirs
+   *     obtained from getExternalDirs, then dirs from environment variables
+   */
   @NonNull
   public static List<Storage> getWritableStorages() {
     List<Storage> result = new LinkedList<>();
@@ -68,11 +70,11 @@ public class Storage {
 
     // filter out read-only storages
     for (File dir : dirs) {
-      if (dir != null) {//getExternalFilesDir could return nulls for currently unavailable storages
+      if (dir != null) { //getExternalFilesDir could return nulls for currently unavailable storages
         try {
           Storage storage = new Storage(dir);
           String state = storage.getState();
-          // unlike isAvailableRW(), use more slow and precise method to determine writability here
+          // unlike isAvailableRw(), use more slow and precise method to determine writability here
           if (UNKNOWN_STATE.equals(state) && !storage.isPrimaryStorage()) {
             // if PodListen directories already exist, assume it's a writable storage
             if (storage.getImagesDir().exists() || storage.getPodcastDir().exists()) {
@@ -95,9 +97,10 @@ public class Storage {
             Log.i(TAG, "Found writable storage: " + dir);
             result.add(storage);
           }
-        } catch (IOException e) {
-          Log.e(TAG, "File path couldn't be converted to canonical form:" + dir.getAbsolutePath(),
-                e);
+        } catch (IOException ioExcpetion) {
+          Log.e(TAG,
+                "File path couldn't be converted to canonical form:" + dir.getAbsolutePath(),
+                ioExcpetion);
         }
       }
     }
@@ -126,7 +129,7 @@ public class Storage {
   }
 
   public void createSubdirs() throws IOException {
-    for (File dir : new File[] {getImagesDir(), getPodcastDir()}) {
+    for (File dir : new File[]{getImagesDir(), getPodcastDir()}) {
       if (!dir.exists() && !dir.mkdirs()) {
         throw new IOException("Failed to create " + dir);
       }
@@ -142,8 +145,8 @@ public class Storage {
     File dataDir = appDir.getParentFile();
     File androidDir = dataDir.getParentFile();
 
-    for (File[] fileArray : new File[][]{podcasts, images, dirs,
-                                         new File[]{appFilesDir, appDir, dataDir, androidDir}}) {
+    for (File[] fileArray : new File[][]{
+        podcasts, images, dirs, new File[]{appFilesDir, appDir, dataDir, androidDir}}) {
       if (fileArray != null) {
         for (File file : fileArray) {
           if (file.exists() && (!file.isDirectory() || file.list().length == 0) && !file.delete()) {
@@ -166,11 +169,12 @@ public class Storage {
 
   /**
    * Checks whether given file belongs to this storage
+   *
    * @throws IOException if File path couldn't be converted to canonical form
    */
-  public boolean contains(File file) throws IOException{
-    File cFile = file.getCanonicalFile();
-    return appFilesDir.equals(cFile) || cFile.getPath().startsWith(appFilesDir + File.separator);
+  public boolean contains(File file) throws IOException {
+    File cnFile = file.getCanonicalFile();
+    return appFilesDir.equals(cnFile) || cnFile.getPath().startsWith(appFilesDir + File.separator);
   }
 
   public boolean isPrimaryStorage() {
@@ -180,11 +184,11 @@ public class Storage {
 
   public boolean isAvailableRead() {
     String state = getState();
-    return Environment.MEDIA_MOUNTED_READ_ONLY.equals(state) ||
-        Environment.MEDIA_MOUNTED.equals(state) || UNKNOWN_STATE.equals(state);
+    return Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)
+        || Environment.MEDIA_MOUNTED.equals(state) || UNKNOWN_STATE.equals(state);
   }
 
-  public boolean isAvailableRW() {
+  public boolean isAvailableRw() {
     String state = getState();
     return Environment.MEDIA_MOUNTED.equals(state) || UNKNOWN_STATE.equals(state);
   }
@@ -213,13 +217,15 @@ public class Storage {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o)
+  public boolean equals(Object other) {
+    if (this == other) {
       return true;
-    if (o == null || getClass() != o.getClass())
+    }
+    if (other == null || getClass() != other.getClass()) {
       return false;
+    }
 
-    Storage storage = (Storage) o;
+    Storage storage = (Storage) other;
 
     // it safe to compare these file paths, as they were converted to canonical form in constructor
     return appFilesDir.equals(storage.appFilesDir);

@@ -28,14 +28,14 @@ public class BackgroundOperations extends IntentService {
 
   private static final String EXTRA_EPISODE_STATE = "com.einmalfel.podlisten.EPISODE_STATE";
 
-  public static void handleDownloads(Context context) {
+  public static void startHandleDownloads(Context context) {
     Intent intent = new Intent(context, BackgroundOperations.class);
     intent.setAction(ACTION_HANDLE_DOWNLOADS);
     context.startService(intent);
   }
 
   /** deletes episodes whose state == stateFilter */
-  public static void cleanupEpisodes(@NonNull Context context, int stateFilter) {
+  public static void startCleanupEpisodes(@NonNull Context context, int stateFilter) {
     Intent intent = new Intent(context, BackgroundOperations.class);
     intent.setAction(ACTION_CLEANUP_EPISODES);
     intent.putExtra(EXTRA_EPISODE_STATE, stateFilter);
@@ -71,8 +71,9 @@ public class BackgroundOperations extends IntentService {
     String where = Provider.K_ESTATE + " == " + stateFilter;
     if (stateFilter == Provider.ESTATE_GONE) {
       // only process ones that aren't included in feed anymore OR have media associated with them
-      where += " AND (" + Provider.K_PTSTAMP + " IS NULL OR " + Provider.K_ETSTAMP + " < " +
-          Provider.K_PTSTAMP + " OR " + Provider.K_EDFIN + " != 0 OR " + Provider.K_EDID + " != 0)";
+      where += " AND (" + Provider.K_PTSTAMP + " IS NULL OR "
+          + Provider.K_ETSTAMP + " < " + Provider.K_PTSTAMP + " OR "
+          + Provider.K_EDFIN + " != 0 OR " + Provider.K_EDID + " != 0)";
     }
     Cursor cursor = resolver.query(
         Provider.episodeJoinPodcastUri,
@@ -91,9 +92,9 @@ public class BackgroundOperations extends IntentService {
     while (cursor.moveToNext()) {
       long episodeId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ID));
       // 1. Stop download if any
-      long dId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDID));
-      if (dId != 0) {
-        dm.remove(dId);
+      long dlId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDID));
+      if (dlId != 0) {
+        dm.remove(dlId);
         ContentValues val = new ContentValues(1);
         val.put(Provider.K_EDID, 0);
         if (resolver.update(Provider.getUri(Provider.T_EPISODE, episodeId), val, null, null) != 1) {
@@ -103,20 +104,20 @@ public class BackgroundOperations extends IntentService {
       }
       // 2. Delete audio and images related to this episode if any
       Storage storage = Preferences.getInstance().getStorage();
-      if (storage == null || !storage.isAvailableRW()) {
+      if (storage == null || !storage.isAvailableRw()) {
         Log.w(TAG, "failed to delete episode media: no storage or it isn't writable");
         continue;
       }
-      File f = new File(storage.getPodcastDir(), Long.toString(episodeId));
-      if (f.exists() && !f.delete()) {
-        Log.w(TAG, "Failed to delete " + f.toURI());
+      File file = new File(storage.getPodcastDir(), Long.toString(episodeId));
+      if (file.exists() && !file.delete()) {
+        Log.w(TAG, "Failed to delete " + file.toURI());
       }
       ImageManager.getInstance().deleteImage(episodeId);
       // 3. Set gone state or completely remove episode from db if it is already absent in the feed
       // or feed itself is deleted (K_PTSTAMP column will contain null in latter case)
-      if (cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ETSTAMP)) <
-          cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_PTSTAMP)) ||
-          cursor.isNull(cursor.getColumnIndexOrThrow(Provider.K_PTSTAMP))) {
+      if (cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ETSTAMP))
+          < cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_PTSTAMP))
+          || cursor.isNull(cursor.getColumnIndexOrThrow(Provider.K_PTSTAMP))) {
         Log.i(TAG, "Feed doesn't contain episode " + episodeId + " anymore. Deleting from db..");
         if (resolver.delete(Provider.getUri(Provider.T_EPISODE, episodeId), null, null) != 1) {
           Log.w(TAG, "Failed to delete " + episodeId + " from db");
@@ -157,13 +158,13 @@ public class BackgroundOperations extends IntentService {
 
     while (cursor.moveToNext()) {
       long epId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ID));
-      int dFinished = cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_EDFIN));
+      int downloadFinished = cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_EDFIN));
       int attempts = cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_EDATT));
       File downloadLocation = new File(currentStorage.getPodcastDir(), Long.toString(epId));
       ContentValues cv = new ContentValues();
       cv.put(Provider.K_EDATT, attempts + 1);
       cv.put(Provider.K_EDTSTAMP, new Date().getTime());
-      if (dFinished == Provider.EDFIN_MOVING) {
+      if (downloadFinished == Provider.EDFIN_MOVING) {
         File tempFile = new File(Storage.getPrimaryStorage().getPodcastDir(), Long.toString(epId));
         try {
           Log.i(TAG, "Moving file from " + tempFile + " to " + downloadLocation);
@@ -217,10 +218,10 @@ public class BackgroundOperations extends IntentService {
     return duration;
   }
 
-  private void setDownloadErrorCode(long episodeId, int dFinValue, @NonNull ContentValues cv) {
-    Log.e(TAG, "Download failed. Error code: " + dFinValue);
+  private void setDownloadErrorCode(long episodeId, int dlFinValue, @NonNull ContentValues cv) {
+    Log.e(TAG, "Download failed. Error code: " + dlFinValue);
     cv.put(Provider.K_EDFIN, Provider.EDFIN_ERROR);
-    cv.put(Provider.K_EERROR, "Download failed. Error code: " + dFinValue);
+    cv.put(Provider.K_EERROR, "Download failed. Error code: " + dlFinValue);
     getContentResolver().update(Provider.getUri(Provider.T_EPISODE, episodeId), cv, null, null);
   }
 
@@ -283,13 +284,15 @@ public class BackgroundOperations extends IntentService {
       outChannel = new FileOutputStream(destination).getChannel();
       inChannel.transferTo(0, inChannel.size(), outChannel);
     } finally {
-      if (inChannel != null)
+      if (inChannel != null) {
         inChannel.close();
+      }
       if (!source.delete()) {
         Log.e(TAG, "Failed to delete source " + source);
       }
-      if (outChannel != null)
+      if (outChannel != null) {
         outChannel.close();
+      }
     }
   }
 }
