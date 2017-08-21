@@ -33,7 +33,7 @@ public class PodListenApp extends DebuggableApp implements Application.ActivityL
     return instance;
   }
 
-  public static Context getContext() {
+  public static Application getContext() {
     if (instance == null) {
       Log.wtf("APP", "Getting context before Application.onCreate()", new NullPointerException());
     }

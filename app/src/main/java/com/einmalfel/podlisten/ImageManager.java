@@ -1,5 +1,6 @@
 package com.einmalfel.podlisten;
 
+import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,14 +33,13 @@ public class ImageManager {
   private static ImageManager instance;
 
   private final LruCache<Long, Bitmap> memoryCache;
-  private final Context context;
 
   @NonNull
   public static ImageManager getInstance() {
     if (instance == null) {
       synchronized (ImageManager.class) {
         if (instance == null) {
-          instance = new ImageManager();
+          instance = new ImageManager(PodListenApp.getContext());
         }
       }
     }
@@ -204,8 +204,7 @@ public class ImageManager {
     return size;
   }
 
-  private ImageManager() {
-    context = PodListenApp.getContext();
+  private ImageManager(@NonNull Application context) {
     widthPx = UnitConverter.getInstance().dpToPx(WIDTH_DP);
     Point displaySize = new Point();
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
