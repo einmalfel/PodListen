@@ -98,7 +98,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
       }
       int subscribed = urls.size();
       for (final String feedUrl : urls) {
-        if (PodcastHelper.getInstance().trySubscribe(feedUrl, acRoot, refreshMode) == 0) {
+        if (PodcastHelper.trySubscribe(feedUrl, acRoot, refreshMode, getContext()) == 0) {
           subscribed--;
         }
       }
@@ -118,7 +118,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
       // Parser exception means this is not well formed OPML
       // Subscribe button is only enabled if urlText contains valid url, so treat it as direct link
       // to feed
-      long id = PodcastHelper.getInstance().trySubscribe(link, view, refreshMode);
+      long id = PodcastHelper.trySubscribe(link, view, refreshMode, getContext());
       if (id != 0) {
         PodlistenAccount.getInstance().refresh(id);
         dismiss();

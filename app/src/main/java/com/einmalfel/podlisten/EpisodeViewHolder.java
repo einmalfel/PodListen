@@ -230,7 +230,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
         || id != this.id) {
       StringBuilder timeSize = new StringBuilder();
       if (length > 0) {
-        timeSize.append(PodcastHelper.getInstance().shortFormatDurationMs(length));
+        timeSize.append(PodcastHelper.shortFormatDurationMs(length, context));
         timeSize.append(" ");
       }
       if (size > 1024) {

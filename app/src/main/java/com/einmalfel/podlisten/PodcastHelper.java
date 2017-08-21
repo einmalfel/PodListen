@@ -27,9 +27,10 @@ import java.util.Locale;
 public class PodcastHelper {
   private static final String TAG = "EPM";
   private static final int TIMEOUT_MS = 15000;
-  private static PodcastHelper instance;
-  private final Context context = PodListenApp.getContext();
-  private final ContentResolver resolver = context.getContentResolver();
+
+  private PodcastHelper() {
+    throw new UnsupportedOperationException();
+  }
 
   static URLConnection openConnectionWithTimeout(URL url) throws IOException {
     URLConnection result = url.openConnection();
@@ -49,18 +50,6 @@ public class PodcastHelper {
     return result;
   }
 
-  //  not making synchronized method to speed up access
-  public static PodcastHelper getInstance() {
-    if (instance == null) {
-      synchronized (PodcastHelper.class) {
-        if (instance == null) {
-          instance = new PodcastHelper();
-        }
-      }
-    }
-    return instance;
-  }
-
   public static long generateId(@NonNull String url) {
     return (long) url.hashCode() - Integer.MIN_VALUE;
   }
@@ -78,7 +67,7 @@ public class PodcastHelper {
   }
 
   @NonNull
-  public String shortFormatDurationMs(long milliseconds) {
+  public static String shortFormatDurationMs(long milliseconds, @NonNull Context context) {
     long minutes = milliseconds / 60 / 1000;
     long hours = minutes / 60;
     return (hours > 0 ? hours + context.getString(R.string.hour_abbreviation) : "")
@@ -95,10 +84,10 @@ public class PodcastHelper {
     }
     int exp = (int) (Math.log(bytes) / Math.log(unit));
     String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
-    return String.format(Locale.getDefault(),"%d%sB", (int) (bytes / Math.pow(unit, exp)), pre);
+    return String.format(Locale.getDefault(), "%d%sB", (int) (bytes / Math.pow(unit, exp)), pre);
   }
 
-  public class SubscriptionNotInsertedException extends Throwable {
+  public static class SubscriptionNotInsertedException extends Throwable {
   }
 
   /**
@@ -108,12 +97,14 @@ public class PodcastHelper {
    * @return ID of podcast or zero if already subscribed
    * @throws SubscriptionNotInsertedException if failed to insert subscription into db
    */
-  public long addSubscription(String url, @NonNull RefreshMode refreshMode)
+  public static long addSubscription(String url, @NonNull RefreshMode refreshMode,
+                                     @NonNull Context context)
       throws SubscriptionNotInsertedException {
     if (!url.toLowerCase(Locale.ROOT).matches("^\\w+://.*")) {
       url = "http://" + url;
       Log.w(TAG, "Feed download protocol defaults to http, new url: " + url);
     }
+    ContentResolver resolver = context.getContentResolver();
     long id = generateId(url);
     Cursor cursor = resolver.query(
         Provider.getUri(Provider.T_PODCAST, id), null, null, null, null);
@@ -137,10 +128,10 @@ public class PodcastHelper {
     }
   }
 
-  long trySubscribe(@NonNull String url, @Nullable View container,
-                    @NonNull RefreshMode refreshMode) {
+  static long trySubscribe(@NonNull String url, @Nullable View container,
+                           @NonNull RefreshMode refreshMode, @NonNull Context context) {
     try {
-      long result = addSubscription(url, refreshMode);
+      long result = addSubscription(url, refreshMode, context);
       if (result == 0 && container != null) {
         Snackbar.make(container,
                       context.getString(R.string.podcast_already_subscribed, url),
