@@ -32,7 +32,7 @@
             android:maxLines="2"
             android:minLines="2"
             android:textColor="@color/text_bright"
-            android:textSize="15sp"/>
+            android:textSize="@dimen/list_element_title_text_size"/>
 
         <TextView
             android:id="@+id/podcast_url"
@@ -45,7 +45,7 @@
             android:layout_marginStart="75dp"
             android:autoLink="all"
             android:singleLine="true"
-            android:textSize="11sp"/>
+            android:textSize="@dimen/list_element_subtitle_text_size"/>
 
         <TextView
             android:id="@+id/podcast_status"
@@ -57,7 +57,7 @@
             android:layout_marginRight="75sp"
             android:layout_marginStart="75dp"
             android:singleLine="true"
-            android:textSize="11sp"/>
+            android:textSize="@dimen/list_element_subtitle_text_size"/>
 
         <ImageView
             android:id="@+id/podcast_image"
@@ -108,7 +108,7 @@
             android:layout_below="@id/description_divider"
             android:linksClickable="true"
             android:singleLine="true"
-            android:textSize="13sp"/>
+            android:textSize="@dimen/list_element_description_text_size"/>
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>
