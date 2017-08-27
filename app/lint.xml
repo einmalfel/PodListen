@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="ClickableViewAccessibility">
+        <ignore path="src/main/java/com/einmalfel/podlisten/MainActivity.java"/>
+    </issue>
+</lint>
