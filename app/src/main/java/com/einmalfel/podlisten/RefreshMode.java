@@ -19,7 +19,6 @@ public enum RefreshMode {
   LAST_50(R.string.refresh_mode_last_50),
   LAST_100(R.string.refresh_mode_last_100);
 
-  private static final Context context = PodListenApp.getContext();
   private final int stringId;
 
 
@@ -27,9 +26,8 @@ public enum RefreshMode {
     this.stringId = stringId;
   }
 
-  @Override
   @NonNull
-  public String toString() {
+  public String toString(@NonNull Context context) {
     return context.getResources().getString(stringId);
   }
 

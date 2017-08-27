@@ -1,6 +1,7 @@
 package com.einmalfel.podlisten;
 
 
+import android.app.Application;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -53,7 +54,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   private static WidgetHelper instance;
 
   private final PlayerLocalConnection connection = new PlayerLocalConnection(this);
-  private final Context context = PodListenApp.getContext();
+  private final Application context = PodListenApp.getContext();
   private final ComponentName receiverComponent = new ComponentName(context, WidgetProvider.class);
   private final AppWidgetManager awm = AppWidgetManager.getInstance(context);
   private final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);

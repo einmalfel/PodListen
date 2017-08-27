@@ -2,6 +2,7 @@ package com.einmalfel.podlisten;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
@@ -9,7 +10,7 @@ import android.os.Bundle;
 public class PodlistenAccount {
   private static PodlistenAccount instance;
 
-  private final Context context = PodListenApp.getContext();
+  private final Application context = PodListenApp.getContext();
   private final String appId = context.getResources().getString(R.string.app_id);
   // cannot derive from Account - instance will be send to sync framework in form of parcel
   private final Account account = new Account(appId, appId);
