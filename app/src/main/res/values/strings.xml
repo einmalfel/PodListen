@@ -2,9 +2,14 @@
     <string name="app_name">PodListen</string>
     <string name="enable_download_manager">Podlisten needs \'Download manager\' system app to load episodes. Please, enable it in Settings->Apps->All></string>
 
-    <!--google play doesn't allow title to contain more than 30 symbols-->
+    <!-- GPLAY STRINGS
+    Strings in this comment are not used in application. They go to app's google play page.
+    Please, translate them to.
+
+    Google play doesn't allow title to contain more than 30 symbols
     <string name="google_play_title">PodListen - free podcast app</string>
-    <!--short description is limited to 80 symbols-->
+
+    Short description is limited to 80 symbols
     <string name="google_play_short_description">Free and open source podcast player with lightweight interface.</string>
     <string name="google_play_long_description">Main idea behind this app is to set podcast listening  free from inconvenience of switching between screens and going through menus. Instead, all navigation in PodListen is done by simply swiping between 3 tabs, basic actions are done with single tap.
 
@@ -25,6 +30,7 @@ Podcast search feature is planned for an update.
 
 PodListen source code is available at https://github.com/einmalfel/PodListen under GPL-3.0 license.
 If you encounter a bug or come up with a feature request, please open an issue on github.</string>
+    -->
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">PodListen</string>
     <string name="enable_download_manager">Podlisten treba \'Download manager\' sistemsku aplikaciju kako bi učitavao epizode. Molim, omogućite ju u Postavke->Aplikacije->Sve></string>
+
+    <!-- GPLAY STRINGS
     <string name="google_play_title">PodListen - slobodna podcast aplikacija</string>
     <string name="google_play_short_description">Besplatan podcast sviraš otvorenog koda s laganim sučeljem.</string>
     <string name="google_play_long_description">Glavna ideja ove aplikacije je omogućavanje slušanja podcasta slobodno od nezgodnog prebacivanja među ekranima i prolaženja po menuima. Umjesto toga, sva navigacija u PodListen-u vrši se jednostavnim povlačenjem između 3 taba, osnovne akcije vrše se pomoću samo jednog dodira.
@@ -22,6 +24,7 @@ Pretraživanje podcasta planira se za nadogradnju.
 
 Izvorni kod PodListen-a je dostupan na https://github.com/einmalfel/PodListen pod GPL-3.0 licencom.
 Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</string>
+    -->
 
     <string name="ok">U redu</string>
     <string name="cancel">Odustani</string>

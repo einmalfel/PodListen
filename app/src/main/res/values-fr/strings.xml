@@ -2,9 +2,10 @@
     <string name="app_name">PodListen</string>
     <string name="enable_download_manager">Podlisten a besoin de l\'application système \'Download manager\' afin de pouvoir télécharger les podcasts. Veuillez l\'activer dans Paramètres->Applications->Toutes les applications</string>
 
-    <!--google play doesn't allow title to contain more than 30 symbols-->
+    <!-- GPLAY STRINGS
+    Google play doesn't allow title to contain more than 30 symbols
     <string name="google_play_title">PodListen - Application libre de lecture de podcasts</string>
-    <!--short description is limited to 80 symbols-->
+    Short description is limited to 80 symbols
     <string name="google_play_short_description">Application de lecture de podcasts, libre et au code source disponible avec une interface légère.</string>
     <string name="google_play_long_description">Ce qui nous a principalement guidé dans l\'éloboration de cette application est de pouvoir écouter et gérer des podcasts sans se perdre dans de multiples écrans et menus. Ainsi, toute la navigation dans Podlisten se fait simplement en balayant entre 3 onglets, les actions de base se faisant en un seul appui.
 
@@ -25,6 +26,7 @@ La possibilité de rechercher des podcasts est prévue et sera ajoutée dans une
 
 Le code source de PodListen est disponible à cette adresse https://github.com/einmalfel/PodListen sous licence GPL-3.0.
 Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formuler une demande sur github.</string>
+    -->
 
     <string name="ok">OK</string>
     <string name="cancel">Annuler</string>
