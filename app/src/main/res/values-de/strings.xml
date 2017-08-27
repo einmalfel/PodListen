@@ -81,7 +81,6 @@ If you encounter a bug or come up with a feature request, please open an issue o
     <string name="subscribe_dialog_edit_text_hint">Podcast URL hier einfügen</string>
     <string name="subscribe_dialog_on_first_load_text">Anzahl hinzuzufügender Episoden:</string>
     <string name="subscribe_dialog_subscribe_button">ABONNIEREN</string>
-    <string name="subscribe_dialog_install_file_manager">Bitte "file manager" installieren um diese Funktion zu benutzen.</string>
     <string name="subscribe_dialog_opml_failed">Das Abonnieren aller Feeds dieses OPML\'s ist Fehlgeschlagen</string>
     <string name="subscribe_dialog_opml_subscriptions_added">"Abonnements hinzugefügt: %1$d/%2$d"</string>
     <string name="subscribe_dialog_opml_empty">Dieses OPML enthält keine Feeds</string>

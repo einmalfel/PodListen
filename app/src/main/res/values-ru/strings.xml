@@ -63,7 +63,6 @@
 
     <string name="subscribe_dialog_edit_text_hint">Введите ссылку на подкаст</string>
     <string name="subscribe_dialog_import_opml">Импорт из OPML</string>
-    <string name="subscribe_dialog_install_file_manager">Пожалуйста, установите файл-менеджер</string>
     <string name="subscribe_dialog_on_first_load_text">Сколько эпизодов добавить изначально:</string>
     <string name="subscribe_dialog_opml_empty">Этот OPML не содержит потоков</string>
     <string name="subscribe_dialog_opml_failed">Не удалось подписаться ни на один поток</string>

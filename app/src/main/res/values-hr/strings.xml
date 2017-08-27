@@ -81,7 +81,6 @@ Nađete li grešku ili smislite funkciju, molim otvorite "issue" na github-u.</s
     <string name="subscribe_dialog_edit_text_hint">Zalijepi URL podcasta ovdje</string>
     <string name="subscribe_dialog_on_first_load_text">Koliko epizoda dodati:</string>
     <string name="subscribe_dialog_subscribe_button">PRETPLATI SE</string>
-    <string name="subscribe_dialog_install_file_manager">Molim instalirajte upravitelj datoteka kako biste koristili ovu funkciju.</string>
     <string name="subscribe_dialog_opml_failed">Neuspjela pretplata na sve feedove ovog OPML-a</string>
     <string name="subscribe_dialog_opml_subscriptions_added">"Dodane pretplate: %1$d/%2$d"</string>
     <string name="subscribe_dialog_opml_empty">Ovaj OPML ne sadrži ni jedan feed</string>
