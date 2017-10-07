@@ -415,7 +415,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
           SubscribeDialog.show(null, getSupportFragmentManager());
           break;
         case REFRESH:
-          PodlistenAccount.getInstance().refresh(0);
+          PodlistenAccount.getInstance(this).refresh(0);
           break;
         case SORT:
           Preferences preferences = Preferences.getInstance();

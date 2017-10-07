@@ -102,7 +102,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
           subscribed--;
         }
       }
-      PodlistenAccount.getInstance().refresh(0);
+      PodlistenAccount.getInstance(getContext()).refresh(0);
       if (subscribed > 0) {
         Snackbar.make(
             acRoot,
@@ -120,7 +120,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
       // to feed
       long id = PodcastHelper.trySubscribe(link, view, refreshMode, getContext());
       if (id != 0) {
-        PodlistenAccount.getInstance().refresh(id);
+        PodlistenAccount.getInstance(getContext()).refresh(id);
         dismiss();
       }
     }

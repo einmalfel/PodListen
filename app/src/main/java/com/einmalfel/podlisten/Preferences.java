@@ -287,7 +287,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private void clearStorage() {
     DownloadReceiver.stopDownloads(null);
 
-    PodlistenAccount account = PodlistenAccount.getInstance();
+    PodlistenAccount account = PodlistenAccount.getInstance(context);
     account.setupSync(0);
     account.cancelRefresh();
 
@@ -386,7 +386,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         RefreshIntervalOption newRi = readEnum(Key.REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
         if (newRi != refreshInterval) {
           refreshInterval = newRi;
-          PodlistenAccount.getInstance().setupSync(refreshInterval.periodSeconds);
+          PodlistenAccount.getInstance(context).setupSync(refreshInterval.periodSeconds);
         }
         break;
       case STORAGE_PATH:
