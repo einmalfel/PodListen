@@ -10,7 +10,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 /**
  * This class is intended to encapsulate preferences names and default values
@@ -392,7 +392,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         String storagePreferenceString = sharedPrefs.getString(Key.STORAGE_PATH.toString(), "");
         if (storagePreferenceString.isEmpty()) {
           // by default, if there are removable storages use first removable, otherwise use last one
-          List<Storage> storages = Storage.getWritableStorages();
+          Set<Storage> storages = Storage.getWritableStorages();
           storage = Storage.getPrimaryStorage();
           for (Storage storageOption : storages) {
             storage = storageOption;

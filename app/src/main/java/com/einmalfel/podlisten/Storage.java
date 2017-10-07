@@ -9,10 +9,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 public class Storage {
@@ -35,11 +32,14 @@ public class Storage {
    *     obtained from getExternalDirs, then dirs from environment variables
    */
   @NonNull
-  public static List<Storage> getWritableStorages() {
-    List<Storage> result = new LinkedList<>();
+  public static LinkedHashSet<Storage> getWritableStorages() {
+    LinkedHashSet<Storage> result = new LinkedHashSet<>();
     Set<File> dirs = new LinkedHashSet<>();
-    dirs.add(new File(Environment.getExternalStorageDirectory(), APP_FILES));
-    dirs.addAll(Arrays.asList(ContextCompat.getExternalFilesDirs(PodListenApp.getContext(), null)));
+    // calling getCanonicalFile to ensure no symbolic links are processed
+    dirs.add(new File(tryGetCanonicalFile(Environment.getExternalStorageDirectory()), APP_FILES));
+    for (File dir : ContextCompat.getExternalFilesDirs(PodListenApp.getContext(), null)) {
+      dirs.add(tryGetCanonicalFile(dir));
+    }
     for (String env : new String[]{"EXTERNAL_STORAGE", "SECONDARY_STORAGE",
                                    "EXTERNAL_SDCARD_STORAGE", "SECOND_VOLUME_STORAGE",
                                    "THIRD_VOLUME_STORAGE"}) {
@@ -49,7 +49,7 @@ public class Storage {
           File storageDir = new File(path);
           // filter legacy out. Download to thais dir fails on CyanogenMod because of perm. problems
           if (!path.startsWith("/storage/emulated/legacy") && storageDir.isDirectory()) {
-            File filesDir = new File(storageDir, APP_FILES);
+            File filesDir = tryGetCanonicalFile(new File(storageDir, APP_FILES));
             if (dirs.add(filesDir)) {
               Log.i(TAG, "Found storage via environment variable: " + filesDir);
             }
@@ -234,5 +234,16 @@ public class Storage {
   @Override
   public int hashCode() {
     return appFilesDir.hashCode();
+  }
+
+  @NonNull
+  private static File tryGetCanonicalFile(@NonNull File file) {
+    File result = null;
+    try {
+      result = file.getCanonicalFile();
+    } catch (IOException ioException) {
+      Log.e(TAG, "Failed to get canonical of " + file + ":" + Log.getStackTraceString(ioException));
+    }
+    return result == null ? file : result;
   }
 }

@@ -9,7 +9,7 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
-import java.util.List;
+import java.util.Set;
 
 public class PreferencesFragment extends PreferenceFragmentCompat {
   @Override
@@ -37,10 +37,11 @@ public class PreferencesFragment extends PreferenceFragmentCompat {
 
     ListPreference storageListPref = (ListPreference) findPreference(
         Preferences.Key.STORAGE_PATH.toString());
-    List<Storage> storageOptions = Storage.getWritableStorages();
+    Set<Storage> storageOptions = Storage.getWritableStorages();
     String[] optionStrings = new String[storageOptions.size()];
-    for (int i = 0; i < storageOptions.size(); i++) {
-      optionStrings[i] = storageOptions.get(i).toString();
+    int index = 0;
+    for (Storage storageOption : storageOptions) {
+      optionStrings[index++] = storageOption.toString();
     }
     storageListPref.setEntries(optionStrings);
     storageListPref.setEntryValues(optionStrings);
