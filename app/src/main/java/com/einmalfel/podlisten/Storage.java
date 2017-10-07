@@ -137,23 +137,9 @@ public class Storage {
   }
 
   public void cleanup() {
-    File[] podcasts = getPodcastDir().listFiles();
-    File[] images = getImagesDir().listFiles();
-    File[] dirs = appFilesDir.listFiles();
-    File appDir = appFilesDir.getParentFile();
-    // if there no other data in */Android/data, try to rm it too
-    File dataDir = appDir.getParentFile();
-    File androidDir = dataDir.getParentFile();
-
-    for (File[] fileArray : new File[][]{
-        podcasts, images, dirs, new File[]{appFilesDir, appDir, dataDir, androidDir}}) {
-      if (fileArray != null) {
-        for (File file : fileArray) {
-          if (file.exists() && (!file.isDirectory() || file.list().length == 0) && !file.delete()) {
-            Log.e(TAG, "Failed to delete " + file.getAbsolutePath());
-          }
-        }
-      }
+    for (File dir : new File[]{getPodcastDir(), getImagesDir(), appFilesDir,
+                               appFilesDir.getParentFile()}) {
+      deleteRecursively(dir);
     }
   }
 
@@ -245,5 +231,23 @@ public class Storage {
       Log.e(TAG, "Failed to get canonical of " + file + ":" + Log.getStackTraceString(ioException));
     }
     return result == null ? file : result;
+  }
+
+  private static boolean deleteRecursively(@NonNull File file) {
+    if (file.isDirectory()) {
+      String[] subFileNames = file.list();
+      if (subFileNames != null) { // seen null here on api-24 emulator
+        for (String subFileName : subFileNames) {
+          if (!deleteRecursively(new File(subFileName))) {
+            Log.e(TAG, "Failed to delete " + subFileName);
+          }
+        }
+      }
+      return file.delete();
+    } else if (file.exists()) {
+      return file.delete();
+    } else {
+      return true;
+    }
   }
 }
