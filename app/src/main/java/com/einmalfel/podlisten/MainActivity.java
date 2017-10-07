@@ -281,7 +281,7 @@ public class MainActivity extends FragmentActivity implements PlayerService.Play
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
-        sendBroadcast(new Intent(DownloadReceiver.DOWNLOAD_HEARTBEAT_ACTION));
+        sendBroadcast(DownloadReceiver.getHeartBeatIntent(MainActivity.this));
       }
     }, 0, DOWNLOAD_CHECK_PERIOD);
     fab.show();

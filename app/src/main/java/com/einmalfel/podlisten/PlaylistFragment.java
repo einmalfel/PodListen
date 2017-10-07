@@ -1,7 +1,6 @@
 package com.einmalfel.podlisten;
 
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -78,11 +77,8 @@ public class PlaylistFragment extends DebuggableFragment implements
     // - episode isn't downloaded, isn't being download (downloadId == 0), button stats download
 
     if (downloaded != Provider.EDFIN_COMPLETE) {
-      Intent bi = new Intent(DownloadReceiver.DOWNLOAD_EPISODE_ACTION);
-      bi.putExtra(DownloadReceiver.URL_EXTRA_NAME, audioUrl);
-      bi.putExtra(DownloadReceiver.TITLE_EXTRA_NAME, title);
-      bi.putExtra(DownloadReceiver.ID_EXTRA_NAME, id);
-      PodListenApp.getContext().sendBroadcast(bi);
+      PodListenApp.getContext().sendBroadcast(DownloadReceiver.getDownloadEpisodeIntent(
+          PodListenApp.getContext(), audioUrl, title, id));
     } else {
       if (conn.service != null) {
         if (id == conn.service.getEpisodeId()) {

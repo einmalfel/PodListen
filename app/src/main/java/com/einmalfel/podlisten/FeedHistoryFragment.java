@@ -2,7 +2,6 @@ package com.einmalfel.podlisten;
 
 import android.app.Dialog;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -107,7 +106,7 @@ public class FeedHistoryFragment extends DialogFragment implements
       getContext().getContentResolver().update(
           Provider.getUri(Provider.T_EPISODE, id), cv, null, null);
       if (Preferences.getInstance().getAutoDownloadMode() != Preferences.AutoDownloadMode.NEVER) {
-        getContext().sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+        getContext().sendBroadcast(DownloadReceiver.getUpdateQueueIntent(getContext()));
       }
     }
   }

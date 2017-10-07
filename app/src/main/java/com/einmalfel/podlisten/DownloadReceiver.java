@@ -25,6 +25,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.BatteryManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -36,9 +37,9 @@ import java.util.Date;
 
 public class DownloadReceiver extends BroadcastReceiver {
   private static final String TAG = "DLR";
-  static final String DOWNLOAD_HEARTBEAT_ACTION = "com.einmalfel.podlisten.DOWNLOAD_HEARTBEAT";
-  static final String UPDATE_QUEUE_ACTION = "com.einmalfel.podlisten.UPDATE_QUEUE";
-  static final String DOWNLOAD_EPISODE_ACTION = "com.einmalfel.podlisten.DOWNLOAD_EPISODE";
+  private static final String DOWNLOAD_HEARTBEAT_ACTION = "DOWNLOAD_HEARTBEAT";
+  private static final String UPDATE_QUEUE_ACTION = "UPDATE_QUEUE";
+  private static final String DOWNLOAD_EPISODE_ACTION = "DOWNLOAD_EPISODE";
   static final String URL_EXTRA_NAME = "URL";
   static final String TITLE_EXTRA_NAME = "TITLE";
   static final String ID_EXTRA_NAME = "ID";
@@ -49,6 +50,26 @@ public class DownloadReceiver extends BroadcastReceiver {
     if (charging == null) {
       charging = isDeviceCharging();
     }
+
+  @NonNull
+  public static Intent getHeartBeatIntent(@NonNull Context context) {
+    return new Intent(DOWNLOAD_HEARTBEAT_ACTION, null, context, DownloadReceiver.class);
+  }
+
+  @NonNull
+  public static Intent getUpdateQueueIntent(@NonNull Context context) {
+    return new Intent(UPDATE_QUEUE_ACTION, null, context, DownloadReceiver.class);
+  }
+
+  @NonNull
+  public static Intent getDownloadEpisodeIntent(@NonNull Context context, @NonNull String audioUrl,
+                                                @NonNull String title, long id) {
+    Intent result = new Intent(DOWNLOAD_EPISODE_ACTION, null, context, DownloadReceiver.class);
+    result.putExtra(DownloadReceiver.URL_EXTRA_NAME, audioUrl);
+    result.putExtra(DownloadReceiver.TITLE_EXTRA_NAME, title);
+    result.putExtra(DownloadReceiver.ID_EXTRA_NAME, id);
+    return result;
+
   }
 
   static boolean isDeviceCharging() {

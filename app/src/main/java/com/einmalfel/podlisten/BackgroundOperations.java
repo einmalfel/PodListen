@@ -134,7 +134,7 @@ public class BackgroundOperations extends IntentService {
     }
     cursor.close();
     if (downloadsStopped) {
-      sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+      sendBroadcast(DownloadReceiver.getUpdateQueueIntent(this));
     }
   }
 

@@ -2,7 +2,6 @@ package com.einmalfel.podlisten;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -300,7 +299,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     storage.cleanup();
 
-    context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+    context.sendBroadcast(DownloadReceiver.getUpdateQueueIntent(context));
     account.refresh(0);
     account.setupSync(getRefreshInterval().periodSeconds);
   }
@@ -332,7 +331,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         if (downloadNetwork != newDlNetwork) {
           downloadNetwork = newDlNetwork;
           DownloadReceiver.stopDownloads(null);
-          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+          context.sendBroadcast(DownloadReceiver.getUpdateQueueIntent(context));
         }
         break;
       case PAUSE_ON_DISCONNECT:
@@ -346,7 +345,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         if (newAutoDownloadAc != autoDownloadAcOnly) {
           autoDownloadAcOnly = newAutoDownloadAc;
           if (!autoDownloadAcOnly) {
-            context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+            context.sendBroadcast(DownloadReceiver.getUpdateQueueIntent(context));
           } else if (!DownloadReceiver.isDeviceCharging()) {
             DownloadReceiver.stopDownloads(null);
           }
@@ -369,7 +368,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
             DownloadReceiver.stopDownloads(null);
           }
           autoDownloadMode = newM;
-          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+          context.sendBroadcast(DownloadReceiver.getUpdateQueueIntent(context));
         }
         break;
       case SORTING_MODE:
@@ -379,7 +378,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         MaxDownloadsOption newMaxDl = readEnum(Key.MAX_DOWNLOADS, DEFAULT_MAX_DOWNLOADS);
         if (newMaxDl != maxDownloads) {
           maxDownloads = newMaxDl;
-          context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+          context.sendBroadcast(DownloadReceiver.getUpdateQueueIntent(context));
         }
         break;
       case REFRESH_INTERVAL:

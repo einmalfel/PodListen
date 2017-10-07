@@ -2,7 +2,6 @@ package com.einmalfel.podlisten;
 
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -55,7 +54,7 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
     val.put(Provider.K_ESTATE, Provider.ESTATE_IN_PLAYLIST);
     activity.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), val, null, null);
     if (Preferences.getInstance().getAutoDownloadMode() == Preferences.AutoDownloadMode.PLAYLIST) {
-      activity.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
+      activity.sendBroadcast(DownloadReceiver.getUpdateQueueIntent(activity));
     }
   }
 
