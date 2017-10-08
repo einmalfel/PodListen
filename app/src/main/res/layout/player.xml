@@ -2,10 +2,14 @@
     android:id="@+id/player"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/background_contrast"
-    app:elevation="4dp">
+    app:elevation="4dp"
+    tools:ignore="Overdraw">
+    <!--ignoring overdraw - lint erroneously reports that player background has overdraw problems.
+    In fact, player rect is being rendered two times: for activity and player backgrounds.-->
 
     <ImageView
         android:id="@+id/play_episode_image"

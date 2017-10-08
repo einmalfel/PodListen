@@ -183,6 +183,7 @@
             android:name=".SearchActivity"
             android:label="@string/search_title"
             android:parentActivityName=".MainActivity"
+            android:theme="@style/PodListenSearch"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
