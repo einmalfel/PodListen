@@ -159,8 +159,12 @@ public class Storage {
    * @throws IOException if File path couldn't be converted to canonical form
    */
   public boolean contains(File file) throws IOException {
-    File cnFile = file.getCanonicalFile();
-    return appFilesDir.equals(cnFile) || cnFile.getPath().startsWith(appFilesDir + File.separator);
+    try {
+      File cnFile = file.getCanonicalFile();
+      return appFilesDir.equals(cnFile) || cnFile.getPath().startsWith(appFilesDir + File.separator);
+    } catch (SecurityException securityException) {
+      throw new IOException(securityException);
+    }
   }
 
   public boolean isPrimaryStorage() {
