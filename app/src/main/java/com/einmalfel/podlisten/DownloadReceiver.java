@@ -173,9 +173,12 @@ public class DownloadReceiver extends BroadcastReceiver {
     Storage currentStorage = Preferences.getInstance().getStorage();
     values.put(Provider.K_EDID, 0);
     if (status == STATUS_SUCCESSFUL && !TextUtils.isEmpty(fileName) && currentStorage != null) {
+      File downloadedFile = new File(fileName);
       try {
-        values.put(Provider.K_EDFIN, currentStorage.contains(new File(fileName))
-            ? Provider.EDFIN_PROCESSING : Provider.EDFIN_MOVING);
+        values.put(
+            Provider.K_EDFIN,
+            currentStorage.contains(downloadedFile) && !currentStorage.cacheContains(downloadedFile)
+                ? Provider.EDFIN_PROCESSING : Provider.EDFIN_MOVING);
         values.put(Provider.K_EERROR, (String) null);
       } catch (IOException exception) {
         Log.wtf(TAG, "Can't convert download path to cannonical form", exception);

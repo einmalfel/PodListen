@@ -1,5 +1,6 @@
 package com.einmalfel.podlisten;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -9,6 +10,8 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -149,8 +152,39 @@ public class Storage {
   }
 
   @NonNull
+  public File getCacheDir() {
+    Context context = PodListenApp.getContext();
+    File storageDir = appFilesDir.getParentFile();
+    Set<File> candidates = new HashSet<>(
+        Arrays.asList(ContextCompat.getExternalCacheDirs(context)));
+    candidates.add(Environment.getDownloadCacheDirectory());
+    candidates.add(context.getExternalCacheDir());
+    candidates.add(context.getCacheDir());
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      candidates.addAll(Arrays.asList(ContextCompat.getExternalCacheDirs(context)));
+    }
+    for (File candidate : candidates) {
+      try {
+        if (contains(storageDir, candidate)) {
+          Log.d(TAG, "Found cache dir: " + candidate);
+          return candidate;
+        }
+      } catch (IOException ex) {
+        Log.e(TAG, "Failed to check cache " + candidate + ": " + Log.getStackTraceString(ex));
+      }
+    }
+    File fallback = new File(appFilesDir, "cache");
+    Log.w(TAG, "Falling back to " + fallback);
+    return fallback;
+  }
+
+  @NonNull
   public File getImagesDir() {
     return new File(appFilesDir, Environment.DIRECTORY_PICTURES);
+  }
+
+  public boolean cacheContains(@NonNull File file) throws IOException {
+    return contains(getCacheDir(), file);
   }
 
   /**
@@ -159,9 +193,13 @@ public class Storage {
    * @throws IOException if File path couldn't be converted to canonical form
    */
   public boolean contains(File file) throws IOException {
+    return contains(appFilesDir.getParentFile(), file);
+  }
+
+  private boolean contains(@NonNull File parent, @NonNull File child) throws IOException {
     try {
-      File cnFile = file.getCanonicalFile();
-      return appFilesDir.equals(cnFile) || cnFile.getPath().startsWith(appFilesDir + File.separator);
+      File cnFile = child.getCanonicalFile();
+      return parent.equals(cnFile) || cnFile.getPath().startsWith(parent + File.separator);
     } catch (SecurityException securityException) {
       throw new IOException(securityException);
     }
