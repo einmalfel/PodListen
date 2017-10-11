@@ -25,6 +25,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -87,21 +88,28 @@ public class DownloadReceiver extends BroadcastReceiver {
   /**
    * @return true if download request was dispatched to DownloadManager, false otherwise
    */
-  private boolean download(Context context, String url, String title, long id) {
-    Storage storage = Preferences.getInstance().getStorage();
-    if (storage == null || !storage.isAvailableRw()) {
-      Log.e(TAG, "Discarding download, as there is no storage, or it isn't writable");
-      return false;
+  private boolean download(@NonNull Context context, @NonNull String url, @NonNull String title,
+                           long id, @NonNull Storage storage) {
+    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      // trying to workaround #62: downloaded files disappear after some time on android 6+
+      return download(context, url, title, id, storage.getCacheDir());
+    } else {
+      return download(context, url, title, id, storage.getPodcastDir());
     }
+  }
 
+  private boolean download(@NonNull Context context, @NonNull String url, @NonNull String title,
+                           long id, @NonNull File directory) {
     // if file was downloaded before (e.g. partially or with error), remove it
-    File target = new File(storage.getPodcastDir(), Long.toString(id));
+    File target = new File(directory, Long.toString(id));
     if (target.exists() && !target.delete()) {
       Log.e(TAG, "Failed to delete previous download " + target);
       return false;
     }
 
     Preferences.DownloadNetwork downloadNetwork = Preferences.getInstance().getDownloadNetwork();
+    // N.B.: Seems like setDestinationInExternalFilesDir() may store download on any storage, not
+    // necessarily primary one, despite the fact documentation states the opposite
     DownloadManager.Request rq = new DownloadManager.Request(Uri.parse(url))
         .setTitle(title)
         .setAllowedOverMetered(downloadNetwork == Preferences.DownloadNetwork.ANY
@@ -123,20 +131,21 @@ public class DownloadReceiver extends BroadcastReceiver {
       } else {
         throw exception;
       }
-    } catch (SecurityException exception) {
-      if (storage.isPrimaryStorage()) {
-        throw exception;
+    } catch (SecurityException securityException) {
+      // DM doesn't support downloading to non-primary external storage if WRITE_EXTERNAL_STORAGE is
+      // not granted. On some devices it's is thrown even if the permission is granted.
+      try {
+        if (!Storage.getPrimaryStorage().contains(directory)) {
+          Log.w(TAG,
+                "DM produced security exception. Downloading to primary storage and copying",
+                securityException);
+          return download(context, url, title, id, Storage.getPrimaryStorage());
+        }
+      } catch (IOException ioException) {
+        Log.e(TAG, "Failed to check whether primary storage contains download "
+            + Log.getStackTraceString(ioException));
       }
-      Log.w(TAG,
-            "DM produced security exception. Downloading to primary storage and copying",
-            exception);
-      target = new File(Storage.getPrimaryStorage().getPodcastDir(), Long.toString(id));
-      if (target.exists() && !target.delete()) {
-        Log.e(TAG, "Failed to delete previous download " + target);
-        return false;
-      }
-      rq.setDestinationUri(Uri.fromFile(target));
-      downloadId = dlManager.enqueue(rq);
+      throw securityException;
     } catch (NullPointerException npe) {
       // By reading DownloadManager code I found that it could throw NPE when requesting download.
       // DM process provides ContentProvider, that contains state of downloads. When new download
@@ -219,6 +228,15 @@ public class DownloadReceiver extends BroadcastReceiver {
    */
   private void updateDownloadQueue(Context context, boolean force) {
     Preferences prefs = Preferences.getInstance();
+    Storage targetStorage = prefs.getStorage();
+    if (targetStorage == null) {
+      Log.e(TAG, "No storage selected, skipping downloads");
+      return;
+    }
+    if (!targetStorage.isAvailableRw()) {
+      Log.e(TAG, "Storage is not available for writing, skipping downloads");
+      return;
+    }
     if (!charging && prefs.getAutoDownloadAcOnly()) {
       return;
     }
@@ -260,8 +278,8 @@ public class DownloadReceiver extends BroadcastReceiver {
     int titleInd = queue.getColumnIndexOrThrow(Provider.K_ENAME);
     int idInd = queue.getColumnIndexOrThrow(Provider.K_ID);
     while (queue.moveToNext() && runningDownloadsCount < maxParallelDownloads) {
-      if (download(
-          context, queue.getString(urlInd), queue.getString(titleInd), queue.getLong(idInd))) {
+      if (download(context, queue.getString(urlInd), queue.getString(titleInd),
+                   queue.getLong(idInd), targetStorage)) {
         Log.d(TAG, "Updating queue : adding " + queue.getString(titleInd));
         runningDownloadsCount++;
       }
@@ -319,10 +337,20 @@ public class DownloadReceiver extends BroadcastReceiver {
           }
           break;
         case DOWNLOAD_EPISODE_ACTION:
-          download(context,
-                   intent.getStringExtra(URL_EXTRA_NAME),
-                   intent.getStringExtra(TITLE_EXTRA_NAME),
-                   intent.getLongExtra(ID_EXTRA_NAME, -1));
+          Storage targetStorage = preferences.getStorage();
+          if (targetStorage == null) {
+            Log.e(TAG, "No storage selected, skipping downloads");
+            return;
+          } else if (!targetStorage.isAvailableRw()) {
+            Log.e(TAG, "Storage is not available for writing, skipping downloads");
+            return;
+          } else {
+            download(context,
+                     intent.getStringExtra(URL_EXTRA_NAME),
+                     intent.getStringExtra(TITLE_EXTRA_NAME),
+                     intent.getLongExtra(ID_EXTRA_NAME, -1),
+                     targetStorage);
+          }
           break;
         case DOWNLOAD_HEARTBEAT_ACTION:
           updateProgress(context);

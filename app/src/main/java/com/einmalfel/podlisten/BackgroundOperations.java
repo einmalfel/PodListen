@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.File;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.util.Date;
+import java.util.LinkedList;
 
 
 public class BackgroundOperations extends IntentService {
@@ -165,7 +167,11 @@ public class BackgroundOperations extends IntentService {
       cv.put(Provider.K_EDATT, attempts + 1);
       cv.put(Provider.K_EDTSTAMP, new Date().getTime());
       if (downloadFinished == Provider.EDFIN_MOVING) {
-        File tempFile = new File(Storage.getPrimaryStorage().getPodcastDir(), Long.toString(epId));
+        File tempFile = findTempFile(epId, currentStorage);
+        if (tempFile == null) {
+          Log.e(TAG, "Failed to find temp file");
+          setDownloadErrorCode(epId, Provider.EDFIN_ERROR, cv);
+        }
         try {
           Log.i(TAG, "Moving file from " + tempFile + " to " + downloadLocation);
           moveFile(tempFile, downloadLocation);
@@ -194,6 +200,26 @@ public class BackgroundOperations extends IntentService {
       }
     }
     cursor.close();
+  }
+
+
+  /**
+   * temporary file could reside either in cache or on primary storage
+   */
+  @Nullable
+  private File findTempFile(long id, @NonNull Storage targetStorage) {
+    LinkedList<File> lookup = new LinkedList<>();
+    lookup.add(new File(targetStorage.getCacheDir(), Long.toString(id)));
+    if (!targetStorage.isPrimaryStorage()) {
+      lookup.add(new File(Storage.getPrimaryStorage().getPodcastDir(), Long.toString(id)));
+      lookup.add(new File(Storage.getPrimaryStorage().getCacheDir(), Long.toString(id)));
+    }
+    for (File file : lookup) {
+      if (file.exists()) {
+        return file;
+      }
+    }
+    return null;
   }
 
   private long getFileLength(File file) {

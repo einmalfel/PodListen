@@ -5,8 +5,9 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
-    <!-- this is is still required on kitkat if app uses download manager-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- this is is still required on some api-19+ devices if app uses download manager-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+                     android:maxSdkVersion="22"/>
 
     <application
         android:name='.PodListenApp'
