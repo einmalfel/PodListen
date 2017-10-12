@@ -31,8 +31,8 @@ public class Storage {
   }
 
   /**
-   * @return Ordered and deduplicated list of writable storages. Order: primary first, then dirs
-   *     obtained from getExternalDirs, then dirs from environment variables
+   * @return Ordered set of writable storages. Order: primary first, then dirs obtained from
+   *     getExternalDirs, then dirs from environment variables, then internal storage
    */
   @NonNull
   public static LinkedHashSet<Storage> getWritableStorages() {
@@ -79,6 +79,9 @@ public class Storage {
       dirs = filtered;
     }
 
+    // add internal after filtering, no need to check for exceptions
+    dirs.add(PodListenApp.getContext().getFilesDir());
+
     // filter out read-only storages
     for (File dir : dirs) {
       if (dir != null) { //getExternalFilesDir could return nulls for currently unavailable storages
@@ -116,6 +119,19 @@ public class Storage {
       }
     }
     return result;
+  }
+
+  @NonNull
+  public static Storage getInternalStorage() {
+    try {
+      return new Storage(PodListenApp.getContext().getFilesDir());
+    } catch (IOException exception) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        throw new AssertionError("Cant convert internal storage to canonical form", exception);
+      } else {
+        throw new AssertionError("Cant convert internal storage to canonical form");
+      }
+    }
   }
 
   @NonNull
@@ -210,6 +226,10 @@ public class Storage {
     return equals(prim) || appFilesDir.getPath().startsWith(prim.appFilesDir + File.separator);
   }
 
+  public boolean isInternalStorage() {
+    return appFilesDir.equals(PodListenApp.getContext().getFilesDir());
+  }
+
   public boolean isAvailableRead() {
     String state = getState();
     return Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)
@@ -223,10 +243,14 @@ public class Storage {
 
   @NonNull
   private String getState() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return Environment.getExternalStorageState(appFilesDir);
+    if (isInternalStorage()) {
+      return Environment.MEDIA_MOUNTED;
     } else {
-      return isPrimaryStorage() ? Environment.getExternalStorageState() : UNKNOWN_STATE;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        return Environment.getExternalStorageState(appFilesDir);
+      } else {
+        return isPrimaryStorage() ? Environment.getExternalStorageState() : UNKNOWN_STATE;
+      }
     }
   }
 
