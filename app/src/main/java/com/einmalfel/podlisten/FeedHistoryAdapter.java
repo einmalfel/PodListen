@@ -24,22 +24,22 @@ class FeedHistoryAdapter extends BaseCursorRecyclerAdapter {
   @Override
   public void onBindViewHolderCursor(RecyclerView.ViewHolder holder, Cursor cursor) {
     long id = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_ID));
-    HistoryElementHolder sHolder = (HistoryElementHolder) holder;
-    sHolder.bind(cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ENAME)),
-                 cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EDESCR)),
-                 cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ESDESCR)),
-                 cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EURL)),
-                 cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDATE)),
-                 cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_ESTATE)),
-                 cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EPLAYED)),
-                 id,
-                 expandedElements.contains(id));
+    HistoryElementHolder historyElementHolder = (HistoryElementHolder) holder;
+    historyElementHolder.bind(cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ENAME)),
+                              cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EDESCR)),
+                              cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ESDESCR)),
+                              cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_EURL)),
+                              cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EDATE)),
+                              cursor.getInt(cursor.getColumnIndexOrThrow(Provider.K_ESTATE)),
+                              cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EPLAYED)),
+                              id,
+                              expandedElements.contains(id));
   }
 
   @Override
   public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    ViewGroup v = (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(
+    ViewGroup view = (ViewGroup) LayoutInflater.from(parent.getContext()).inflate(
         R.layout.history_list_element, parent, false);
-    return new HistoryElementHolder(v, listener, this);
+    return new HistoryElementHolder(view, listener, this);
   }
 }

@@ -13,7 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-/** This class is intended to encapsulate preferences names and default values */
+/**
+ * This class is intended to encapsulate preferences names and default values
+ */
 public class Preferences implements SharedPreferences.OnSharedPreferenceChangeListener {
   enum Key {
     STORAGE_PATH,
@@ -172,7 +174,9 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
       return values()[newArrayId];
     }
 
-    /** @return at string intended to be shown in snackbar when user switches modes */
+    /**
+     * @return at string intended to be shown in snackbar when user switches modes
+     */
     @Override
     public String toString() {
       switch (this) {
@@ -238,22 +242,22 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private DownloadNetwork downloadNetwork;
   private CompleteAction completeAction;
   private JumpInterval jumpInterval;
-  private boolean autoDownloadACOnly;
+  private boolean autoDownloadAcOnly;
   private boolean playerForeground; // preserve last player service state across app kill/restarts
   @Nullable
   private String currentActivity; // current activity class name, for services in separate process
   private boolean pauseOnDisconnect;
   private boolean fixSkipEnding;
 
-  private SharedPreferences sPrefs;
+  private SharedPreferences sharedPrefs;
 
   private final Context context = PodListenApp.getContext();
 
   public Preferences() {
     // TODO make prefs synced between processes via IPC. MULTI_PROCESS is deprecated and unreliable
-    sPrefs = context.getSharedPreferences(context.getPackageName() + "_preferences",
-            Context.MODE_MULTI_PROCESS);
-    sPrefs.registerOnSharedPreferenceChangeListener(this);
+    sharedPrefs = context.getSharedPreferences(context.getPackageName() + "_preferences",
+                                               Context.MODE_MULTI_PROCESS);
+    sharedPrefs.registerOnSharedPreferenceChangeListener(this);
     for (Key key : Key.values()) {
       readPreference(key);
     }
@@ -291,7 +295,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     cv.put(Provider.K_EDID, 0);
     cv.put(Provider.K_EDFIN, 0);
     cv.put(Provider.K_EDTSTAMP, 0);
-    cv.put(Provider.K_EERROR, (String)null);
+    cv.put(Provider.K_EERROR, (String) null);
     context.getContentResolver().update(Provider.episodeUri, cv, null, null);
 
     storage.cleanup();
@@ -304,12 +308,13 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   @NonNull
   private <T extends Enum<T>> T readEnum(@NonNull Key key, @NonNull T defaultValue) {
     try {
-      String pref = sPrefs.getString(key.toString(), "-1");
+      String pref = sharedPrefs.getString(key.toString(), "-1");
       int id = Integer.valueOf(pref);
       return defaultValue.getDeclaringClass().getEnumConstants()[id];
-    } catch (ClassCastException | ArrayIndexOutOfBoundsException | NumberFormatException e) {
-      Log.e(TAG, "Illegal enum value, reverting to default: " + defaultValue.toString(), e);
-      sPrefs.edit().putString(key.toString(), Integer.toString(defaultValue.ordinal())).commit();
+    } catch (ClassCastException | ArrayIndexOutOfBoundsException | NumberFormatException ex) {
+      Log.e(TAG, "Illegal enum value, reverting to default: " + defaultValue.toString(), ex);
+      sharedPrefs.edit().putString(key.toString(), Integer.toString(defaultValue.ordinal()))
+                 .commit();
       return defaultValue;
     }
   }
@@ -318,28 +323,29 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     switch (key) {
       case JUMP_INTERVAL:
         jumpInterval = readEnum(Key.JUMP_INTERVAL, DEFAULT_JUMP_INTERVAL);
+        break;
       case COMPLETE_ACTION:
         completeAction = readEnum(Key.COMPLETE_ACTION, DEFAULT_COMPLETE_ACTION);
         break;
       case DOWNLOAD_NETWORK:
-        DownloadNetwork newDLNetwork = readEnum(Key.DOWNLOAD_NETWORK, DEFAULT_DOWNLOAD_NETWORK);
-        if (downloadNetwork != newDLNetwork) {
-          downloadNetwork = newDLNetwork;
+        DownloadNetwork newDlNetwork = readEnum(Key.DOWNLOAD_NETWORK, DEFAULT_DOWNLOAD_NETWORK);
+        if (downloadNetwork != newDlNetwork) {
+          downloadNetwork = newDlNetwork;
           DownloadReceiver.stopDownloads(null);
           context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
         }
         break;
       case PAUSE_ON_DISCONNECT:
-        pauseOnDisconnect = sPrefs.getBoolean(Key.PAUSE_ON_DISCONNECT.toString(), true);
+        pauseOnDisconnect = sharedPrefs.getBoolean(Key.PAUSE_ON_DISCONNECT.toString(), true);
         break;
       case FIX_SKIP_ENDING:
-        fixSkipEnding = sPrefs.getBoolean(Key.FIX_SKIP_ENDING.toString(), false);
+        fixSkipEnding = sharedPrefs.getBoolean(Key.FIX_SKIP_ENDING.toString(), false);
         break;
       case AUTO_DOWNLOAD_AC:
-        boolean newAutoDownloadAC = sPrefs.getBoolean(Key.AUTO_DOWNLOAD_AC.toString(), false);
-        if (newAutoDownloadAC != autoDownloadACOnly) {
-          autoDownloadACOnly = newAutoDownloadAC;
-          if (!autoDownloadACOnly) {
+        boolean newAutoDownloadAc = sharedPrefs.getBoolean(Key.AUTO_DOWNLOAD_AC.toString(), false);
+        if (newAutoDownloadAc != autoDownloadAcOnly) {
+          autoDownloadAcOnly = newAutoDownloadAc;
+          if (!autoDownloadAcOnly) {
             context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
           } else if (!DownloadReceiver.isDeviceCharging()) {
             DownloadReceiver.stopDownloads(null);
@@ -347,10 +353,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         }
         break;
       case PLAYER_FOREGROUND:
-        playerForeground = sPrefs.getBoolean(Key.PLAYER_FOREGROUND.toString(), false);
+        playerForeground = sharedPrefs.getBoolean(Key.PLAYER_FOREGROUND.toString(), false);
         break;
       case CURRENT_ACTIVITY:
-        currentActivity = sPrefs.getString(Key.CURRENT_ACTIVITY.toString(), null);
+        currentActivity = sharedPrefs.getString(Key.CURRENT_ACTIVITY.toString(), null);
         Log.e(TAG, "read " + currentActivity);
         break;
       case AUTO_DOWNLOAD:
@@ -370,21 +376,21 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         sortingMode = readEnum(Key.SORTING_MODE, DEFAULT_SORTING_MODE);
         break;
       case MAX_DOWNLOADS:
-        MaxDownloadsOption newMaxDL = readEnum(Key.MAX_DOWNLOADS, DEFAULT_MAX_DOWNLOADS);
-        if (newMaxDL != maxDownloads) {
-          maxDownloads = newMaxDL;
+        MaxDownloadsOption newMaxDl = readEnum(Key.MAX_DOWNLOADS, DEFAULT_MAX_DOWNLOADS);
+        if (newMaxDl != maxDownloads) {
+          maxDownloads = newMaxDl;
           context.sendBroadcast(new Intent(DownloadReceiver.UPDATE_QUEUE_ACTION));
         }
         break;
       case REFRESH_INTERVAL:
-        RefreshIntervalOption newRI = readEnum(Key.REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
-        if (newRI != refreshInterval) {
-          refreshInterval = newRI;
+        RefreshIntervalOption newRi = readEnum(Key.REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
+        if (newRi != refreshInterval) {
+          refreshInterval = newRi;
           PodlistenAccount.getInstance().setupSync(refreshInterval.periodSeconds);
         }
         break;
       case STORAGE_PATH:
-        String storagePreferenceString = sPrefs.getString(Key.STORAGE_PATH.toString(), "");
+        String storagePreferenceString = sharedPrefs.getString(Key.STORAGE_PATH.toString(), "");
         if (storagePreferenceString.isEmpty()) {
           // by default, if there are removable storages use first removable, otherwise use last one
           List<Storage> storages = Storage.getWritableStorages();
@@ -397,7 +403,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
           }
           try {
             storage.createSubdirs();
-            sPrefs.edit().putString(Key.STORAGE_PATH.toString(), storage.toString()).commit();
+            sharedPrefs.edit().putString(Key.STORAGE_PATH.toString(), storage.toString()).commit();
           } catch (IOException exception) {
             Log.wtf(TAG, "Failed to init storage known to be writable " + storage, exception);
           }
@@ -409,17 +415,18 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
               clearStorage();
             }
             storage = newStorage;
-          } catch (IOException e) {
+          } catch (IOException ioException) {
             Log.wtf(
-                TAG, "Failed to set storage " + storagePreferenceString + ". Reverting to prev", e);
-            sPrefs.edit().putString(
+                TAG,
+                "Failed to set storage " + storagePreferenceString + ". Reverting to prev",
+                ioException);
+            sharedPrefs.edit().putString(
                 Key.STORAGE_PATH.toString(), storage == null ? "" : storage.toString()).commit();
           }
         }
         break;
       default:
-        Log.e(TAG, "Unexpected key received: " + key);
-        break;
+        throw new AssertionError("Unexpected key " + key);
     }
   }
 
@@ -444,13 +451,13 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   }
 
   public void setSortingMode(SortingMode sortingMode) {
-    sPrefs.edit()
-          .putString(Key.SORTING_MODE.toString(), Integer.toString(sortingMode.ordinal()))
-          .commit();
+    sharedPrefs.edit()
+               .putString(Key.SORTING_MODE.toString(), Integer.toString(sortingMode.ordinal()))
+               .apply();
   }
 
   public void setPlayerForeground(boolean playerServicePlaying) {
-    sPrefs.edit().putBoolean(Key.PLAYER_FOREGROUND.toString(), playerServicePlaying).commit();
+    sharedPrefs.edit().putBoolean(Key.PLAYER_FOREGROUND.toString(), playerServicePlaying).commit();
   }
 
   public boolean getPlayerForeground() {
@@ -458,23 +465,23 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   }
 
   public void setCurrentActivity(@Nullable String currentActivity) {
-    sPrefs.edit().putString(Key.CURRENT_ACTIVITY.toString(), currentActivity).commit();
+    sharedPrefs.edit().putString(Key.CURRENT_ACTIVITY.toString(), currentActivity).commit();
   }
 
   @Nullable
   public String getCurrentActivity(boolean sync) {
     if (sync) { // TODO remove this, make preferences synchronized between processes via IPC
       // need to re-get shared preferences object to cause reloading of preferences file
-      sPrefs = context.getSharedPreferences(context.getPackageName() + "_preferences",
-                                            Context.MODE_MULTI_PROCESS);
+      sharedPrefs = context.getSharedPreferences(context.getPackageName() + "_preferences",
+                                                 Context.MODE_MULTI_PROCESS);
       readPreference(Key.CURRENT_ACTIVITY);
     }
     return currentActivity;
   }
 
 
-  public boolean getAutoDownloadACOnly() {
-    return autoDownloadACOnly;
+  public boolean getAutoDownloadAcOnly() {
+    return autoDownloadAcOnly;
   }
 
   @NonNull

@@ -50,7 +50,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private int downloaded = -1;
   private int state;
   private String title;
-  private String aURL;
+  private String audioUrl;
 
   public EpisodeViewHolder(final View layout,
                            final EpisodeListAdapter.ItemClickListener listener,
@@ -73,24 +73,24 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     View relativeLayout = layout.findViewById(R.id.card_layout);
     relativeLayout.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
+      public void onClick(View view) {
         adapter.setExpanded(id, !expanded, getAdapterPosition());
       }
     });
     relativeLayout.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
-      public boolean onLongClick(View v) {
+      public boolean onLongClick(View view) {
         return listener.onLongTap(
             EpisodeViewHolder.this.id, EpisodeViewHolder.this.title, EpisodeViewHolder.this.state,
-            EpisodeViewHolder.this.aURL, EpisodeViewHolder.this.downloaded);
+            EpisodeViewHolder.this.audioUrl, EpisodeViewHolder.this.downloaded);
       }
     });
     playAddFrame.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
+      public void onClick(View view) {
         listener.onButtonTap(
             EpisodeViewHolder.this.id, EpisodeViewHolder.this.title, EpisodeViewHolder.this.state,
-            EpisodeViewHolder.this.aURL, EpisodeViewHolder.this.downloaded);
+            EpisodeViewHolder.this.audioUrl, EpisodeViewHolder.this.downloaded);
       }
     });
 
@@ -134,9 +134,9 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   public void bindEpisode(String title, String description, long id, long pid, long size, int state,
                           String feedTitle, long played, long length, long date, int downloaded,
                           String shortDescr, String errorMessage, PlayerService.State playerState,
-                          String url, long downloadId, String aURL, boolean expanded) {
+                          String url, long downloadId, String audioUrl, boolean expanded) {
     if (errorMessage == null) {
-      episdoeUrlView.setText(TextUtils.isEmpty(url) ? aURL : url);
+      episdoeUrlView.setText(TextUtils.isEmpty(url) ? audioUrl : url);
       episdoeUrlView.setTextColor(ContextCompat.getColor(
           context, playerState.isStopped() ? R.color.text : R.color.text_bright));
     } else {
@@ -195,8 +195,8 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       } else {
         progressBar.getProgressDrawable().setColorFilter(loadingFilter);
       }
-      if (downloaded == Provider.EDFIN_MOVING || downloaded == Provider.EDFIN_PROCESSING ||
-          (downloadId != 0 && downloaded == 0)) {
+      if (downloaded == Provider.EDFIN_MOVING || downloaded == Provider.EDFIN_PROCESSING
+          || (downloadId != 0 && downloaded == 0)) {
         progressBar.setIndeterminate(true);
       } else {
         progressBar.setIndeterminate(false);
@@ -228,8 +228,8 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
       }
     }
 
-    if ((downloaded == Provider.EDFIN_COMPLETE && this.downloaded != Provider.EDFIN_COMPLETE) ||
-        id != this.id) {
+    if ((downloaded == Provider.EDFIN_COMPLETE && this.downloaded != Provider.EDFIN_COMPLETE)
+        || id != this.id) {
       StringBuilder timeSize = new StringBuilder();
       if (length > 0) {
         timeSize.append(PodcastHelper.getInstance().shortFormatDurationMs(length));
@@ -258,6 +258,6 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     this.downloaded = downloaded;
     this.title = title;
     this.state = state;
-    this.aURL = aURL;
+    this.audioUrl = audioUrl;
   }
 }

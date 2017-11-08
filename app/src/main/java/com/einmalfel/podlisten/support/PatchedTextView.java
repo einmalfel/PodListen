@@ -26,7 +26,7 @@ public class PatchedTextView extends TextView {
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     try {
       super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    } catch (ArrayIndexOutOfBoundsException e) {
+    } catch (ArrayIndexOutOfBoundsException toSuppress) {
       setText(getText().toString());
       super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
@@ -36,7 +36,7 @@ public class PatchedTextView extends TextView {
   public void setGravity(int gravity) {
     try {
       super.setGravity(gravity);
-    } catch (ArrayIndexOutOfBoundsException e) {
+    } catch (ArrayIndexOutOfBoundsException toSuppress) {
       setText(getText().toString());
       super.setGravity(gravity);
     }
@@ -46,7 +46,7 @@ public class PatchedTextView extends TextView {
   public void setText(CharSequence text, BufferType type) {
     try {
       super.setText(text, type);
-    } catch (ArrayIndexOutOfBoundsException e) {
+    } catch (ArrayIndexOutOfBoundsException toSuppress) {
       setText(text.toString());
     }
   }

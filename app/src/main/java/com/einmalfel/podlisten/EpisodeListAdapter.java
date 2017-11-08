@@ -12,9 +12,9 @@ public class EpisodeListAdapter extends BaseCursorRecyclerAdapter<EpisodeViewHol
     /**
      * @return true if event was consumed
      */
-    boolean onLongTap(long id, String title, int state, String aURL, int downloaded);
+    boolean onLongTap(long id, String title, int state, String audioUrl, int downloaded);
 
-    void onButtonTap(long id, String title, int state, String aURL, int downloaded);
+    void onButtonTap(long id, String title, int state, String audioUrl, int downloaded);
   }
 
   private static final String TAG = "ELA";
@@ -72,8 +72,8 @@ public class EpisodeListAdapter extends BaseCursorRecyclerAdapter<EpisodeViewHol
 
   @Override
   public EpisodeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    View v = LayoutInflater.from(parent.getContext())
+    View view = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.episode_list_element, parent, false);
-    return new EpisodeViewHolder(v, listener, this);
+    return new EpisodeViewHolder(view, listener, this);
   }
 }

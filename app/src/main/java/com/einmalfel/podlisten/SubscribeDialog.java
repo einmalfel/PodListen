@@ -74,15 +74,14 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
           urlText.setText(data.getStringExtra(SearchActivity.RSS_URL_EXTRA));
           break;
         default:
-          Log.e(TAG, "Unexpected requestCode received: " + requestCode);
-          break;
+          throw new AssertionError("Unexpected request id: " + requestCode);
       }
     }
   }
 
   /** subscribe button onClick */
   @Override
-  public void onClick(View v) {
+  public void onClick(View view) {
     // Dialog may become invisible after this click. Attach snackbars to activity root view.
     final View acRoot = getActivity().getWindow().getDecorView().findViewById(R.id.tabbed_frame);
 
@@ -93,9 +92,9 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
       if (inputStream == null) {
         throw new FileNotFoundException();
       }
-      List<String> urls = parseOPML(inputStream);
+      List<String> urls = parseOpml(inputStream);
       if (urls.isEmpty()) {
-        Snackbar.make(v, R.string.subscribe_dialog_opml_empty, Snackbar.LENGTH_LONG);
+        Snackbar.make(view, R.string.subscribe_dialog_opml_empty, Snackbar.LENGTH_LONG);
         return;
       }
       int subscribed = urls.size();
@@ -113,14 +112,14 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
         dismiss();
       } else {
         Snackbar.make(
-            v, R.string.subscribe_dialog_opml_failed, Snackbar.LENGTH_LONG).show();
+            view, R.string.subscribe_dialog_opml_failed, Snackbar.LENGTH_LONG).show();
       }
     } catch (XmlPullParserException | IOException exception) {
       // IOException means url doesn't point to local file or content provider.
       // Parser exception means this is not well formed OPML
       // Subscribe button is only enabled if urlText contains valid url, so treat it as direct link
       // to feed
-      long id = PodcastHelper.getInstance().trySubscribe(link, v, refreshMode);
+      long id = PodcastHelper.getInstance().trySubscribe(link, view, refreshMode);
       if (id != 0) {
         PodlistenAccount.getInstance().refresh(id);
         dismiss();
@@ -129,7 +128,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
   }
 
   @NonNull
-  private List<String> parseOPML(@NonNull InputStream inputStream)
+  private List<String> parseOpml(@NonNull InputStream inputStream)
       throws XmlPullParserException, IOException {
     List<String> result = new LinkedList<>();
     XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
@@ -158,17 +157,17 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     urlText.addTextChangedListener(new TextWatcher() {
 
       @Override
-      public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+      public void beforeTextChanged(CharSequence string, int start, int count, int after) {}
 
       @Override
-      public void onTextChanged(CharSequence s, int start, int before, int count) {
-        boolean valid = URLUtil.isValidUrl(completeUrlString(s));
+      public void onTextChanged(CharSequence string, int start, int before, int count) {
+        boolean valid = URLUtil.isValidUrl(completeUrlString(string));
         subscribeButton.setEnabled(valid);
         subscribeButton.setAlpha(valid ? 1f : .3f);
       }
 
       @Override
-      public void afterTextChanged(Editable s) {}
+      public void afterTextChanged(Editable editable) {}
     });
     final Bundle arguments = getArguments();
     urlText.setText(arguments == null ? "" : arguments.getString(URL_ARG, ""));
@@ -177,7 +176,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     Button searchButton = (Button) result.findViewById(R.id.search_button);
     searchButton.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
+      public void onClick(View view) {
         startActivityForResult(new Intent(getContext(), SearchActivity.class), SEARCH_REQUEST_ID);
       }
     });
@@ -185,7 +184,7 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
     Button openFileButton = (Button) result.findViewById(R.id.open_file_button);
     openFileButton.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
+      public void onClick(View view) {
         Intent intent = new Intent(getContext(), FilePickerActivity.class);
         intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
         intent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);

@@ -115,9 +115,9 @@ public class SearchActivity extends AppCompatActivity
   }
 
   @Override
-  public void onPodcastButtonTap(String rss_url) {
+  public void onPodcastButtonTap(String rssUrl) {
     Intent intent = new Intent();
-    intent.putExtra(RSS_URL_EXTRA, rss_url);
+    intent.putExtra(RSS_URL_EXTRA, rssUrl);
     setResult(Activity.RESULT_OK, intent);
     finish();
   }

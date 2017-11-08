@@ -21,7 +21,6 @@ import android.widget.RemoteViews;
  * Should already be instantiated by the moment of playback launch, so it is set up when:
  * - there is active app widget (WidgetProvider.onEnabled)
  * - PlayService is in foreground
- *
  * PodListen widget contains episode image. I consider it a bad practice to
  * serialize-send-deserialize the image on each widget update, cause this happens at least at 2 Hz
  * (playback progress updates).
@@ -43,7 +42,9 @@ import android.widget.RemoteViews;
  * itself will be functional.
  */
 public class WidgetHelper implements PlayerService.PlayerStateListener {
-  enum WidgetAction {PLAY_PAUSE, SEEK_FORWARD, SEEK_BACKWARD, NEXT_EPISODE, STOP}
+  enum WidgetAction {
+    PLAY_PAUSE, SEEK_FORWARD, SEEK_BACKWARD, NEXT_EPISODE, STOP
+  }
 
   private static final String TAG = "WGH";
   private static final int INTENT_ID_LAUNCH_ACTIVITY = 100;
@@ -76,7 +77,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
     rvFull.setOnClickPendingIntent(R.id.play_options, getIntent(context, WidgetAction.STOP));
     rvFull.setImageViewResource(R.id.play_options, R.mipmap.ic_close_white_36dp);
     builder.setSmallIcon(R.drawable.logo).setPriority(NotificationCompat.PRIORITY_LOW)
-            .setOngoing(true).setCategory(NotificationCompat.CATEGORY_SERVICE);
+           .setOngoing(true).setCategory(NotificationCompat.CATEGORY_SERVICE);
     connection.bind();
   }
 
@@ -111,8 +112,8 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
 
     if (episodeId == 0) {
       rv.setTextViewText(R.id.play_title,
-                         context.getString(state == PlayerService.State.STOPPED_EMPTY ?
-                                               R.string.player_empty : R.string.player_stopped));
+                         context.getString(state == PlayerService.State.STOPPED_EMPTY
+                                               ? R.string.player_empty : R.string.player_stopped));
       activityIntent.removeExtra(MainActivity.EPISODE_ID_OPTION);
     } else {
       activityIntent.putExtra(MainActivity.EPISODE_ID_OPTION, episodeId);
@@ -140,13 +141,11 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   }
 
   public boolean processIntent(Intent intent) {
-    WidgetAction action = null;
+    WidgetAction action;
 
     try {
       action = WidgetAction.valueOf(intent.getAction());
-    } catch (IllegalArgumentException | NullPointerException ignored) {}
-
-    if (action == null) {
+    } catch (IllegalArgumentException | NullPointerException ignored) {
       return false;
     }
 
@@ -177,8 +176,7 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
         connection.service.stop();
         break;
       default:
-        Log.e(TAG, "Unexpected action received: " + action);
-        break;
+        throw new AssertionError("Action " + action);
     }
   }
 
@@ -195,8 +193,8 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
   }
 
   private void updateNotification(RemoteViews rv) {
-    if (connection.service != null &&
-        connection.service.getState() != PlayerService.State.STOPPED) {
+    if (connection.service != null
+        && connection.service.getState() != PlayerService.State.STOPPED) {
       connection.service.updateNotification(builder.setContent(rv).build());
     }
   }
@@ -248,19 +246,19 @@ public class WidgetHelper implements PlayerService.PlayerStateListener {
       title = "";
       podcastId = 0;
     } else {
-      Cursor c = context.getContentResolver().query(
+      Cursor cursor = context.getContentResolver().query(
           Provider.getUri(Provider.T_EPISODE, episodeId),
           new String[]{Provider.K_ENAME, Provider.K_EPID},
           null, null, null);
-      if (c != null) {
-        if (c.moveToFirst()) {
-          title = c.getString(c.getColumnIndexOrThrow(Provider.K_ENAME));
-          podcastId = c.getLong(c.getColumnIndexOrThrow(Provider.K_EPID));
+      if (cursor != null) {
+        if (cursor.moveToFirst()) {
+          title = cursor.getString(cursor.getColumnIndexOrThrow(Provider.K_ENAME));
+          podcastId = cursor.getLong(cursor.getColumnIndexOrThrow(Provider.K_EPID));
         } else {
           title = context.getString(R.string.player_episode_does_not_exist, episodeId);
           podcastId = 0;
         }
-        c.close();
+        cursor.close();
       } else {
         Log.wtf(TAG, "Unexpectedly got null cursor from content provider", new AssertionError());
       }

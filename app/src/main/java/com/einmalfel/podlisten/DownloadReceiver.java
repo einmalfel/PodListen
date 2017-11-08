@@ -1,5 +1,21 @@
 package com.einmalfel.podlisten;
 
+import static android.app.DownloadManager.ACTION_DOWNLOAD_COMPLETE;
+import static android.app.DownloadManager.ACTION_NOTIFICATION_CLICKED;
+import static android.app.DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR;
+import static android.app.DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP;
+import static android.app.DownloadManager.COLUMN_LOCAL_FILENAME;
+import static android.app.DownloadManager.COLUMN_REASON;
+import static android.app.DownloadManager.COLUMN_STATUS;
+import static android.app.DownloadManager.COLUMN_TOTAL_SIZE_BYTES;
+import static android.app.DownloadManager.EXTRA_DOWNLOAD_ID;
+import static android.app.DownloadManager.STATUS_FAILED;
+import static android.app.DownloadManager.STATUS_PAUSED;
+import static android.app.DownloadManager.STATUS_PENDING;
+import static android.app.DownloadManager.STATUS_RUNNING;
+import static android.app.DownloadManager.STATUS_SUCCESSFUL;
+import static android.content.Context.DOWNLOAD_SERVICE;
+
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -9,7 +25,6 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.BatteryManager;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -42,15 +57,18 @@ public class DownloadReceiver extends BroadcastReceiver {
     if (batteryStatus == null) {
       return false; // If we failed to get state, it's safer to assume that device is not charging
     } else {
-      int s = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-      return s == BatteryManager.BATTERY_STATUS_CHARGING || s == BatteryManager.BATTERY_STATUS_FULL;
+      int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+      return status == BatteryManager.BATTERY_STATUS_CHARGING
+          || status == BatteryManager.BATTERY_STATUS_FULL;
     }
   }
 
-  /** @return true if download request was dispatched to DownloadManager, false otherwise */
+  /**
+   * @return true if download request was dispatched to DownloadManager, false otherwise
+   */
   private boolean download(Context context, String url, String title, long id) {
     Storage storage = Preferences.getInstance().getStorage();
-    if (storage == null || !storage.isAvailableRW()) {
+    if (storage == null || !storage.isAvailableRw()) {
       Log.e(TAG, "Discarding download, as there is no storage, or it isn't writable");
       return false;
     }
@@ -65,37 +83,39 @@ public class DownloadReceiver extends BroadcastReceiver {
     Preferences.DownloadNetwork downloadNetwork = Preferences.getInstance().getDownloadNetwork();
     DownloadManager.Request rq = new DownloadManager.Request(Uri.parse(url))
         .setTitle(title)
-        .setAllowedOverMetered(downloadNetwork == Preferences.DownloadNetwork.ANY ||
-                                   downloadNetwork == Preferences.DownloadNetwork.NON_ROAMING)
+        .setAllowedOverMetered(downloadNetwork == Preferences.DownloadNetwork.ANY
+                                   || downloadNetwork == Preferences.DownloadNetwork.NON_ROAMING)
         .setAllowedOverRoaming(downloadNetwork == Preferences.DownloadNetwork.ANY)
         .setDestinationUri(Uri.fromFile(target))
         .setDescription(context.getString(R.string.episode_downloading, url))
         .setVisibleInDownloadsUi(false)
         .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
 
-    DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+    DownloadManager dlManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
     long downloadId;
     try {
-      downloadId = dM.enqueue(rq);
-    } catch (IllegalArgumentException e) {
-      if ("Unknown URL content://downloads/my_downloads".equals(e.getMessage())) {
+      downloadId = dlManager.enqueue(rq);
+    } catch (IllegalArgumentException exception) {
+      if ("Unknown URL content://downloads/my_downloads".equals(exception.getMessage())) {
         Toast.makeText(context, R.string.enable_download_manager, Toast.LENGTH_LONG).show();
         return false;
       } else {
-        throw e;
+        throw exception;
       }
-    } catch (SecurityException e) {
+    } catch (SecurityException exception) {
       if (storage.isPrimaryStorage()) {
-        throw e;
+        throw exception;
       }
-      Log.w(TAG, "DM produced security exception. Downloading to primary storage and copying", e);
+      Log.w(TAG,
+            "DM produced security exception. Downloading to primary storage and copying",
+            exception);
       target = new File(Storage.getPrimaryStorage().getPodcastDir(), Long.toString(id));
       if (target.exists() && !target.delete()) {
         Log.e(TAG, "Failed to delete previous download " + target);
         return false;
       }
       rq.setDestinationUri(Uri.fromFile(target));
-      downloadId = dM.enqueue(rq);
+      downloadId = dlManager.enqueue(rq);
     } catch (NullPointerException npe) {
       // By reading DownloadManager code I found that it could throw NPE when requesting download.
       // DM process provides ContentProvider, that contains state of downloads. When new download
@@ -114,28 +134,27 @@ public class DownloadReceiver extends BroadcastReceiver {
   }
 
   private void processDownloadResult(Context context, long downloadId) {
-    DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-    Cursor c = dM.query(new DownloadManager.Query().setFilterById(downloadId));
-    if (c == null || !c.moveToFirst()) {
+    DownloadManager dlManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
+    Cursor cursor = dlManager.query(new DownloadManager.Query().setFilterById(downloadId));
+    if (cursor == null || !cursor.moveToFirst()) {
       Log.i(TAG, "DownloadManager query failed");
-      if (c != null) {
-        c.close();
+      if (cursor != null) {
+        cursor.close();
       }
       return;
     }
-    int status = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
-    String fileName = c.getString(c.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_FILENAME));
-    int reason = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON));
-    c.close();
+    int status = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STATUS));
+    String fileName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCAL_FILENAME));
+    int reason = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_REASON));
+    cursor.close();
 
     ContentValues values = new ContentValues(3);
     Storage currentStorage = Preferences.getInstance().getStorage();
     values.put(Provider.K_EDID, 0);
-    if (status == DownloadManager.STATUS_SUCCESSFUL && !TextUtils.isEmpty(fileName) &&
-        currentStorage != null) {
+    if (status == STATUS_SUCCESSFUL && !TextUtils.isEmpty(fileName) && currentStorage != null) {
       try {
-        values.put(Provider.K_EDFIN, currentStorage.contains(new File(fileName)) ?
-            Provider.EDFIN_PROCESSING : Provider.EDFIN_MOVING);
+        values.put(Provider.K_EDFIN, currentStorage.contains(new File(fileName))
+            ? Provider.EDFIN_PROCESSING : Provider.EDFIN_MOVING);
         values.put(Provider.K_EERROR, (String) null);
       } catch (IOException exception) {
         Log.wtf(TAG, "Can't convert download path to cannonical form", exception);
@@ -149,17 +168,17 @@ public class DownloadReceiver extends BroadcastReceiver {
     }
     if (context.getContentResolver().update(
         Provider.episodeUri, values, Provider.K_EDID + " == " + downloadId, null) == 1) {
-      BackgroundOperations.handleDownloads(context);
+      BackgroundOperations.startHandleDownloads(context);
     } else {
       Log.e(TAG, "Failed to update dp row for download " + downloadId);
     }
   }
 
   private int getRunningCount(Context context) {
-    DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+    DownloadManager dlManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
     DownloadManager.Query query = new DownloadManager.Query().setFilterByStatus(
-        DownloadManager.STATUS_PAUSED | DownloadManager.STATUS_PENDING | DownloadManager.STATUS_RUNNING);
-    Cursor cursor = dM.query(query);
+        STATUS_PAUSED | STATUS_PENDING | STATUS_RUNNING);
+    Cursor cursor = dlManager.query(query);
     if (cursor == null) {
       Log.wtf(TAG, "Download manager query failed", new NullPointerException());
       return Integer.MAX_VALUE; // to prevent starting of new downloads
@@ -172,11 +191,11 @@ public class DownloadReceiver extends BroadcastReceiver {
 
   /**
    * @param context to run db queries and to get DownloadManager instance
-   * @param force   if false, failed downloads won't be restarted more often than 1/refresh period
+   * @param force if false, failed downloads won't be restarted more often than 1/refresh period
    */
   private void updateDownloadQueue(Context context, boolean force) {
     Preferences prefs = Preferences.getInstance();
-    if (!charging && prefs.getAutoDownloadACOnly()) {
+    if (!charging && prefs.getAutoDownloadAcOnly()) {
       return;
     }
     if (prefs.getAutoDownloadMode() == Preferences.AutoDownloadMode.NEVER) {
@@ -188,9 +207,9 @@ public class DownloadReceiver extends BroadcastReceiver {
       return;
     }
 
-    String condition = Provider.K_EDID + " == 0 AND " + Provider.K_EDFIN + " NOT IN (" +
-        Provider.EDFIN_COMPLETE + ", " + Provider.EDFIN_MOVING + ", " + Provider.EDFIN_PROCESSING +
-        ") AND ";
+    String condition = Provider.K_EDID + " == 0 AND " + Provider.K_EDFIN + " NOT IN ("
+        + Provider.EDFIN_COMPLETE + ", " + Provider.EDFIN_MOVING + ", " + Provider.EDFIN_PROCESSING
+        + ") AND ";
     if (prefs.getAutoDownloadMode() == Preferences.AutoDownloadMode.PLAYLIST) {
       condition += Provider.K_ESTATE + " == " + Provider.ESTATE_IN_PLAYLIST;
     } else {
@@ -238,13 +257,13 @@ public class DownloadReceiver extends BroadcastReceiver {
       if (cursor.getCount() != 0) {
         long[] ids = new long[cursor.getCount()];
         int columnId = cursor.getColumnIndexOrThrow(Provider.K_EDID);
-        int i = 0;
+        int index = 0;
         while (cursor.moveToNext()) {
-          ids[i++] = cursor.getLong(columnId);
+          ids[index++] = cursor.getLong(columnId);
         }
 
-        DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        int removeResult = dM.remove(ids);
+        DownloadManager dlManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
+        int removeResult = dlManager.remove(ids);
         if (removeResult != ids.length) {
           Log.e(TAG, "Failed to delete " + (ids.length - removeResult) + " downloads");
         }
@@ -271,7 +290,7 @@ public class DownloadReceiver extends BroadcastReceiver {
           break;
         case Intent.ACTION_POWER_DISCONNECTED:
           charging = false;
-          if (preferences.getAutoDownloadACOnly()) {
+          if (preferences.getAutoDownloadAcOnly()) {
             stopDownloads(null);
           }
           break;
@@ -287,70 +306,69 @@ public class DownloadReceiver extends BroadcastReceiver {
         case UPDATE_QUEUE_ACTION:
           updateDownloadQueue(context, true);
           break;
-        case DownloadManager.ACTION_NOTIFICATION_CLICKED:
-          Intent i = new Intent(context, MainActivity.class)
+        case ACTION_NOTIFICATION_CLICKED:
+          Intent activityIntet = new Intent(context, MainActivity.class)
               .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          context.startActivity(i);
+          context.startActivity(activityIntet);
           break;
-        case DownloadManager.ACTION_DOWNLOAD_COMPLETE:
+        case ACTION_DOWNLOAD_COMPLETE:
           processDownloadResult(context,
-                                intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L));
+                                intent.getLongExtra(EXTRA_DOWNLOAD_ID, 0L));
           updateDownloadQueue(context, false);
           break;
         default:
-          Log.e(TAG, "Unexpected intent received: " + intent);
-          break;
+          throw new AssertionError("Unexpected action " + intent.getAction());
       }
     }
   }
 
   private void updateProgress(Context context) {
     //TODO call this asynchronously
-    Cursor c = context.getContentResolver().query(
+    Cursor epsCursor = context.getContentResolver().query(
         Provider.episodeUri,
         new String[]{Provider.K_ID, Provider.K_EDID},
         Provider.K_EDID + " != 0",
         null,
         null);
-    while (c.moveToNext()) {
-      long downLoadId = c.getLong(c.getColumnIndexOrThrow(Provider.K_EDID));
-      long id = c.getLong(c.getColumnIndexOrThrow(Provider.K_ID));
-      DownloadManager dM = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-      Cursor q = dM.query(new DownloadManager.Query().setFilterById(downLoadId));
-      if (q != null && q.moveToFirst()) {
-        int state = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
+    while (epsCursor.moveToNext()) {
+      long downLoadId = epsCursor.getLong(epsCursor.getColumnIndexOrThrow(Provider.K_EDID));
+      long id = epsCursor.getLong(epsCursor.getColumnIndexOrThrow(Provider.K_ID));
+      DownloadManager dlManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
+      Cursor dlCursor = dlManager.query(new DownloadManager.Query().setFilterById(downLoadId));
+      if (dlCursor != null && dlCursor.moveToFirst()) {
+        int state = dlCursor.getInt(dlCursor.getColumnIndexOrThrow(COLUMN_STATUS));
         // WORKAROUND: sometimes ACTION_DOWNLOAD_COMPLETE is somehow not received (or there was an
         // exception in callback), so handle there episodes completed more than a minute ago
-        if (state == DownloadManager.STATUS_SUCCESSFUL || state == DownloadManager.STATUS_FAILED) {
-          long t = q
-              .getLong(q.getColumnIndexOrThrow(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP));
-          if (System.currentTimeMillis() - t > 60000) {
+        if (state == STATUS_SUCCESSFUL || state == STATUS_FAILED) {
+          long timestamp = dlCursor.getLong(
+              dlCursor.getColumnIndexOrThrow(COLUMN_LAST_MODIFIED_TIMESTAMP));
+          if (System.currentTimeMillis() - timestamp > 60000) {
             Log.e(TAG, "Found lost completed download, processing " + downLoadId);
             processDownloadResult(context, downLoadId);
           }
         } else {
-          int got = q
-              .getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-          int total = q.getInt(q.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+          int got = dlCursor.getInt(dlCursor.getColumnIndexOrThrow(COLUMN_BYTES_DOWNLOADED_SO_FAR));
+          int total = dlCursor.getInt(dlCursor.getColumnIndexOrThrow(COLUMN_TOTAL_SIZE_BYTES));
           // ignore dubious data. E.g. sometimes it reports total size is -1B or 128B
           if (got > 0 && total > 1000 && total > got) {
-            ContentValues v = new ContentValues(2);
-            v.put(Provider.K_EDFIN, 99L * got / total);
-            v.put(Provider.K_ESIZE, total);
+            ContentValues values = new ContentValues(2);
+            values.put(Provider.K_EDFIN, 99L * got / total);
+            values.put(Provider.K_ESIZE, total);
             context.getContentResolver().update(
-                Provider.getUri(Provider.T_EPISODE, id), v, null, null);
+                Provider.getUri(Provider.T_EPISODE, id), values, null, null);
           }
         }
       } else {
         Log.e(TAG, "Failed to obtain download info for episode " + id + ". Resetting K_EDID to 0");
-        ContentValues v = new ContentValues(2);
-        v.put(Provider.K_EDID, 0);
-        context.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), v, null, null);
+        ContentValues values = new ContentValues(2);
+        values.put(Provider.K_EDID, 0);
+        context.getContentResolver().update(
+            Provider.getUri(Provider.T_EPISODE, id), values, null, null);
       }
-      if (q != null) {
-        q.close();
+      if (dlCursor != null) {
+        dlCursor.close();
       }
     }
-    c.close();
+    epsCursor.close();
   }
 }

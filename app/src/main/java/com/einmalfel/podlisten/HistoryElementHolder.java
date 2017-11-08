@@ -39,14 +39,14 @@ public class HistoryElementHolder extends RecyclerView.ViewHolder {
     button = (ImageButton) layout.findViewById(R.id.episode_button);
     button.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
+      public void onClick(View view) {
         listener.onEpisodeButtonTap(id, state);
       }
     });
     View relativeLayout = layout.findViewById(R.id.card_layout);
     relativeLayout.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
+      public void onClick(View view) {
         adapter.setExpanded(id, !expanded, getAdapterPosition());
       }
     });

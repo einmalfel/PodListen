@@ -29,12 +29,12 @@ public class PreferencesActivity extends AppCompatActivity {
   private static final SimpleDateFormat RFC822DATEFORMAT
           = new SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US);
   private static final String[] directoryMimeTypes = new String[]{
-          "application/x-directory",
-          "resource/folder",
-          "x-directory/normal",
-          "inode/directory",
-          "application/folder",
-          "vnd.android.cursor.item/file"
+      "application/x-directory",
+      "resource/folder",
+      "x-directory/normal",
+      "inode/directory",
+      "application/folder",
+      "vnd.android.cursor.item/file"
   };
   private final Preferences preferences = Preferences.getInstance();
 
@@ -42,11 +42,11 @@ public class PreferencesActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    android.support.v4.app.FragmentManager fM = getSupportFragmentManager();
-    if (fM.findFragmentById(android.R.id.content) == null) {
-      fM.beginTransaction()
-        .add(android.R.id.content, new PreferencesFragment())
-        .commit();
+    android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+    if (fragmentManager.findFragmentById(android.R.id.content) == null) {
+      fragmentManager.beginTransaction()
+                     .add(android.R.id.content, new PreferencesFragment())
+                     .commit();
     }
 
     setTitle(getString(R.string.preferences_title));
@@ -78,34 +78,38 @@ public class PreferencesActivity extends AppCompatActivity {
             Log.e(TAG, "Directory for OPML export doesn't exist " + dir);
           }
           final File target = new File(dir, getString(R.string.opml_export_file_name));
-          if (exportToOPML(target)) {
-            AlertDialog.Builder b = new AlertDialog.Builder(this);
-            b.setTitle(getString(R.string.opml_dialog_title))
-             .setMessage(String.format(getString(R.string.opml_dialog_message), target))
-             .setNegativeButton(R.string.opml_dialog_done, null);
+          if (exportToOpml(target)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.opml_dialog_title))
+                   .setMessage(String.format(getString(R.string.opml_dialog_message), target))
+                   .setNegativeButton(R.string.opml_dialog_done, null);
 
             final Intent sendIntent = new Intent(Intent.ACTION_SEND);
             sendIntent.setType("file/*");
             sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(target));
             if (sendIntent.resolveActivity(getPackageManager()) != null) {
-              b.setPositiveButton(R.string.opml_dialog_send, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                  startActivity(sendIntent);
-                }
-              });
+              builder.setPositiveButton(
+                  R.string.opml_dialog_send,
+                  new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                      startActivity(sendIntent);
+                    }
+                  });
             }
 
             if (showDirectory(dir, true)) {
-              b.setNeutralButton(R.string.opml_dialog_FMapp, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                  showDirectory(dir, false);
-                }
-              });
+              builder.setNeutralButton(
+                  R.string.opml_dialog_FMapp,
+                  new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                      showDirectory(dir, false);
+                    }
+                  });
             }
 
-            b.show();
+            builder.show();
           } else {
             Snackbar.make(findViewById(android.R.id.content),
                           R.string.preferences_opml_export_failed,
@@ -119,7 +123,7 @@ public class PreferencesActivity extends AppCompatActivity {
     }
   }
 
-  private boolean exportToOPML(File file) {
+  private boolean exportToOpml(File file) {
     XmlSerializer serializer = Xml.newSerializer();
     try {
       if (!file.exists() && !file.createNewFile()) {
@@ -185,7 +189,9 @@ public class PreferencesActivity extends AppCompatActivity {
         try {
           startActivity(showFolderIntent);
           return true;
-        } catch (ActivityNotFoundException ignored) {}
+        } catch (ActivityNotFoundException ignored) {
+          // it's ok, just try next mime type
+        }
       }
     }
     return false;

@@ -1,4 +1,4 @@
-package com.einmalfel.podlisten;
+package com.einmalfel.podlisten.thirdparty;
 
 /*
  * The MIT License (MIT)

@@ -117,9 +117,9 @@ public class CatalogueFragment extends Fragment {
         if (terms.length == 0 || (terms.length == 1 && terms[0].equals(""))) {
           query = "SELECT * FROM " + CAT_NAME + " WHERE title != ?";
         } else {
-          query = "SELECT " + CAT_NAME + ".* FROM " + FTS_NAME + " JOIN " + CAT_NAME + " WHERE " +
-              FTS_NAME + "." + K_DOCID + " == " + CAT_NAME + "." + K_ID + " AND " + FTS_NAME +
-              " match ?";
+          query = "SELECT " + CAT_NAME + ".* FROM " + FTS_NAME + " JOIN " + CAT_NAME + " WHERE "
+              + FTS_NAME + "." + K_DOCID + " == " + CAT_NAME + "." + K_ID + " AND " + FTS_NAME
+              + " match ?";
 
           // optimization: don't sort results if number of terms is big (slow WHERE processing) or
           // all terms are short (i.e. a lots of results)
@@ -135,14 +135,15 @@ public class CatalogueFragment extends Fragment {
           }
         }
 
-        Cursor c = null;
+        Cursor cursor = null;
         try {
-          c = db.rawQuery(query, new String[]{TextUtils.join(" ", terms)});
-          c.getCount();// need this to trigger SQLiteException if there are problems with this query
-          sendQueryResult(c);
+          cursor = db.rawQuery(query, new String[]{TextUtils.join(" ", terms)});
+          // need this to trigger SQLiteException if there are problems with this query
+          cursor.getCount();
+          sendQueryResult(cursor);
         } catch (SQLiteException exception) {
-          if (c != null) {
-            c.close();
+          if (cursor != null) {
+            cursor.close();
           }
           Log.i(TAG, "User query couldn't be used for MATCH. Returning null");
           sendQueryResult(null);
@@ -171,14 +172,14 @@ public class CatalogueFragment extends Fragment {
       Log.i(TAG, "Generating FTS DB");
       db.beginTransaction();
       try {
-        db.execSQL("CREATE VIRTUAL TABLE IF NOT EXISTS " + FTS_NAME +
-                       " USING fts4(title, description, web_url)");
+        db.execSQL("CREATE VIRTUAL TABLE IF NOT EXISTS " + FTS_NAME
+                       + " USING fts4(title, description, web_url)");
         Cursor catalogue = db.query(
             CAT_NAME,
             new String[]{K_ID, K_TITLE, K_DESCRIPTION, K_WEB},
             null, null, null, null, null);
         ContentValues cv = new ContentValues(4);
-        int iDiD = catalogue.getColumnIndexOrThrow(K_ID);
+        int idId = catalogue.getColumnIndexOrThrow(K_ID);
         int titleId = catalogue.getColumnIndexOrThrow(K_TITLE);
         int descriptionId = catalogue.getColumnIndexOrThrow(K_DESCRIPTION);
         int webId = catalogue.getColumnIndexOrThrow(K_WEB);
@@ -187,7 +188,7 @@ public class CatalogueFragment extends Fragment {
           if (catalogue.getPosition() % recordsPerPercent == 0) {
             reportProgress(catalogue.getPosition() / recordsPerPercent);
           }
-          cv.put(K_DOCID, catalogue.getLong(iDiD));
+          cv.put(K_DOCID, catalogue.getLong(idId));
           cv.put(K_TITLE, catalogue.getString(titleId).toLowerCase());
           String description = catalogue.getString(descriptionId);
           if (description != null) {

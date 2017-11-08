@@ -42,8 +42,8 @@ public class PodcastListAdapter extends BaseCursorRecyclerAdapter<PodcastViewHol
 
   @Override
   public PodcastViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    View v = LayoutInflater.from(parent.getContext())
-                           .inflate(R.layout.podcast_list_element, parent, false);
-    return new PodcastViewHolder(v, listener, this);
+    View view = LayoutInflater.from(parent.getContext())
+                              .inflate(R.layout.podcast_list_element, parent, false);
+    return new PodcastViewHolder(view, listener, this);
   }
 }

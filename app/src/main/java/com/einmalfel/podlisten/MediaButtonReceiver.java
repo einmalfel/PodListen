@@ -47,7 +47,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
     }
   }
 
-  static private synchronized boolean handleButton(Intent intent) {
+  private static synchronized boolean handleButton(Intent intent) {
     KeyEvent ev = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
     if (service == null || ev.getAction() != KeyEvent.ACTION_DOWN || ev.getRepeatCount() != 0) {
       return false;

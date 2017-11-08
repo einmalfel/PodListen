@@ -53,41 +53,43 @@ class SyncWorker implements Runnable {
 
   // patterns from android.utils.Patterns with \s appended to begin and end of pattern to not match
   // links that are already inside tags. Also, capturing groups replaced with non-capturing
-  private static final String GOOD_IRI_CHAR = "a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF";
+  private static final String GOOD_IRI_CHAR =
+      "a-zA-Z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF"; // no idea what these unicode symbols are
   private static final String IP_ADDRESS =
-          "(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(?:25[0-5]|2[0-4]"
-                  + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1]"
-                  + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
-                  + "|[1-9][0-9]|[0-9]))";
+      "(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(?:25[0-5]|2[0-4]"
+          + "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1]"
+          + "[0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}"
+          + "|[1-9][0-9]|[0-9]))";
   private static final String IRI =
-          "[" + GOOD_IRI_CHAR + "](?:[" + GOOD_IRI_CHAR + "\\-]{0,61}[" + GOOD_IRI_CHAR + "])?";
-  private static final String GTLD = "[a-zA-Z\u00C0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,63}";
+      "[" + GOOD_IRI_CHAR + "](?:[" + GOOD_IRI_CHAR + "\\-]{0,61}[" + GOOD_IRI_CHAR + "])?";
+  private static final String GTLD =
+      "[a-zA-Z\u00C0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{2,63}"; // no idea what these UTF symbols are
   private static final String HOST_NAME = "(?:" + IRI + "\\.)+" + GTLD;
   private static final String DOMAIN_NAME = "(?:" + HOST_NAME + "|" + IP_ADDRESS + ")";
   // last part of number should be longer than 7 symbols, otherwise it will match dates (2015-02-02)
   private static final Pattern PHONE = Pattern.compile(
-          "(\\A|\\s|<br/>)+" +
-                  "((?:\\+[0-9]+[\\- \\.]*)?(?:\\([0-9]+\\)[\\- \\.]*)?(?:[0-9][0-9\\- \\.]{9,}[0-9]))" +
-                  "(\\Z|\\s|<br/>)+");
+      "(\\A|\\s|<br/>)+"
+          + "((?:\\+[0-9]+[\\- \\.]*)?(?:\\([0-9]+\\)[\\- \\.]*)?(?:[0-9][0-9\\- \\.]{9,}[0-9]))"
+          + "(\\Z|\\s|<br/>)+");
   private static final Pattern EMAIL_ADDRESS = Pattern.compile(
-          "(\\A|\\s|<br/>)+" +
-                  "([a-zA-Z0-9\\+\\._%\\-]{1,256}@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
-                  "(?:\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}))" +
-                  "(\\Z|\\s|<br/>)+"
+      "(\\A|\\s|<br/>)+"
+          + "([a-zA-Z0-9\\+\\._%\\-]{1,256}@[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}"
+          + "(?:\\.[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}))"
+          + "(\\Z|\\s|<br/>)+"
   );
-  private static final String IRI_PART = "(?:/(?:(?:[" + GOOD_IRI_CHAR +
-          ";/\\?:@&=#~\\-\\.\\+!\\*'\\(\\),_])|(?:%[a-fA-F0-9]{2}))*)?";
+  private static final String IRI_PART = "(?:/(?:(?:[" + GOOD_IRI_CHAR
+      + ";/\\?:@&=#~\\-\\.\\+!\\*'\\(\\),_])|(?:%[a-fA-F0-9]{2}))*)?";
   private static final Pattern WEB_URL = Pattern.compile(
-          "(\\A|\\s|<br/>)+" +
-                  "((?:(?:(?:http|https|Http|Https|rtsp|Rtsp)://(?:(?:[a-zA-Z0-9\\$\\-_\\.\\+!\\*" +
-                  "'\\(\\),;\\?&=]|(?:%[a-fA-F0-9]{2})){1,64}(?::(?:[a-zA-Z0-9\\$\\-_" +
-                  "\\.\\+!\\*\\(\\),;\\?&=]|(?:%[a-fA-F0-9]{2})){1,25})?@)?)?" +
-                  DOMAIN_NAME + "(?::\\d{1,5})?)" + IRI_PART + ")" +
-                  "(\\b|$|<br/>)+");
+      "(\\A|\\s|<br/>)+"
+          + "((?:(?:(?:http|https|Http|Https|rtsp|Rtsp)://(?:(?:[a-zA-Z0-9\\$\\-_\\.\\+!\\*"
+          + "'\\(\\),;\\?&=]|(?:%[a-fA-F0-9]{2})){1,64}(?::(?:[a-zA-Z0-9\\$\\-_"
+          + "\\.\\+!\\*\\(\\),;\\?&=]|(?:%[a-fA-F0-9]{2})){1,25})?@)?)?"
+          + DOMAIN_NAME + "(?::\\d{1,5})?)" + IRI_PART + ")"
+          + "(\\b|$|<br/>)+");
   private static final Pattern WEB_URL_NO_PROTO = Pattern.compile(
-          "(\\A|\\s|<br/>)+" +
-                  "((?:" + DOMAIN_NAME + "(?::\\d{1,5})?)" + IRI_PART + ")" +
-                  "(\\b|$|<br/>)+");
+      "(\\A|\\s|<br/>)+"
+          + "((?:" + DOMAIN_NAME + "(?::\\d{1,5})?)" + IRI_PART + ")"
+          + "(\\b|$|<br/>)+");
 
   // match tags containing xml, rss and feed w/o nested tags and w/ href attribute
   private static final Pattern hrefPattern = Pattern.compile(
@@ -119,7 +121,8 @@ class SyncWorker implements Runnable {
   @Override
   public void run() {
     try {
-      InputStream inputStream = PodcastHelper.openConnectionWithTO(new URL(link)).getInputStream();
+      InputStream inputStream = PodcastHelper.openConnectionWithTimeout(new URL(link))
+                                             .getInputStream();
       Feed feed = null;
       try {
         feed = EarlParser.parseOrThrow(inputStream, MAX_EPISODES_TO_PARSE);
@@ -128,7 +131,7 @@ class SyncWorker implements Runnable {
         for (String feedCandidate : scanPage(link)) {
           try {
             feed = EarlParser.parseOrThrow(
-                PodcastHelper.openConnectionWithTO(new URL(feedCandidate)).getInputStream(),
+                PodcastHelper.openConnectionWithTimeout(new URL(feedCandidate)).getInputStream(),
                 MAX_EPISODES_TO_PARSE);
             if (feedHasAudioEpisodes(feed)) {
               switchFeed(feedCandidate);
@@ -169,23 +172,23 @@ class SyncWorker implements Runnable {
       if (provider.update(Provider.getUri(Provider.T_PODCAST, id), values, null, null) == 1) {
         syncState.signalFeedSuccess(title, newEpisodesInserted);
         // delete every gone episode whose timestamp is less then feeds timestamp
-        BackgroundOperations.cleanupEpisodes(PodListenApp.getContext(), Provider.ESTATE_GONE);
+        BackgroundOperations.startCleanupEpisodes(PodListenApp.getContext(), Provider.ESTATE_GONE);
       } else {
         throw new RemoteException("Failed to update feed timestamp");
       }
 
     } catch (IOException exception) {
       storeFeedError(exception);
-      syncState.signalIOError(link);
+      syncState.signalIoError(link);
     } catch (RemoteException exception) {
       storeFeedError(exception);
-      syncState.signalDBError(link);
+      syncState.signalDbError(link);
     } catch (DataFormatException | XmlPullParserException exception) {
       storeFeedError(exception);
       syncState.signalParseError(link);
     } catch (Exception exception) {
       storeFeedError(exception);
-      syncState.signalIOError(link);
+      syncState.signalIoError(link);
     }
   }
 
@@ -198,21 +201,21 @@ class SyncWorker implements Runnable {
     return false;
   }
 
-  private void switchFeed(@NonNull String newURL) throws RemoteException {
+  private void switchFeed(@NonNull String newUrl) throws RemoteException {
     ContentValues cv = new ContentValues(3);
-    long newId = PodcastHelper.generateId(newURL);
+    long newId = PodcastHelper.generateId(newUrl);
     cv.put(Provider.K_ID, newId);
-    cv.put(Provider.K_PFURL, newURL);
+    cv.put(Provider.K_PFURL, newUrl);
     cv.put(Provider.K_PRMODE, refreshMode.ordinal());
     try {
       provider.update(Provider.getUri(Provider.T_PODCAST, id), cv, null, null);
     } catch (SQLiteConstraintException exception) {
       throw new RemoteException(PodListenApp.getContext().getString(
           R.string.podcast_already_subscribed,
-          newURL));
+          newUrl));
     }
     id = newId;
-    link = newURL;
+    link = newUrl;
   }
 
   @NonNull
@@ -271,8 +274,8 @@ class SyncWorker implements Runnable {
   private Enclosure extractAudioEnclosure(@NonNull Item episode) {
     for (Enclosure enclosure : episode.getEnclosures()) {
       String type = enclosure.getType();
-      if ((!TextUtils.isEmpty(type) && AUDIO_PATTERN.matcher(type).matches()) ||
-          (TextUtils.isEmpty(type) && urlPointsToAudio(enclosure.getLink()))) {
+      if ((!TextUtils.isEmpty(type) && AUDIO_PATTERN.matcher(type).matches())
+          || (TextUtils.isEmpty(type) && urlPointsToAudio(enclosure.getLink()))) {
         return enclosure;
       }
     }
@@ -288,7 +291,9 @@ class SyncWorker implements Runnable {
     return null;
   }
 
-  /** @return true if episode was inserted, false in case of error or if episode was already in DB */
+  /**
+   * @return true if episode was inserted, false in case of error or if episode was already in DB
+   */
   private boolean tryInsertEpisode(
       @NonNull Item episode, long subscriptionId,
       @NonNull ContentProviderClient provider, boolean markNew) {
@@ -329,7 +334,7 @@ class SyncWorker implements Runnable {
 
     if (audioSize == null || audioSize < 10 * 1024) {
       try {
-        audioSize = PodcastHelper.openConnectionWithTO(
+        audioSize = PodcastHelper.openConnectionWithTimeout(
             new URL(audioEnclosure.getLink())).getContentLength();
       } catch (MalformedURLException ex) {
         Log.e(TAG,
@@ -347,7 +352,7 @@ class SyncWorker implements Runnable {
     values.put(Provider.K_EAURL, audioEnclosure.getLink());
     String description = episode.getDescription();
     if (description != null) {
-      String simplifiedDescription = simplifyHTML(description);
+      String simplifiedDescription = simplifyHtml(description);
       values.put(Provider.K_EDESCR, simplifiedDescription);
       values.put(Provider.K_ESDESCR, getShortDescription(simplifiedDescription));
     }
@@ -398,7 +403,7 @@ class SyncWorker implements Runnable {
     values.put(Provider.K_PNAME, title);
     String description = feed.getDescription();
     if (description != null) {
-      String simplifiedDescription = simplifyHTML(description);
+      String simplifiedDescription = simplifyHtml(description);
       values.put(Provider.K_PDESCR, simplifiedDescription);
       values.put(Provider.K_PSDESCR, getShortDescription(simplifiedDescription));
     }
@@ -419,14 +424,15 @@ class SyncWorker implements Runnable {
   @NonNull
   private static String getShortDescription(@NonNull String htmlDescription) {
     String plain = Html.fromHtml(htmlDescription).toString();
-    int pL = plain.length();
-    return plain.substring(0, pL > Provider.SHORT_DESCR_LENGTH ? Provider.SHORT_DESCR_LENGTH : pL);
+    int length = plain.length();
+    return plain.substring(
+        0, length > Provider.SHORT_DESCR_LENGTH ? Provider.SHORT_DESCR_LENGTH : length);
   }
 
   @NonNull
-  static String simplifyHTML(@NonNull String text) {
+  static String simplifyHtml(@NonNull String text) {
     // replace opening <li> tag with bullet symbol. Otherwise <li> will be thrown out by Html.toHtml
-    text = listPattern.matcher(text).replaceAll("\u2022");
+    text = listPattern.matcher(text).replaceAll("\u2022"); // u2022 == bullet symbol
 
     // replace \n and </li> with line breaks. Need all LF tokens to be <br> to reduce them later
     text = brPattern.matcher(text).replaceAll(BR);

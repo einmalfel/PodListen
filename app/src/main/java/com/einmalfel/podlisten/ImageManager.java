@@ -101,13 +101,13 @@ public class ImageManager {
     HttpURLConnection urlConnection = null;
     Bitmap bitmap = null;
     try {
-      urlConnection = (HttpURLConnection) PodcastHelper.openConnectionWithTO(url);
+      urlConnection = (HttpURLConnection) PodcastHelper.openConnectionWithTimeout(url);
       urlConnection.connect();
       BitmapFactory.Options options = new BitmapFactory.Options();
       options.inJustDecodeBounds = true;
       bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
       urlConnection.disconnect();
-      urlConnection = (HttpURLConnection) PodcastHelper.openConnectionWithTO(url);
+      urlConnection = (HttpURLConnection) PodcastHelper.openConnectionWithTimeout(url);
       options.inJustDecodeBounds = false;
       options.inSampleSize = calculateInSampleSize(options, widthPx);
       Log.d(TAG, "Downloading " + url + ". Sampling factor: " + options.inSampleSize);
@@ -164,12 +164,12 @@ public class ImageManager {
 
   @Nullable
   private File getImageFile(long id, boolean write) {
-    Storage s = Preferences.getInstance().getStorage();
-    if (s == null) {
+    Storage storage = Preferences.getInstance().getStorage();
+    if (storage == null) {
       return null;
     }
-    boolean isAvailable = write ? s.isAvailableRW() : s.isAvailableRead();
-    return isAvailable ? new File(s.getImagesDir(), id + ".png") : null;
+    boolean isAvailable = write ? storage.isAvailableRw() : storage.isAvailableRead();
+    return isAvailable ? new File(storage.getImagesDir(), id + ".png") : null;
   }
 
 

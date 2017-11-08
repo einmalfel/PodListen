@@ -44,13 +44,13 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
   }
 
   @Override
-  public boolean onLongTap(long id, String title, int state, String aURL, int downloaded) {
+  public boolean onLongTap(long id, String title, int state, String audioUrl, int downloaded) {
     activity.deleteEpisodeDialog(id, state, title);
     return true;
   }
 
   @Override
-  public void onButtonTap(long id, String title, int state, String aURL, int downloaded) {
+  public void onButtonTap(long id, String title, int state, String audioUrl, int downloaded) {
     ContentValues val = new ContentValues(1);
     val.put(Provider.K_ESTATE, Provider.ESTATE_IN_PLAYLIST);
     activity.getContentResolver().update(Provider.getUri(Provider.T_EPISODE, id), val, null, null);
@@ -62,16 +62,16 @@ public class NewEpisodesFragment extends DebuggableFragment implements LoaderMan
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(activity,
-        Provider.episodeJoinPodcastUri,
-        EpisodeListAdapter.REQUIRED_DB_COLUMNS,
-        Provider.K_ESTATE + " = " + Provider.ESTATE_NEW,
-        null,
-        Provider.K_EDATE);
+                            Provider.episodeJoinPodcastUri,
+                            EpisodeListAdapter.REQUIRED_DB_COLUMNS,
+                            Provider.K_ESTATE + " = " + Provider.ESTATE_NEW,
+                            null,
+                            Provider.K_EDATE);
   }
 
   @Override
   public void onLoadFinished(Loader loader, Cursor data) {
-    activity.updateFAB(data.getCount());
+    activity.updateFab(data.getCount());
     adapter.swapCursor(data);
   }
 
