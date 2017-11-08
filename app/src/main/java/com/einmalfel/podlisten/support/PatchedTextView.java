@@ -5,11 +5,11 @@ package com.einmalfel.podlisten.support;
 
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 
-public class PatchedTextView extends TextView {
+public class PatchedTextView extends AppCompatTextView {
   public PatchedTextView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
   }

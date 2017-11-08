@@ -22,17 +22,16 @@ import com.einmalfel.podlisten.support.UnitConverter;
 public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private static final String TAG = "EVH";
 
-  private static Context context = null;
-  private static PorterDuffColorFilter loadingFilter;
-  private static PorterDuffColorFilter playingFilter;
-  private static PorterDuffColorFilter loadedFilter;
-  private static PorterDuffColorFilter playedFilter;
-  private static Drawable playButtonDrawable;
-  private static Drawable loadingButtonDrawable;
-  private static Drawable pauseButtonDrawable;
-  private static Drawable addButtonDrawable;
-  private static Drawable loadButtonDrawable;
-
+  private final Context context;
+  private final PorterDuffColorFilter loadingFilter;
+  private final PorterDuffColorFilter playingFilter;
+  private final PorterDuffColorFilter loadedFilter;
+  private final PorterDuffColorFilter playedFilter;
+  private final Drawable playButtonDrawable;
+  private final Drawable loadingButtonDrawable;
+  private final Drawable pauseButtonDrawable;
+  private final Drawable addButtonDrawable;
+  private final Drawable loadButtonDrawable;
   private final TextView descriptionText;
   private final TextView titleText;
   private final TextView feedTitleText;
@@ -52,7 +51,8 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
   private String title;
   private String audioUrl;
 
-  public EpisodeViewHolder(final View layout,
+  public EpisodeViewHolder(final Context context,
+                           final View layout,
                            final EpisodeListAdapter.ItemClickListener listener,
                            final EpisodeListAdapter adapter) {
     super(layout);
@@ -99,25 +99,23 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
     // and shares it's state with other ProgressBar drawables.
     progressBar.setMax(Integer.MAX_VALUE);
     progressBar.setProgress(Integer.MAX_VALUE);
+    this.context = context;
 
-    if (context == null) {
-      context = PodListenApp.getContext();
-      loadingFilter = new PorterDuffColorFilter(
-          ContextCompat.getColor(context, R.color.accent_primary), PorterDuff.Mode.MULTIPLY);
-      loadedFilter = new PorterDuffColorFilter(
-          ContextCompat.getColor(context, R.color.accent_primary_dim), PorterDuff.Mode.MULTIPLY);
-      playingFilter = new PorterDuffColorFilter(
-          ContextCompat.getColor(context, R.color.accent_secondary), PorterDuff.Mode.MULTIPLY);
-      playedFilter = new PorterDuffColorFilter(
-          ContextCompat.getColor(context, R.color.accent_secondary_dim), PorterDuff.Mode.MULTIPLY);
-      playButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_play_arrow_white_36dp);
-      pauseButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_pause_white_36dp);
-      addButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_playlist_add_white_36dp);
-      loadingButtonDrawable = ContextCompat.getDrawable(context,
-                                                        R.mipmap.ic_file_download_white_36dp);
-      loadingButtonDrawable.mutate().setColorFilter(MainActivity.disabledFilter);
-      loadButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_file_download_white_36dp);
-    }
+    loadingFilter = new PorterDuffColorFilter(
+        ContextCompat.getColor(context, R.color.accent_primary), PorterDuff.Mode.MULTIPLY);
+    loadedFilter = new PorterDuffColorFilter(
+        ContextCompat.getColor(context, R.color.accent_primary_dim), PorterDuff.Mode.MULTIPLY);
+    playingFilter = new PorterDuffColorFilter(
+        ContextCompat.getColor(context, R.color.accent_secondary), PorterDuff.Mode.MULTIPLY);
+    playedFilter = new PorterDuffColorFilter(
+        ContextCompat.getColor(context, R.color.accent_secondary_dim), PorterDuff.Mode.MULTIPLY);
+    playButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_play_arrow_white_36dp);
+    pauseButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_pause_white_36dp);
+    addButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_playlist_add_white_36dp);
+    loadingButtonDrawable = ContextCompat.getDrawable(context,
+                                                      R.mipmap.ic_file_download_white_36dp);
+    loadingButtonDrawable.mutate().setColorFilter(MainActivity.disabledFilter);
+    loadButtonDrawable = ContextCompat.getDrawable(context, R.mipmap.ic_file_download_white_36dp);
   }
 
   long getId() {
@@ -232,7 +230,7 @@ public class EpisodeViewHolder extends RecyclerView.ViewHolder {
         || id != this.id) {
       StringBuilder timeSize = new StringBuilder();
       if (length > 0) {
-        timeSize.append(PodcastHelper.getInstance().shortFormatDurationMs(length));
+        timeSize.append(PodcastHelper.shortFormatDurationMs(length, context));
         timeSize.append(" ");
       }
       if (size > 1024) {

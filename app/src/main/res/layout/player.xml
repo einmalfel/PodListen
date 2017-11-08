@@ -1,22 +1,29 @@
 <RelativeLayout
     android:id="@+id/player"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/background_contrast"
-    android:elevation="4dp">
+    app:elevation="4dp"
+    tools:ignore="Overdraw">
+    <!--ignoring overdraw - lint erroneously reports that player background has overdraw problems.
+    In fact, player rect is being rendered two times: for activity and player backgrounds.-->
 
     <ImageView
         android:id="@+id/play_episode_image"
         android:layout_width="100dp"
         android:layout_height="80dp"
         android:adjustViewBounds="false"
-        android:background="@drawable/player_image_background"/>
+        android:background="@drawable/player_image_background"
+        android:contentDescription="@string/player_episode_image_description"/>
 
     <FrameLayout
         android:id="@+id/progress_frame"
         android:layout_width="match_parent"
         android:layout_height="30dp"
+        android:layout_toEndOf="@id/play_episode_image"
         android:layout_toRightOf="@id/play_episode_image">
 
         <ProgressBar
@@ -25,6 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="2dp"
+            android:layout_marginStart="2dp"
             android:progressDrawable="@drawable/playback_progress"/>
 
         <TextView
@@ -35,13 +43,14 @@
             android:linksClickable="false"
             android:singleLine="true"
             android:textColor="@color/text"
-            android:textSize="@dimen/abc_text_size_medium_material"/>
+            android:textSize="18sp"/>
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/progress_frame"
+        android:layout_toEndOf="@id/play_episode_image"
         android:layout_toRightOf="@id/play_episode_image"
         android:orientation="horizontal">
 
@@ -52,6 +61,7 @@
             android:layout_margin="0dp"
             android:layout_weight="1"
             android:background="@drawable/clickable_image_button_bg"
+            android:contentDescription="@string/player_preferences_button_description"
             android:scaleType="fitCenter"
             android:src="@mipmap/ic_settings_white_36dp"/>
 
@@ -62,6 +72,7 @@
             android:layout_margin="0dp"
             android:layout_weight="1"
             android:background="@drawable/clickable_image_button_bg"
+            android:contentDescription="@string/player_rewind_button_description"
             android:scaleType="fitCenter"
             android:src="@mipmap/ic_fast_rewind_white_36dp"/>
 
@@ -72,6 +83,7 @@
             android:layout_margin="0dp"
             android:layout_weight="1"
             android:background="@drawable/clickable_image_button_bg"
+            android:contentDescription="@string/player_play_button_description"
             android:scaleType="fitCenter"
             android:src="@mipmap/ic_play_arrow_white_36dp"/>
 
@@ -82,6 +94,7 @@
             android:layout_margin="0dp"
             android:layout_weight="1"
             android:background="@drawable/clickable_image_button_bg"
+            android:contentDescription="@string/player_forward_button_description"
             android:scaleType="fitCenter"
             android:src="@mipmap/ic_fast_forward_white_36dp"/>
 
@@ -92,6 +105,7 @@
             android:layout_margin="0dp"
             android:layout_weight="1"
             android:background="@drawable/clickable_image_button_bg"
+            android:contentDescription="@string/player_next_button_description"
             android:scaleType="fitCenter"
             android:src="@mipmap/ic_skip_next_white_36dp"/>
 

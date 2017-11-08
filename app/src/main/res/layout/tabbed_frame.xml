@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/background_contrast"
-            android:elevation="4dp"/>
+            app:elevation="4dp"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
@@ -30,8 +30,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:layout_marginBottom="16dp"
+        android:layout_marginEnd="55sp"
         android:layout_marginRight="55sp"
         android:visibility="gone"
         app:backgroundTint="@color/accent_secondary"

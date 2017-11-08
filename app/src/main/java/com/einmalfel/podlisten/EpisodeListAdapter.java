@@ -74,6 +74,6 @@ public class EpisodeListAdapter extends BaseCursorRecyclerAdapter<EpisodeViewHol
   public EpisodeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     View view = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.episode_list_element, parent, false);
-    return new EpisodeViewHolder(view, listener, this);
+    return new EpisodeViewHolder(parent.getContext(), view, listener, this);
   }
 }

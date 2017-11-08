@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">PodListen</string>
-    <string name="enable_download_manager">Podlisten a besoin de l'application système \'Download manager\' afin de pouvoir télécharger les podcasts. Veuillez l\'activer dans Paramètres->Applications->Toutes les applications</string>
+    <string name="enable_download_manager">Podlisten a besoin de l\'application système \'Download manager\' afin de pouvoir télécharger les podcasts. Veuillez l\'activer dans Paramètres->Applications->Toutes les applications</string>
 
-    <!--google play doesn't allow title to contain more than 30 symbols-->
+    <!-- GPLAY STRINGS
+    Google play doesn't allow title to contain more than 30 symbols
     <string name="google_play_title">PodListen - Application libre de lecture de podcasts</string>
-    <!--short description is limited to 80 symbols-->
+    Short description is limited to 80 symbols
     <string name="google_play_short_description">Application de lecture de podcasts, libre et au code source disponible avec une interface légère.</string>
     <string name="google_play_long_description">Ce qui nous a principalement guidé dans l\'éloboration de cette application est de pouvoir écouter et gérer des podcasts sans se perdre dans de multiples écrans et menus. Ainsi, toute la navigation dans Podlisten se fait simplement en balayant entre 3 onglets, les actions de base se faisant en un seul appui.
 
@@ -25,6 +26,7 @@ La possibilité de rechercher des podcasts est prévue et sera ajoutée dans une
 
 Le code source de PodListen est disponible à cette adresse https://github.com/einmalfel/PodListen sous licence GPL-3.0.
 Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formuler une demande sur github.</string>
+    -->
 
     <string name="ok">OK</string>
     <string name="cancel">Annuler</string>
@@ -45,6 +47,7 @@ Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formul
     <string name="podcast_refresh_failed">Échec d\'actualisation : %s</string>
     <string name="podcast_not_loaded_yet">Le podcast n\'est pas encore téléchargé</string>
     <string name="podcast_refresh_time">Actualisé %s</string>
+    <!--description values used by accessibility services -->
     <string name="podcast_image_description">Image de ce podcast, le cas échéant</string>
     <string name="podcast_button_description">Voir les épisodes de ce podcast</string>
 
@@ -53,9 +56,11 @@ Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formul
     <string name="episode_delete_question">Supprimer l\'épisode ?</string>
     <string name="episode_deleted">Épisode supprimé: %s</string>
     <string name="episode_deleted_undo">Annuler</string>
-    <string name="episode_image_description">Image de ce podcast, le cas échéant</string>
     <string name="episode_deleted_subscription">Abonnement supprimé</string>
     <string name="episode_published">Publié %s</string>
+    <!--description values used by accessibility services -->
+    <string name="episode_image_description">Image de ce podcast, le cas échéant</string>
+    <string name="episode_button_description">Add, download or play episode</string>
 
     <string name="episode_action_download">Télécharger l\'épisode</string>
     <string name="episode_action_add">Ajouter cet épisode à la playlist</string>
@@ -84,7 +89,6 @@ Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formul
     <string name="subscribe_dialog_edit_text_hint">Collez l\'Url du podcast ici</string>
     <string name="subscribe_dialog_on_first_load_text">Combien d\'épisodes à ajouter :</string>
     <string name="subscribe_dialog_subscribe_button">ABONNEMENT</string>
-    <string name="subscribe_dialog_install_file_manager">Pour pouvoir utiliser cette fonctionnalité, veuillez installer un gestionnaire de fichiers.</string>
     <string name="subscribe_dialog_opml_failed">Impossible de s\'abonner à tous les flux de ce fichier OMPL.</string>
     <string name="subscribe_dialog_opml_subscriptions_added">"Abonnements ajoutés : %1$d/%2$d"</string>
     <string name="subscribe_dialog_opml_empty">Ce fichier OPML ne contient aucun flux.</string>
@@ -103,10 +107,10 @@ Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formul
     <string name="preferences_experimental_title">Expérimental</string>
     <string name="preferences_send_bug_report_title">Envoyer un rapport de bug</string>
     <string name="preferences_send_bug_report_summary">Envoyer un email au développeur. Les journaux de l\'application et de l\'appareil seront inclus.</string>
-    <string name="preferences_send_bug_report_summary_disabled">Annuler : il n\'y a pas d'application de email installée.</string>
+    <string name="preferences_send_bug_report_summary_disabled">Annuler : il n\'y a pas d\'application de email installée.</string>
     <string name="preferences_max_downloads_title">Nombre maximum de téléchargements en parallèle</string>
     <string name="preferences_max_downloads_unlimited">Pas de limitation</string>
-    <string name="preferences_storage_location_title">Cache d'épisode (effacé au changement)</string>
+    <string name="preferences_storage_location_title">Cache d\'épisode (effacé au changement)</string>
     <string name="preferences_auto_download_title">Épisode en auto-téléchargement</string>
     <string name="preferences_auto_download_ac_title">Téléchargement uniquement en charge</string>
     <string name="preferences_auto_download_ac_summary">Le téléchargement automatique ne se lance que lorsque que le chargeur est branché.</string>
@@ -114,7 +118,7 @@ Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formul
     <string name="preferences_opml_export_title">Exporter vers un fichier OPML</string>
     <string name="preferences_opml_export_summary">Exporter vos abonnements vers un fichier au format OPML (accepté par la plupart des applications)</string>
     <string name="preferences_opml_export_summary_disabled">Désactivé : vous n\'avez pas d\'abonnement à exporter</string>
-    <string name="preferences_opml_export_failed">Exportation vers OPML échouée, désolé...</string>
+    <string name="preferences_opml_export_failed">Exportation vers OPML échouée, désolé…</string>
     <string name="preferences_refresh_interval_title">Actualiser automatiquement les abonnements</string>
     <string name="preferences_jump_interval_title">Longueur du saut d\'avance et de retour rapide</string>
     <string name="preferences_on_playback_completed_title">À la fin de la lecture</string>
@@ -158,8 +162,8 @@ Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formul
 
     <string name="playback_complete_do_nothing">Ne rien faire</string>
     <string name="playback_complete_delete_do_nothing">Effacer l\'épisode joué et ne rien faire</string>
-    <string name="playback_complete_play_next">Jouer l'épisode suivant de la playlist</string>
-    <string name="playback_complete_delete_play_next">Effacer l'épisode joué et lire le suivant</string>
+    <string name="playback_complete_play_next">Jouer l\'épisode suivant de la playlist</string>
+    <string name="playback_complete_delete_play_next">Effacer l\'épisode joué et lire le suivant</string>
     <string name="playback_complete_play_first">Jouer le premier épisode de la playlist</string>
     <string name="playback_complete_delete_play_first">Effacer l\'épisode joué et lire le premier</string>
 
@@ -175,7 +179,14 @@ Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formul
 
     <string name="player_stopped">Appuyez sur "play" pour lancer la lecture</string>
     <string name="player_empty">Playlist vide</string>
-    <string name="player_episode_does_not_exist">Cet épisode n\'existe pas</string>
+    <string name="player_episode_does_not_exist">Cet épisode (%d) n\'existe pas</string>
+    <!--description values used by accessibility services -->
+    <string name="player_episode_image_description">@string/episode_image_description</string>
+    <string name="player_preferences_button_description">@string/preferences_title</string>
+    <string name="player_rewind_button_description">Rewind</string>
+    <string name="player_forward_button_description">Skip fragment</string>
+    <string name="player_play_button_description">Play or pause</string>
+    <string name="player_next_button_description">@string/playback_complete_play_next</string>
 
     <string name="sync_database_error">DB error</string>
     <string name="sync_interrupted_by_system">Réinitialisation interrompu par le système</string>
@@ -192,8 +203,8 @@ Si vous trouvez un bug ou désirez une nouvelle fonctionnalité, veuillez formul
 
     <string name="search_title">Recherche de podcasts</string>
     <string name="search_subscribe_button">S\'abonner à ce podcast</string>
-    <string name="search_unpacking_db">Préparation de la base de données de podcasts...</string>
-    <string name="search_frequency">Fréquence : %. épisodes par mois</string>
+    <string name="search_unpacking_db">Préparation de la base de données de podcasts…</string>
+    <string name="search_frequency">Fréquence : %.1f épisodes par mois</string>
 
     <!--<string name="app_id">GENERATED BY GRADLE</string>-->
 </resources>

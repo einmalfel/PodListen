@@ -25,6 +25,10 @@
         <item name="android:textAppearanceSmall">@style/TextAppearance.AppCompat.Caption</item>
     </style>
 
+    <style name="PodListenSearch" parent="PodListenCommon">
+        <item name="android:windowBackground">@color/background_soft</item>
+    </style>
+
     <style name="PodlistenMain" parent="PodListenCommon">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

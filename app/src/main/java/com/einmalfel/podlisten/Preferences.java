@@ -286,7 +286,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   private void clearStorage() {
     DownloadReceiver.stopDownloads(null);
 
-    PodlistenAccount account = PodlistenAccount.getInstance();
+    PodlistenAccount account = PodlistenAccount.getInstance(context);
     account.setupSync(0);
     account.cancelRefresh();
 
@@ -313,7 +313,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     } catch (ClassCastException | ArrayIndexOutOfBoundsException | NumberFormatException ex) {
       Log.e(TAG, "Illegal enum value, reverting to default: " + defaultValue.toString(), ex);
       sharedPrefs.edit().putString(key.toString(), Integer.toString(defaultValue.ordinal()))
-                 .commit();
+                 .apply();
       return defaultValue;
     }
   }
@@ -385,7 +385,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         RefreshIntervalOption newRi = readEnum(Key.REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
         if (newRi != refreshInterval) {
           refreshInterval = newRi;
-          PodlistenAccount.getInstance().setupSync(refreshInterval.periodSeconds);
+          PodlistenAccount.getInstance(context).setupSync(refreshInterval.periodSeconds);
         }
         break;
       case STORAGE_PATH:
@@ -402,7 +402,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
           }
           try {
             storage.createSubdirs();
-            sharedPrefs.edit().putString(Key.STORAGE_PATH.toString(), storage.toString()).commit();
+            sharedPrefs.edit().putString(Key.STORAGE_PATH.toString(), storage.toString()).apply();
           } catch (IOException exception) {
             Log.wtf(TAG, "Failed to init storage known to be writable " + storage, exception);
           }
@@ -420,7 +420,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
                 "Failed to set storage " + storagePreferenceString + ". Reverting to prev",
                 ioException);
             sharedPrefs.edit().putString(
-                Key.STORAGE_PATH.toString(), storage == null ? "" : storage.toString()).commit();
+                Key.STORAGE_PATH.toString(), storage == null ? "" : storage.toString()).apply();
           }
         }
         break;
@@ -456,7 +456,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   }
 
   public void setPlayerForeground(boolean playerServicePlaying) {
-    sharedPrefs.edit().putBoolean(Key.PLAYER_FOREGROUND.toString(), playerServicePlaying).commit();
+    sharedPrefs.edit().putBoolean(Key.PLAYER_FOREGROUND.toString(), playerServicePlaying).apply();
   }
 
   public boolean getPlayerForeground() {
@@ -464,7 +464,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
   }
 
   public void setCurrentActivity(@Nullable String currentActivity) {
-    sharedPrefs.edit().putString(Key.CURRENT_ACTIVITY.toString(), currentActivity).commit();
+    sharedPrefs.edit().putString(Key.CURRENT_ACTIVITY.toString(), currentActivity).apply();
   }
 
   @Nullable

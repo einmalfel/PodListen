@@ -25,33 +25,39 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_marginEnd="75sp"
             android:layout_marginLeft="75dp"
             android:layout_marginRight="75sp"
+            android:layout_marginStart="75dp"
             android:maxLines="2"
             android:minLines="2"
             android:textColor="@color/text_bright"
-            android:textSize="15sp"/>
+            android:textSize="@dimen/list_element_title_text_size"/>
 
         <TextView
             android:id="@+id/podcast_url"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_title"
+            android:layout_marginEnd="75sp"
             android:layout_marginLeft="75dp"
             android:layout_marginRight="75sp"
-            android:singleLine="true"
+            android:layout_marginStart="75dp"
             android:autoLink="all"
-            android:textSize="11sp"/>
+            android:singleLine="true"
+            android:textSize="@dimen/list_element_subtitle_text_size"/>
 
         <TextView
             android:id="@+id/podcast_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/podcast_url"
+            android:layout_marginEnd="75sp"
             android:layout_marginLeft="75dp"
             android:layout_marginRight="75sp"
+            android:layout_marginStart="75dp"
             android:singleLine="true"
-            android:textSize="11sp"/>
+            android:textSize="@dimen/list_element_subtitle_text_size"/>
 
         <ImageView
             android:id="@+id/podcast_image"
@@ -66,6 +72,7 @@
             android:layout_width="70sp"
             android:layout_height="match_parent"
             android:layout_alignBottom="@id/podcast_status"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@id/podcast_title"
             android:background="@drawable/clickable_image_button_bg"
@@ -82,6 +89,7 @@
             android:layout_marginLeft="2sp"
             android:layout_marginRight="2sp"
             android:layout_toLeftOf="@id/podcast_button"
+            android:layout_toStartOf="@id/podcast_button"
             android:background="@color/background_contrast"/>
 
         <View
@@ -100,7 +108,7 @@
             android:layout_below="@id/description_divider"
             android:linksClickable="true"
             android:singleLine="true"
-            android:textSize="13sp"/>
+            android:textSize="@dimen/list_element_description_text_size"/>
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>

@@ -99,11 +99,11 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
       }
       int subscribed = urls.size();
       for (final String feedUrl : urls) {
-        if (PodcastHelper.getInstance().trySubscribe(feedUrl, acRoot, refreshMode) == 0) {
+        if (PodcastHelper.trySubscribe(feedUrl, acRoot, refreshMode, getContext()) == 0) {
           subscribed--;
         }
       }
-      PodlistenAccount.getInstance().refresh(0);
+      PodlistenAccount.getInstance(getContext()).refresh(0);
       if (subscribed > 0) {
         Snackbar.make(
             acRoot,
@@ -119,9 +119,9 @@ public class SubscribeDialog extends AppCompatDialogFragment implements View.OnC
       // Parser exception means this is not well formed OPML
       // Subscribe button is only enabled if urlText contains valid url, so treat it as direct link
       // to feed
-      long id = PodcastHelper.getInstance().trySubscribe(link, view, refreshMode);
+      long id = PodcastHelper.trySubscribe(link, view, refreshMode, getContext());
       if (id != 0) {
-        PodlistenAccount.getInstance().refresh(id);
+        PodlistenAccount.getInstance(getContext()).refresh(id);
         dismiss();
       }
     }

@@ -163,8 +163,8 @@ public class RotationLayout extends ViewGroup {
 
   public LayoutParams generateLayoutParams(AttributeSet attrs) {
     TypedArray array = getContext().obtainStyledAttributes(
-        attrs, R.styleable.RotationLayout_LayoutParams);
-    int rotation = array.getInt(R.styleable.RotationLayout_LayoutParams_layout_rotation, 0);
+        attrs, R.styleable.RotationLayout);
+    int rotation = array.getInt(R.styleable.RotationLayout_layout_rotation, 0);
     array.recycle();
     return new LayoutParams(new ViewGroup.LayoutParams(getContext(), attrs), rotation);
   }

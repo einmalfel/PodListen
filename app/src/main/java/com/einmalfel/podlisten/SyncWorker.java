@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -260,7 +261,7 @@ class SyncWorker implements Runnable {
   }
 
   private boolean urlPointsToAudio(@NonNull String link) {
-    String lowerCase = link.toLowerCase();
+    String lowerCase = link.toLowerCase(Locale.ROOT);
     // following formats are used in podcasting and supported officially on Android 3.1+
     for (String extension : new String[]{".mp3", ".ogg", ".flac", ".aac", ".wav", ".m4a", ".oga"}) {
       if (lowerCase.endsWith(extension)) {

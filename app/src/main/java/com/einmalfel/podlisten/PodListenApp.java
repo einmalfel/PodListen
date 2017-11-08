@@ -1,5 +1,6 @@
 package com.einmalfel.podlisten;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -31,7 +32,7 @@ public class PodListenApp extends DebuggableApp implements Application.ActivityL
     return instance;
   }
 
-  public static Context getContext() {
+  public static Application getContext() {
     if (instance == null) {
       Log.wtf("APP", "Getting context before Application.onCreate()", new NullPointerException());
     }
@@ -72,7 +73,9 @@ public class PodListenApp extends DebuggableApp implements Application.ActivityL
   public void onActivityDestroyed(Activity activity) {}
 
   // when user decides to send report on his own, disable reporting via crash dialog, send report,
-  // re-enable crash dialog
+  // re-enable crash dialog.
+  // using commit here to make sure we are not leaving temporary preference value
+  @SuppressLint("ApplySharedPref")
   static void sendLogs() {
     ACRA.getACRASharedPreferences()
         .edit()
