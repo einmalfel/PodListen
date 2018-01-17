@@ -1,0 +1,200 @@
+<resources>
+    <string name="app_name">PodListen</string>
+    <string name="enable_download_manager">Podlisten needs \'Download manager\' system app to load episodes. Please, enable it in Settings->Apps->All></string>
+
+    <!--google play doesn't allow title to contain more than 30 symbols-->
+    <string name="google_play_title">PodListen - free podcast app</string>
+    <!--short description is limited to 80 symbols-->
+    <string name="google_play_short_description">Free and open source podcast player with lightweight interface.</string>
+    <string name="google_play_long_description">Main idea behind this app is to set podcast listening  free from inconvenience of switching between screens and going through menus. Instead, all navigation in PodListen is done by simply swiping between 3 tabs, basic actions are done with single tap.
+
+PodListen is open-source ad-free app, it doesn\'t include analytics services, collect any user data or use strange system permissions.
+
+Besides original interface, it has basic features one can expect from podcatcher app:
+ * searchable podcast database
+ * OPML import and export
+ * feeds auto-refresh and episodes download
+ * subscription by clicking on RSS links in browser
+ * home screen widget
+ * playlist sorting modes
+ * preferences like “download on wi-fi only”, "pause on headphones disconnect" etc.
+
+NB!: as interface of this app was intentionally made simplistic, don\'t expect it to have some features big paid apps have: episode ratings, sharing of anything via social networks, video episodes support, various folders and categories like “recommended”, “favorite”, “downloaded”, “played”, etc.
+
+Podcast search feature is planned for an update.
+
+PodListen source code is available at https://github.com/einmalfel/PodListen under GPL-3.0 license.
+If you encounter a bug or come up with a feature request, please open an issue on github.</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Avbryt</string>
+
+    <!--only one-letter abbreviations will fit into layout. There is no room for longer ones-->
+    <string name="hour_abbreviation">h</string>
+    <string name="minute_abbreviation">m</string>
+
+    <string name="tab_playlist">Spellista</string>
+    <string name="tab_new_episodes">Nya episoder</string>
+    <string name="tab_subscriptions">Prenumerationer</string>
+
+    <string name="podcast_already_subscribed">Redan prenumererat på %s</string>
+    <string name="podcast_subscribe_failed">Felaktig prenumeration</string>
+    <string name="podcast_delete_question">Avbryta prenumeration av %s?</string>
+    <string name="podcast_delete_question_no_title">Avbryta perenumeration av denna podcast?</string>
+    <string name="podcast_no_title">Ingen titel</string>
+    <string name="podcast_refresh_failed">Uppdateringen falerade: %s</string>
+    <string name="podcast_not_loaded_yet">Strömmen är inte laddad än</string>
+    <string name="podcast_refresh_time">Uppdaterad %s</string>
+    <string name="podcast_image_description">Bild av denna podcast om det finns</string>
+    <string name="podcast_button_description">Visa episoder av denna ström</string>
+
+    <string name="episode_no_title">INGEN TITEL</string>
+    <string name="episode_downloading">Nedladding av episod %s</string>
+    <string name="episode_delete_question">Ta bort episod?</string>
+    <string name="episode_deleted">Episod borttagen: %s</string>
+    <string name="episode_deleted_undo">Ogör</string>
+    <string name="episode_image_description">Bild av denna episod om det finns</string>
+    <string name="episode_deleted_subscription">Borttagen prenumeration</string>
+    <string name="episode_published">Publicerad %s</string>
+
+    <string name="episode_action_download">Ladda ner episod</string>
+    <string name="episode_action_add">Addera denna episod till spellistan</string>
+    <string name="episode_action_play">Spela denna episod</string>
+    <string name="episode_action_pause">Pause</string>
+
+    <!--Ideally those strings should fit in single line in spinner widget (20-25 characters).
+    It's still ok if they don't fit, but it doesn't look neat. I'd recommend to exclude "add" word,
+    as it's usually longer in any language than in english. "Add" is already contained is spinner
+    title (see subscribe_dialog_on_first_load_text)-->
+    <string name="refresh_mode_week">Lägg till förra veckans episoder</string>
+    <string name="refresh_mode_month">Lägg till förra månades episoder</string>
+    <string name="refresh_mode_year">Lägg till förra årets episoder</string>
+    <string name="refresh_mode_all">Lägg till alla episoder</string>
+    <string name="refresh_mode_none">Lägg inte till gamla episoder</string>
+    <string name="refresh_mode_last">Lägg till senaste episoden</string>
+    <string name="refresh_mode_last_2">Lägg till de 2 senaste episoderna</string>
+    <string name="refresh_mode_last_3">Lägg till de 3 senaste episoderna</string>
+    <string name="refresh_mode_last_4">Lägg till de 4 senaste episoderna</string>
+    <string name="refresh_mode_last_5">Lägg till de 5 senaste episoderna</string>
+    <string name="refresh_mode_last_10">Lägg till de 10 senaste episoderna</string>
+    <string name="refresh_mode_last_20">Lägg till de 20 senaste episoderna</string>
+    <string name="refresh_mode_last_50">Lägg till de 50 senaste episoderna</string>
+    <string name="refresh_mode_last_100">Lägg till de 100 senaste episoderna</string>
+
+    <string name="subscribe_dialog_edit_text_hint">Infoga podcast URL här</string>
+    <string name="subscribe_dialog_on_first_load_text">Addera hur många episoder:</string>
+    <string name="subscribe_dialog_subscribe_button">PRENUMERERA</string>
+    <string name="subscribe_dialog_install_file_manager">Vänligen installera "file manager" för att använda denna funktion.</string>
+    <string name="subscribe_dialog_opml_failed">Misslyckades med att prenumerera på alla strömmar ur denna OPML</string>
+    <string name="subscribe_dialog_opml_subscriptions_added">"Prenumerationen adderad: %1$d/%2$d"</string>
+    <string name="subscribe_dialog_opml_empty">Denna OPML innehåller inga strömmar</string>
+    <string name="subscribe_dialog_title">Addera prenumeration</string>
+    <string name="subscribe_dialog_select_opml_prompt">Välj OPML fil</string>
+    <string name="subscribe_dialog_import_opml">Importera OPML</string>
+    <string name="subscribe_dialog_search_db">Sök i databasen</string>
+
+    <!--PodListen uses android's "preference support library". It imposes some restrictions:
+    preferences_*_title strings are never wrapped, so entire string should fit in single line (~30
+    characters. preferences_*_summary length ideally should not exceed 100 characters-->
+    <string name="preferences_title">Inställningar</string>
+    <string name="preferences_network_title">Nätverk</string>
+    <string name="preferences_playback_title">Uppspelning</string>
+    <string name="preferences_other_title">Annat</string>
+    <string name="preferences_experimental_title">Experimentellt</string>
+    <string name="preferences_send_bug_report_title">Skicka en felrapport</string>
+    <string name="preferences_send_bug_report_summary">Skicka epost till utvecklaren. Appens logg och enhets information kommer att ingå</string>
+    <string name="preferences_send_bug_report_summary_disabled">Avstängt: det finns ingen installerad epost app</string>
+    <string name="preferences_max_downloads_title">Max antal parallella nedladdningar</string>
+    <string name="preferences_max_downloads_unlimited">Utan gräns</string>
+    <string name="preferences_storage_location_title">Episodförråd (tömms vid förändring)</string>
+    <string name="preferences_auto_download_title">Episod auto-nedladdning</string>
+    <string name="preferences_auto_download_ac_title">Nedladdning när enheten laddas</string>
+    <string name="preferences_auto_download_ac_summary">Automatisk nedladdning endast när enheten laddas</string>
+    <string name="preferences_download_network_title">Nätverkstyp för nedladdning</string>
+    <string name="preferences_opml_export_title">Exportera till OPML</string>
+    <string name="preferences_opml_export_summary">Exportera dina prenumerationer till en OPML fil (används av de flesta podcast appar)</string>
+    <string name="preferences_opml_export_summary_disabled">Avstängt: du har inga prenumerationer att exportera</string>
+    <string name="preferences_opml_export_failed">OPML exportering gick tyvärr fel</string>
+    <string name="preferences_refresh_interval_title">Automatisk uppdatering av prenumerationer</string>
+    <string name="preferences_jump_interval_title">Intervall för hoppa knapp</string>
+    <string name="preferences_on_playback_completed_title">Vid uppspelningend slut</string>
+    <string name="preferences_pause_on_disconnect_title">Paus vid urkommling</string>
+    <string name="preferences_pause_on_disconnect_summary">Paus i uppspelningen när hörlurar kopplas ur eller om BT förlorar uppkopplingen</string>
+    <string name="preferences_fix_skip_ending_title">Fix för problem med episod slut</string>
+    <string name="preferences_fix_skip_ending_summary">Androids sytemets mediauppspelare hoppar över slutet av spår på några typer av enheter. Denna option fixar det problemet.</string>
+
+    <string name="opml_dialog_done">Klart</string>
+    <string name="opml_dialog_message">Din prenumeration exporterades till %s</string>
+    <string name="opml_dialog_send">Skicka</string>
+    <string name="opml_dialog_FMapp">Visa i filhanterare</string>
+    <string name="opml_dialog_title">Lyckad exportering</string>
+    <string name="opml_export_file_name">PodListen_Subscriptions.opml</string>
+
+    <string name="refresh_period_never">Aldrig</string>
+    <string name="refresh_period_hour">Varje timme</string>
+    <string name="refresh_period_2hours">Varannnan timme</string>
+    <string name="refresh_period_3hours">Var tredje timme</string>
+    <string name="refresh_period_6hours">Var fjärde timme</string>
+    <string name="refresh_period_12hours">Var tolfte timme</string>
+    <string name="refresh_period_day">Dagligen</string>
+    <string name="refresh_period_2days">Varannan dag</string>
+    <string name="refresh_period_week">Veckovis</string>
+    <string name="refresh_period_2weeks">Varannan vecka</string>
+    <string name="refresh_period_month">Månatligt</string>
+
+    <string name="sorting_mode_oldest_first">Sorterat efter datum (äldst först)</string>
+    <string name="sorting_mode_newest_first">Sorterat efter datum (nyast först)</string>
+    <string name="sorting_mode_by_feed">Sorterat efter feed</string>
+    <string name="sorting_mode_shortest_first">Sorterat efter längd (kortast först)</string>
+    <string name="sorting_mode_longest_first">Sorterat efter längd (längst först)</string>
+
+    <string name="auto_download_playlist">Episoder adderade till spellistan</string>
+    <string name="auto_download_all_new">Alla nya episoder</string>
+    <string name="auto_download_never">Aldrig</string>
+
+    <string name="download_network_wifi">Endast Wi-Fi</string>
+    <string name="download_network_non_roaming">Wi-Fi och mobilnät, utom vid roaming</string>
+    <string name="download_network_any">Använd alla nätverk</string>
+
+    <string name="playback_complete_do_nothing">Gör ingenting</string>
+    <string name="playback_complete_delete_do_nothing">Ta bort spelad episod och gör ingenting</string>
+    <string name="playback_complete_play_next">Spela nästa episod i spellistan</string>
+    <string name="playback_complete_delete_play_next">Ta bort spelad episod och spela nästa</string>
+    <string name="playback_complete_play_first">Spela första episoden i spellistan</string>
+    <string name="playback_complete_delete_play_first">Ta bort spelad episod och spela första</string>
+
+    <string name="jump_interval_10sec">10 sekunder</string>
+    <string name="jump_interval_20sec">20 sekunder</string>
+    <string name="jump_interval_30sec">30 sekunder</string>
+    <string name="jump_interval_1min">1 minut</string>
+    <string name="jump_interval_5min">5 minuter</string>
+
+    <string name="crash_dialog_title">PodListen har krashat</string>
+    <string name="crash_dialog_text">Ett oväntat fel har uppstått som tvingar PodListen att stanna. Var vänligt att hjälp oss att fixa detta genom att skicka oss PodListens logg och och anonmym information om din enhet. Du kan editera meddelandet innan det skickas om du vill.</string>
+    <string name="crash_dialog_ok_toast">Tack!</string>
+
+    <string name="player_stopped">Tryck på spela för att starta</string>
+    <string name="player_empty">Spellistan är tom</string>
+    <string name="player_episode_does_not_exist">Episod %d finns inte</string>
+
+    <string name="sync_database_error">DB fel</string>
+    <string name="sync_interrupted_by_system">Refresh interrupted by system</string>
+    <string name="sync_failed">Uppdatering gick fel</string>
+    <string name="sync_running">Uppdatering av PodListen..</string>
+    <string name="sync_new_episodes">Nya episoder: %s</string>
+    <string name="sync_feeds_synced">Feeds laddade: %d</string>
+    <string name="sync_feeds_failed">Misslyckades med att ladda: %d</string>
+    <string name="sync_finished">Podlisten uppdaterad</string>
+    <string name="sync_feed_parsing_failed">Parsing misslyckades: %s</string>
+    <string name="sync_feed_db_error">DB fel: %s</string>
+    <string name="sync_feed_io_error">IO fel: %s</string>
+    <string name="sync_feed_synced">Laddad: %s</string>
+
+    <string name="search_title">Sök podcasts</string>
+    <string name="search_subscribe_button">Prenumerera på denna podcast</string>
+    <string name="search_unpacking_db">Förbereder podcast databas…</string>
+    <string name="search_frequency">Frekvens: %.1f episoder/månad</string>
+
+    <!--<string name="app_id">GENERATED BY GRADLE</string>-->
+</resources>
+
