@@ -18,7 +18,7 @@ PodListen is ready for translation. If you are willing to contribute by translat
 
 Alternatively, you can simply [download latest strings.xml](https://raw.githubusercontent.com/einmalfel/PodListen/master/app/src/main/res/values/strings.xml), translate it and email it to me.
 
-Currently, PodListen has Croatian, English, German, Russian and incomplete French localizations.
+Currently, PodListen has Croatian, English, German, Russian, Italian and incomplete French localizations.
 
 ### License
 

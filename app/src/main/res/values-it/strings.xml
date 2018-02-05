@@ -1,0 +1,198 @@
+<resources>
+    <string name="app_name">PodListen</string>
+    <string name="enable_download_manager">Podlisten needs \'Download manager\' system app to load episodes. Please, enable it in Settings->Apps->All></string>
+
+    <!--google play doesn't allow title to contain more than 30 symbols-->
+    <string name="google_play_title">PodListen - free podcast app</string>
+    <!--short description is limited to 80 symbols-->
+    <string name="google_play_short_description">Free and open source podcast player with lightweight interface.</string>
+    <string name="google_play_long_description">Main idea behind this app is to set podcast listening  free from inconvenience of switching between screens and going through menus. Instead, all navigation in PodListen is done by simply swiping between 3 tabs, basic actions are done with single tap.
+
+        PodListen is open-source ad-free app, it doesn\'t include analytics services, collect any user data or use strange system permissions.
+
+        Besides original interface, it has basic features one can expect from podcatcher app:
+        * searchable podcast database
+        * OPML import and export
+        * feeds auto-refresh and episodes download
+        * subscription by clicking on RSS links in browser
+        * home screen widget
+        * playlist sorting modes
+        * preferences like “download on wi-fi only”, "pause on headphones disconnect" etc.
+
+        NB!: as interface of this app was intentionally made simplistic, don\'t expect it to have some features big paid apps have: episode ratings, sharing of anything via social networks, video episodes support, various folders and categories like “recommended”, “favorite”, “downloaded”, “played”, etc.
+
+        Podcast search feature is planned for an update.
+
+        PodListen source code is available at https://github.com/einmalfel/PodListen under GPL-3.0 license.
+        If you encounter a bug or come up with a feature request, please open an issue on github.</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Annulla</string>
+
+    <!--only one-letter abbreviations will fit into layout. There is no room for longer ones-->
+    <string name="hour_abbreviation">h</string>
+    <string name="minute_abbreviation">m</string>
+
+    <string name="tab_playlist">Playlist</string>
+    <string name="tab_new_episodes">Nuovi episodi</string>
+    <string name="tab_subscriptions">Sottoscrizioni</string>
+
+    <string name="podcast_already_subscribed">Già sottoscritto a %s</string>
+    <string name="podcast_subscribe_failed">Sottoscrizione fallita</string>
+    <string name="podcast_delete_question">Rimuovi sottoscrizione da %s?</string>
+    <string name="podcast_delete_question_no_title">Rimuovi sottoscrizione da questo postcast?</string>
+    <string name="podcast_no_title">Nessun titolo</string>
+    <string name="podcast_refresh_failed">Ricaricamento fallito: %s</string>
+    <string name="podcast_not_loaded_yet">Feed non ancora caricato</string>
+    <string name="podcast_refresh_time">Ricaricato %s</string>
+    <string name="podcast_image_description">Immagine del podcast se presente</string>
+    <string name="podcast_button_description">Visualizza episodi di questo feed</string>
+
+    <string name="episode_no_title">NESSUN TITOLO</string>
+    <string name="episode_downloading">Download dell\'episodio %s</string>
+    <string name="episode_delete_question">Elimina episodio?</string>
+    <string name="episode_deleted">Episodio eliminato: %s</string>
+    <string name="episode_deleted_undo">Annulla</string>
+    <string name="episode_image_description">Immagine dell\'episodio se presente</string>
+    <string name="episode_deleted_subscription">Sottoscrizione eliminata</string>
+    <string name="episode_published">Pubblicato %s</string>
+
+    <string name="episode_action_download">Scarica episodio</string>
+    <string name="episode_action_add">Aggiungi questo episodio a playlist</string>
+    <string name="episode_action_play">Ascolta questo episodio</string>
+    <string name="episode_action_pause">Pausa</string>
+
+    <!--Ideally those strings should fit in single line in spinner widget (20-25 characters).
+    It's still ok if they don't fit, but it doesn't look neat. I'd recommend to exclude "add" word,
+    as it's usually longer in any language than in english. "Add" is already contained is spinner
+    title (see subscribe_dialog_on_first_load_text)-->
+    <string name="refresh_mode_week">Aggiungi episodi della scorsa settimana</string>
+    <string name="refresh_mode_month">Aggiungi episodi dello scorso mese</string>
+    <string name="refresh_mode_year">Aggiungi episodi dello scorso anno</string>
+    <string name="refresh_mode_all">Aggiungi tutti gli episodi</string>
+    <string name="refresh_mode_none">Non aggiungere episodi vecchi</string>
+    <string name="refresh_mode_last">Aggiungi l\'ultimo episodio</string>
+    <string name="refresh_mode_last_2">Aggiungi gli ultimi 2 episodi</string>
+    <string name="refresh_mode_last_3">Aggiungi gli ultimi 3 episodi</string>
+    <string name="refresh_mode_last_4">Aggiungi gli ultimi 4 episodi</string>
+    <string name="refresh_mode_last_5">Aggiungi gli ultimi 5 episodi</string>
+    <string name="refresh_mode_last_10">Aggiungi gli ultimi 10 episodi</string>
+    <string name="refresh_mode_last_20">Aggiungi gli ultimi 20 episodi</string>
+    <string name="refresh_mode_last_50">Aggiungi gli ultimi 50 episodi</string>
+    <string name="refresh_mode_last_100">Aggiungi gli ultimi 100 episodi</string>
+
+    <string name="subscribe_dialog_edit_text_hint">Incolla URL podcast qui</string>
+    <string name="subscribe_dialog_on_first_load_text">Quanti episodi aggiungere:</string>
+    <string name="subscribe_dialog_subscribe_button">SOTTOSCRIVI</string>
+    <string name="subscribe_dialog_install_file_manager">Prego installare gestore file per usare questa feature.</string>
+    <string name="subscribe_dialog_opml_failed">Sottoscrizione fallita per tutti i feed di questo OPML</string>
+    <string name="subscribe_dialog_opml_subscriptions_added">"Sottoscrizioni aggiunte: %1$d/%2$d"</string>
+    <string name="subscribe_dialog_opml_empty">Questo OPML non contiene alcun feed</string>
+    <string name="subscribe_dialog_title">Aggiungi sottoscrizione</string>
+    <string name="subscribe_dialog_select_opml_prompt">Seleziona file OPML</string>
+    <string name="subscribe_dialog_import_opml">Importa OPML</string>
+    <string name="subscribe_dialog_search_db">Ricerca nel database</string>
+
+    <!--PodListen uses android's "preference support library". It imposes some restrictions:
+    preferences_*_title strings are never wrapped, so entire string should fit in single line (~30
+    characters. preferences_*_summary length ideally should not exceed 100 characters-->
+    <string name="preferences_title">Preferenze</string>
+    <string name="preferences_network_title">Rete</string>
+    <string name="preferences_playback_title">Riproduzione</string>
+    <string name="preferences_other_title">Altro</string>
+    <string name="preferences_experimental_title">Sperimentale</string>
+    <string name="preferences_send_bug_report_title">Invia bug-report</string>
+    <string name="preferences_send_bug_report_summary">Invia email a sviluppatore. Log dell\'app e informazioni sul dispositivo saranno incluse</string>
+    <string name="preferences_send_bug_report_summary_disabled">Disabilitato: nessuna app di mail installata</string>
+    <string name="preferences_max_downloads_title">Max download paralleli</string>
+    <string name="preferences_max_downloads_unlimited">Illimitato</string>
+    <string name="preferences_storage_location_title">cache degli episodi (svuotata sul click)</string>
+    <string name="preferences_auto_download_title">auto-download episodi</string>
+    <string name="preferences_auto_download_ac_title">Download solo quando in carica</string>
+    <string name="preferences_auto_download_ac_summary">Esegui download automatici solo quando in uso il caricabatterie</string>
+    <string name="preferences_download_network_title">Tipologia rete di download</string>
+    <string name="preferences_opml_export_title">Esporta a OPML</string>
+    <string name="preferences_opml_export_summary">Esporta le sottoscrizioni a file OPML (accettato dalla maggior parte delle app di podcast)</string>
+    <string name="preferences_opml_export_summary_disabled">Disabilitato: non hai sottoscrizioni da esportare</string>
+    <string name="preferences_opml_export_failed">Esportazione OPML fallita, scusa..</string>
+    <string name="preferences_refresh_interval_title">Auto-ricarica sottoscrizioni</string>
+    <string name="preferences_jump_interval_title">Intervallo bottoni skip</string>
+    <string name="preferences_on_playback_completed_title">Su riproduzione completata</string>
+    <string name="preferences_pause_on_disconnect_title">Pausa su disconnessione auricolare</string>
+    <string name="preferences_pause_on_disconnect_summary">Mette riproduzione in pausa quanto l\'utente scollega gli auricolari o dispositivo bluetooth perde la connessione</string>
+    <string name="preferences_fix_skip_ending_title">Workaround skip finali</string>
+    <string name="preferences_fix_skip_ending_summary">Su alcuni dispositivi il media player del sistema Android skippa i finali delle tracce. Questa opzione corregge il problema</string>
+
+    <string name="opml_dialog_done">Finito</string>
+    <string name="opml_dialog_message">Le tue sottoscrizioni sono state esportate in %s</string>
+    <string name="opml_dialog_send">Invia</string>
+    <string name="opml_dialog_FMapp">Visualizza nel gestore file</string>
+    <string name="opml_dialog_title">Esportazione completata</string>
+    <string name="opml_export_file_name">PodListen_Subscriptions.opml</string>
+
+    <string name="refresh_period_never">Mai</string>
+    <string name="refresh_period_hour">Ogni ora</string>
+    <string name="refresh_period_2hours">Ogni 2 ore</string>
+    <string name="refresh_period_3hours">Ogni 3 ore</string>
+    <string name="refresh_period_6hours">Ogni 6 ore</string>
+    <string name="refresh_period_12hours">Ogni 12 ore</string>
+    <string name="refresh_period_day">Quotidiano</string>
+    <string name="refresh_period_2days">Ogni 2 giorni</string>
+    <string name="refresh_period_week">Settimanalmente</string>
+    <string name="refresh_period_2weeks">Ogni 2 settiname</string>
+    <string name="refresh_period_month">Mensilmente</string>
+
+    <string name="sorting_mode_oldest_first">Ordinati per data (prima più vecchi)</string>
+    <string name="sorting_mode_newest_first">Ordinati per data (prima più recenti)</string>
+    <string name="sorting_mode_by_feed">Ordinati per feed</string>
+    <string name="sorting_mode_shortest_first">Ordinati per durata (prima più corti)</string>
+    <string name="sorting_mode_longest_first">Ordinati per durata (prima più lunghi)</string>
+
+    <string name="auto_download_playlist">Episodi aggiunti alla playlist</string>
+    <string name="auto_download_all_new">Tutti episodi nuovi</string>
+    <string name="auto_download_never">Mai</string>
+
+    <string name="download_network_wifi">Solo Wi-Fi</string>
+    <string name="download_network_non_roaming">Wi-Fi e cellulare, eccetto per roaming</string>
+    <string name="download_network_any">Usa tutte le reti</string>
+
+    <string name="playback_complete_do_nothing">Non fare nulla</string>
+    <string name="playback_complete_delete_do_nothing">Elimina episodio riprodotto e non fare nulla</string>
+    <string name="playback_complete_play_next">Riproduci prossimo episodio nella playlist</string>
+    <string name="playback_complete_delete_play_next">Elimina episodio riprodotto e riproduci il prossimo</string>
+    <string name="playback_complete_play_first">Riproduci primo episodio nella playlist</string>
+    <string name="playback_complete_delete_play_first">Elimina episodio riprodotto e riproduci il primo</string>
+
+    <string name="jump_interval_10sec">10 secondi</string>
+    <string name="jump_interval_20sec">20 secondi</string>
+    <string name="jump_interval_30sec">30 secondi</string>
+    <string name="jump_interval_1min">1 minuto</string>
+    <string name="jump_interval_5min">5 minuti</string>
+
+    <string name="crash_dialog_title">PodListen è crashato</string>
+    <string name="crash_dialog_text">Un errore imprevisto ha portato alla chiusura di PodListen. Per favore aiutaci a correggere l\'errore inviandoci i log PodListen e informazioni anonime riguardo il tuo dispositivo. Potrai editare il messaggio prima dell\'invio.</string>
+    <string name="crash_dialog_ok_toast">Grazie!</string>
+
+    <string name="player_stopped">Premi play per riprodurre</string>
+    <string name="player_empty">Playlist vuota</string>
+    <string name="player_episode_does_not_exist">l\'episodio %d non esiste</string>
+
+    <string name="sync_database_error">Errore DB</string>
+    <string name="sync_interrupted_by_system">Ricaricamento interrotto dal sistema</string>
+    <string name="sync_failed">Ricaricamento fallito</string>
+    <string name="sync_running">Ricaricando PodListen..</string>
+    <string name="sync_new_episodes">Nuovi episodi: %s</string>
+    <string name="sync_feeds_synced">Feeds caricati: %d</string>
+    <string name="sync_feeds_failed">Errore nel caricamento: %d</string>
+    <string name="sync_finished">Podlisten ricaricato</string>
+    <string name="sync_feed_parsing_failed">Parsificazione fallita: %s</string>
+    <string name="sync_feed_db_error">Errore DB: %s</string>
+    <string name="sync_feed_io_error">Errore IO: %s</string>
+    <string name="sync_feed_synced">Caricato: %s</string>
+
+    <string name="search_title">Cerca fra podcast</string>
+    <string name="search_subscribe_button">Sottoscrivi a questo podcast</string>
+    <string name="search_unpacking_db">Preparazione database podcast…</string>
+    <string name="search_frequency">Frequenza: %.1f episodi/mese</string>
+</resources>
+
