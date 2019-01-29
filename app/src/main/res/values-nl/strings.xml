@@ -1,0 +1,211 @@
+<resources>
+    <string name="app_name">PodListen</string>
+    <string name="enable_download_manager">Podlisten heeft de systeem-app \'Download manager\' nodig om afleveringen te laden. Activeer het alstublieft in Instellingen-> Apps-> Alle</string>
+
+    <!-- GPLAY STRINGS
+         Google play doesn't allow title to contain more than 30 symbols
+         <string name="google_play_title">PodListen - vrije podcast app</string>
+         Short description is limited to 80 symbols
+         <string name="google_play_short_description">Vrije en open source podcast app met een lichtgewichte interface.</string>
+         <string name="google_play_long_description">Het belangrijkste idee achter deze app is om podcast luisteren vrij te laten van het ongemak van het schakelen tussen schermen en het doorlopen van menu's. In plaats daarvan wordt alle navigatie in PodListen uitgevoerd door simpelweg tussen 3 tabbladen te vegen, basishandelingen worden met één tik uitgevoerd.
+         
+         PodListen is een open-source ad-free app, deze bevat geen analytische services, verzamelt geen gebruikersgegevens of gebruikt vreemde systeemmachtigingen.
+         
+         Naast de originele interface, heeft het basisfuncties die je van de podcatcher-app kunt verwachten:
+         * doorzoekbare podcast-database
+         * OPML import en export
+         * feeds automatisch vernieuwen en afleveringen downloaden
+         * abonneren door in de browser op de RSS-links te klikken
+         * startscherm widget
+         * afspeellijst sorteermodi
+         * voorkeuren zoals "download alleen via wifi", "pauzeer bij het loskoppelen van de hoofdtelefoon" enz.
+
+         NB!: aangezien de interface van deze app opzettelijk simplistisch werd gemaakt, verwacht dan niet dat deze enkele functies heeft die grote betaalde apps hebben: afleveringsclassificaties, het delen van alles via sociale netwerken, ondersteuning voor video-afleveringen, verschillende mappen en categorieën zoals "aanbevolen" , "Favoriet", "gedownload", "gespeeld", enz.
+         
+         Een podcast-zoekfunctie is gepland voor een update.
+
+         De PodListen-broncode is beschikbaar op https://github.com/einmalfel/PodListen onder de GPL-3.0-licentie.
+         Als u een bug tegenkomt of een functieverzoek bedenkt, open dan alsublieft een issue op github.
+    -->
+
+    <string name="ok">OK</string>
+    <string name="cancel">Annuleer</string>
+
+    <!--only one-letter abbreviations will fit into layout. There is no room for longer ones-->
+    <string name="hour_abbreviation">u</string>
+    <string name="minute_abbreviation">m</string>
+
+    <string name="tab_playlist">AfspeellijstPlaylist</string>
+    <string name="tab_new_episodes">Nieufirewe afleveringens</string>
+    <string name="tab_subscriptions">Abonnementen</string>
+
+    <string name="podcast_already_subscribed">Al geaboneerd op %s</string>
+    <string name="podcast_subscribe_failed">Abonneren mislukt</string>
+    <string name="podcast_delete_question">Afmelden voor %s?</string>
+    <string name="podcast_delete_question_no_title">Afmelden voor deze podcast?</string>
+    <string name="podcast_no_title">Geen titel</string>
+    <string name="podcast_refresh_failed">Vernieuwen mislukt: %s</string>
+    <string name="podcast_not_loaded_yet">Feed is nog niet geladen</string>
+    <string name="podcast_refresh_time">Vernieuwd %s</string>
+    <!--description values used by accessibility services -->
+    <string name="podcast_image_description">Afbeelding van deze podcast, indien aanwezig</string>
+    <string name="podcast_button_description">Afleveringen van deze feed weergeven</string>
+
+    <string name="episode_no_title">GEEN TITEL</string>
+    <string name="episode_downloading">Aflevering \'%s\' downloaden</string>
+    <string name="episode_delete_question">Aflevering verwijderen?</string>
+    <string name="episode_deleted">Aflevering verwijderd: %s</string>
+    <string name="episode_deleted_undo">Annuleer</string>
+    <string name="episode_deleted_subscription">Abonnement verwijderd</string>
+    <string name="episode_published">Gepubliceerd %s</string>
+    <!--description values used by accessibility services -->
+    <string name="episode_image_description">Afbeelding van deze aflevering, indien aanwezig</string>
+    <string name="episode_button_description">Aflevering toevoegen, downloaden of afspelen</string>
+
+    <string name="episode_action_download">Aflevering downloaden</string>
+    <string name="episode_action_add">Voeg deze aflevering toe aan afspeellijst</string>
+    <string name="episode_action_play">Speel deze aflevering</string>
+    <string name="episode_action_pause">Pauze</string>
+
+    <!--Ideally those strings should fit in single line in spinner widget (20-25 characters).
+    It's still ok if they don't fit, but it doesn't look neat. I'd recommend to exclude "add" word,
+    as it's usually longer in any language than in english. "Add" is already contained is spinner
+    title (see subscribe_dialog_on_first_load_text)-->
+    <string name="refresh_mode_week">Afleveringen van vorige week</string>
+    <string name="refresh_mode_month">Afleveringen van vorige maand</string>
+    <string name="refresh_mode_year">Afleveringen van vorig jaar</string>
+    <string name="refresh_mode_all">Voeg alle afleveringen toe</string>
+    <string name="refresh_mode_none">Voeg niet alle afleveringen toe</string>
+    <string name="refresh_mode_last">Laatste aflevering</string>
+    <string name="refresh_mode_last_2">Laatste 2 afleveringen</string>
+    <string name="refresh_mode_last_3">Laatste 3 afleveringen</string>
+    <string name="refresh_mode_last_4">Laatste 4 afleveringen</string>
+    <string name="refresh_mode_last_5">Laatste 5 afleveringen</string>
+    <string name="refresh_mode_last_10">Laatste 10 afleveringen</string>
+    <string name="refresh_mode_last_20">Laatste 20 afleveringen</string>
+    <string name="refresh_mode_last_50">Laatste 50 afleveringen</string>
+    <string name="refresh_mode_last_100">Laatste 100 afleveringen</string>
+
+    <string name="subscribe_dialog_edit_text_hint">Plak de podcast URL hier</string>
+    <string name="subscribe_dialog_on_first_load_text">Aantal afleveringen:</string>
+    <string name="subscribe_dialog_subscribe_button">ABONNEREN</string>
+    <string name="subscribe_dialog_opml_failed">Abonneren op alle feeds van deze OPML is mislukt</string>
+    <string name="subscribe_dialog_opml_subscriptions_added">"Abonnementen toegevoegd: %1$d/%2$d"</string>
+    <string name="subscribe_dialog_opml_empty">Deze OPML bevat geen feeds</string>
+    <string name="subscribe_dialog_title">Abonnement toevoegen</string>
+    <string name="subscribe_dialog_select_opml_prompt">Selecteer OPML-bestand</string>
+    <string name="subscribe_dialog_import_opml">Importeer OPML</string>
+    <string name="subscribe_dialog_search_db">Zoek in database</string>
+
+    <!--PodListen uses android's "preference support library". It imposes some restrictions:
+    preferences_*_title strings are never wrapped, so entire string should fit in single line (~30
+    characters. preferences_*_summary length ideally should not exceed 100 characters-->
+    <string name="preferences_title">Voorkeuren</string>
+    <string name="preferences_network_title">Netwerk</string>
+    <string name="preferences_playback_title">AfspelenLecture</string>
+    <string name="preferences_other_title">Andere</string>
+    <string name="preferences_experimental_title">Experimenteel</string>
+    <string name="preferences_send_bug_report_title">Stuur foutenrapport</string>
+    <string name="preferences_send_bug_report_summary">Stuur ontwikkelaar een e-mail. Applog en apparaatinfo worden opgenomen</string>
+    <string name="preferences_send_bug_report_summary_disabled">Uitgeschakeld: er is geen e-mail-app ge\ïnstalleerd</string>
+    <string name="preferences_max_downloads_title">Max. Parallelle downloads</string>
+    <string name="preferences_max_downloads_unlimited">Onbeperkt</string>
+    <string name="preferences_storage_location_title">Aflevering cache (gewist bij verandering)</string>
+    <string name="preferences_auto_download_title">Aflevering auto-download</string>
+    <string name="preferences_auto_download_ac_title">Alleen downloaden tijdens opladen</string>
+    <string name="preferences_auto_download_ac_summary">Voer alleen automatische downloads uit wanneer de oplader is aangesloten</string>
+    <string name="preferences_download_network_title">Soort download netwerk</string>
+    <string name="preferences_opml_export_title">Exporteren naar OPML</string>
+    <string name="preferences_opml_export_summary">Exporteer uw abonnementen naar OPML-bestand (geaccepteerd door de meeste podcast-apps)</string>
+    <string name="preferences_opml_export_summary_disabled">Uitgeschakeld: u hebt geen abonnementen om te exporteren</string>
+    <string name="preferences_opml_export_failed">OPML-export mislukt, sorry ..</string>
+    <string name="preferences_refresh_interval_title">Abonnementen automatisch vernieuwen</string>
+    <string name="preferences_jump_interval_title">Jump-knoppen interval</string>
+    <string name="preferences_on_playback_completed_title">Bij afspelen voltooid</string>
+    <string name="preferences_pause_on_disconnect_title">Pauzeer bij koptelefoonkoppelingen</string>
+    <string name="preferences_pause_on_disconnect_summary">Pauzeert het afspelen wanneer de gebruiker de koptelefoon loskoppelt of de BT-headset geen verbinding meer heeft</string>
+    <string name="preferences_fix_skip_ending_title">Tijdelijke oplossing einde overslaan</string>
+    <string name="preferences_fix_skip_ending_summary">De mediaspeler van het Android-systeem slaat het einde van afleveringen op sommige apparaten over. Deze optie lost het probleem op</string>
+
+    <string name="opml_dialog_done">Gereed</string>
+    <string name="opml_dialog_message">Uw abonnementen zijn ge\ëxporteerd naar %s</string>
+    <string name="opml_dialog_send">Verzenden</string>
+    <string name="opml_dialog_FMapp">Weergeven in bestandsbeheer</string>
+    <string name="opml_dialog_title">Succesvol ge\ëxporteerd</string>
+    <string name="opml_export_file_name">PodListen_Abonnementen.opml</string>
+
+    <string name="refresh_period_never">Nooit</string>
+    <string name="refresh_period_hour">Elk uur</string>
+    <string name="refresh_period_2hours">Elke 2 uur</string>
+    <string name="refresh_period_3hours">Elke 3 uur</string>
+    <string name="refresh_period_6hours">Elke 6 uur</string>
+    <string name="refresh_period_12hours">Elke 12 uur</string>
+    <string name="refresh_period_day">Dagelijks</string>
+    <string name="refresh_period_2days">Elke 2 dagen</string>
+    <string name="refresh_period_week">Wekelijks</string>
+    <string name="refresh_period_2weeks">Elke 2 weken</string>
+    <string name="refresh_period_month">Maandelijks</string>
+
+    <string name="sorting_mode_oldest_first">Gesorteerd op datum (oudste eerst)</string>
+    <string name="sorting_mode_newest_first">Gesorteerd op datum (nieuwste eerst)</string>
+    <string name="sorting_mode_by_feed">Gesorteerd op feed</string>
+    <string name="sorting_mode_shortest_first">Gesorteerd op lengte (kortste eerst)</string>
+    <string name="sorting_mode_longest_first">Gesorteerd op lengte (langste eerst)</string>
+
+    <string name="auto_download_playlist">Afleveringen toegevoegd aan afspeellijst</string>
+    <string name="auto_download_all_new">Alle nieuwe afleveringen</string>
+    <string name="auto_download_never">Nooit</string>
+
+    <string name="download_network_wifi">Alleen via Wi-Fi</string>
+    <string name="download_network_non_roaming">Wi-Fi en mobiel, behalve voor roaming</string>
+    <string name="download_network_any">Alle netwerken gebruiken</string>
+
+    <string name="playback_complete_do_nothing">Niets doen</string>
+    <string name="playback_complete_delete_do_nothing">Verwijder afgespeelde aflevering en doe niets</string>
+    <string name="playback_complete_play_next">Speel de volgende aflevering in afspeellijst</string>
+    <string name="playback_complete_delete_play_next">Verwijder afgespeelde aflevering en speel het volgende af</string>
+    <string name="playback_complete_play_first">Speel de eerste aflevering in de afspeellijst</string>
+    <string name="playback_complete_delete_play_first">Verwijder de afgespeelde aflevering en speel deze eerst</string>
+
+    <string name="jump_interval_10sec">10 seconden</string>
+    <string name="jump_interval_20sec">20 seconden</string>
+    <string name="jump_interval_30sec">30 seconden</string>
+    <string name="jump_interval_1min">1 minuut</string>
+    <string name="jump_interval_5min">5 minuten</string>
+
+    <string name="crash_dialog_title">PodListen is gecrasht</string>
+    <string name="crash_dialog_text">Er is een onverwachte fout opgetreden waardoor PodListen is gedwongen te stoppen. Help ons dit op te lossen door ons PodListen-logboek en anonieme informatie over uw apparaat te sturen. U kunt het bericht bewerken voordat u het verzendt zoals u dat wilt.</string>
+    <string name="crash_dialog_ok_toast">Bedankt!</string>
+
+    <string name="player_stopped">Druk op "play" om te starten</string>
+    <string name="player_empty">Afspeellijst is leeg</string>
+    <string name="player_episode_does_not_exist">Aflevering %d bestaat niet</string>
+    <!--description values used by accessibility services -->
+    <string name="player_episode_image_description">@string/aflevering_afbeelding_beschrijving</string>
+    <string name="player_preferences_button_description">@string/voorkeuren_titel</string>
+    <string name="player_rewind_button_description">Terugspoelen</string>
+    <string name="player_forward_button_description">Fragment overslaan</string>
+    <string name="player_play_button_description">Afspelen of pauzeren</string>
+    <string name="player_next_button_description">@string/afspelen_compleet_speel_volgende</string>
+
+    <string name="sync_database_error">DB fout</string>
+    <string name="sync_interrupted_by_system">Vernieuwen onderbroken door systeem</string>
+    <string name="sync_failed">Vernieuwen mislukt</string>
+    <string name="sync_running">PodListen vernieuwen..</string>
+    <string name="sync_new_episodes">Nieuwe afleveringen: %s</string>
+    <string name="sync_feeds_synced">Feeds geladen: %d</string>
+    <string name="sync_feeds_failed">Laden mislukt: %d</string>
+    <string name="sync_finished">Podlisten vernieuwd</string>
+    <string name="sync_feed_parsing_failed">Parsing mislukt: %s</string>
+    <string name="sync_feed_db_error">Fout DB: %s</string>
+    <string name="sync_feed_io_error">Fout IO: %s</string>
+    <string name="sync_feed_synced">Geladen: %s</string>
+
+    <string name="search_title">Zoek podcasts</string>
+    <string name="search_subscribe_button">Abonneer op deze podcast</string>
+    <string name="search_unpacking_db">Podcastdatabase voorbereiden..</string>
+    <string name="search_frequency">Frequentie: %.1f afleveringen/maand</string>
+
+    <!--<string name="app_id">GENERATED BY GRADLE</string>-->
+</resources>
+
